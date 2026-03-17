@@ -1,0 +1,112 @@
+---
+// LeadForm.astro — Lead qualification form (non-functional wireframe)
+// STARDRAFT: non-functional — no submit handler, marked with data-stardraft attribute
+---
+
+<section id="qualify" class="py-24">
+  <div class="max-w-2xl mx-auto px-6">
+
+    <!-- Section header -->
+    <div class="text-center mb-12">
+      <p class="text-sm font-semibold uppercase tracking-widest opacity-50 mb-2">Apply</p>
+      <h2 class="text-4xl font-bold leading-tight mb-4">
+        Is Breakthru right for you?
+      </h2>
+      <p class="opacity-70">
+        Two sentences explaining the purpose of this form: Myer reviews every application personally and only takes on clients he knows he can help achieve a genuine transformation.
+      </p>
+    </div>
+
+    <!-- STARDRAFT: non-functional -->
+    <form
+      data-stardraft="non-functional"
+      class="card card-border"
+      onsubmit="return false;"
+    >
+      <!-- STARDRAFT: non-functional -->
+      <div class="card-body gap-6">
+
+        <!-- Name -->
+        <fieldset class="fieldset">
+          <legend class="fieldset-legend">Your name</legend>
+          <input type="text" class="input w-full" placeholder="First and last name" />
+          <span class="fieldset-label">How Myer will address you</span>
+        </fieldset>
+
+        <!-- Age -->
+        <fieldset class="fieldset">
+          <legend class="fieldset-legend">Your age</legend>
+          <input type="number" class="input w-full" placeholder="e.g. 28" min="16" max="99" />
+          <span class="fieldset-label">Helps Myer understand your context and experience stage</span>
+        </fieldset>
+
+        <!-- Years of training experience -->
+        <fieldset class="fieldset">
+          <legend class="fieldset-legend">Years of training experience</legend>
+          <select class="select w-full">
+            <option disabled selected>Select your experience level</option>
+            <option>0 — I am completely new to training</option>
+            <option>Less than 1 year</option>
+            <option>1–2 years</option>
+            <option>3–5 years</option>
+            <option>5–10 years</option>
+            <option>10+ years</option>
+          </select>
+          <span class="fieldset-label">Breakthru works with all levels — this helps personalise your programme</span>
+        </fieldset>
+
+        <!-- Primary goal -->
+        <fieldset class="fieldset">
+          <legend class="fieldset-legend">Your primary goal</legend>
+          <select class="select w-full">
+            <option disabled selected>Select your main goal</option>
+            <option>Build strength and muscle</option>
+            <option>Lose body fat and transform my physique</option>
+            <option>Improve athletic performance / marginal gains</option>
+            <option>Build confidence and consistency</option>
+            <option>General fitness and health</option>
+            <option>Multiple goals — I'll describe below</option>
+          </select>
+          <span class="fieldset-label">Your primary focus — you can expand on this below</span>
+        </fieldset>
+
+        <!-- Goals detail -->
+        <fieldset class="fieldset">
+          <legend class="fieldset-legend">Tell Myer about your goals</legend>
+          <textarea class="textarea w-full h-32" placeholder="Describe what you want to achieve, what has and hasn't worked for you before, and why now is the right time for Breakthru"></textarea>
+          <span class="fieldset-label">The more context you give, the better Myer can assess fit</span>
+        </fieldset>
+
+        <!-- Biggest challenge -->
+        <fieldset class="fieldset">
+          <legend class="fieldset-legend">Your biggest challenge right now</legend>
+          <textarea class="textarea w-full h-24" placeholder="What is the main obstacle standing between you and the results you want?"></textarea>
+        </fieldset>
+
+        <!-- Email -->
+        <fieldset class="fieldset">
+          <legend class="fieldset-legend">Email address</legend>
+          <input type="email" class="input w-full" placeholder="you@example.com" />
+          <span class="fieldset-label">Myer will reach out here if your application is a good fit</span>
+        </fieldset>
+
+        <!-- Submit button — non-functional -->
+        <div class="card-actions flex-col items-stretch gap-3 mt-2">
+          <!-- STARDRAFT: non-functional -->
+          <button type="submit" class="btn btn-primary btn-lg w-full" disabled data-stardraft="non-functional">
+            Submit Application
+          </button>
+          <div class="flex justify-center">
+            <span class="badge badge-ghost">Form submission coming in build phase</span>
+          </div>
+          <p class="text-xs text-center opacity-50">
+            Myer reviews every application personally. You will hear back within 48 hours.
+          </p>
+        </div>
+
+      </div>
+    </form>
+    <!-- end STARDRAFT: non-functional -->
+
+  </div>
+</section>
