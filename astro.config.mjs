@@ -1,5 +1,5 @@
 // @ts-check
-import { defineConfig } from "astro/config";
+import { defineConfig, passthroughImageService } from "astro/config";
 import tailwindcss from "@tailwindcss/vite";
 
 import cloudflare from "@astrojs/cloudflare";
@@ -7,6 +7,9 @@ import cloudflare from "@astrojs/cloudflare";
 export default defineConfig({
   vite: {
     plugins: [tailwindcss()],
+  },
+  image: {
+    service: passthroughImageService(),
   },
 
   adapter: cloudflare(),
