@@ -12,12 +12,14 @@
     "astro": "astro",
     "lint": "eslint src/**/*.{js,ts,jsx,tsx,astro} --no-error-on-unmatched-pattern",
     "lint:fix": "eslint src/**/*.{js,ts,jsx,tsx,astro} --no-error-on-unmatched-pattern --fix",
-    "prepare": "husky"
+    "prepare": "husky",
+    "generate-types": "wrangler types"
   },
   "lint-staged": {
     "*.{js,ts,jsx,tsx,astro}": "eslint --fix"
   },
   "dependencies": {
+    "@astrojs/cloudflare": "^13.1.2",
     "@tailwindcss/vite": "^4.2.1",
     "astro": "^6.0.4",
     "daisyui": "^5.5.19",
@@ -34,6 +36,7 @@
     "globals": "^17.4.0",
     "husky": "^9.1.7",
     "lint-staged": "^16.4.0",
-    "typescript-eslint": "^8.57.0"
+    "typescript-eslint": "^8.57.0",
+    "wrangler": "^4.74.0"
   }
 }

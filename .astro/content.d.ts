@@ -2,7 +2,7 @@ declare module "astro:content" {
   export interface RenderResult {
     Content: import("astro/runtime/server/index.js").AstroComponentFactory;
     headings: import("astro").MarkdownHeading[];
-    remarkPluginFrontmatter: Record<string, any>;
+    remarkPluginFrontmatter: Record<string, unknown>;
   }
   interface Render {
     ".md": Promise<RenderResult>;
@@ -143,10 +143,10 @@ declare module "astro:content" {
   type DataEntryMap = {};
 
   type ExtractLoaderTypes<T> = T extends import("astro/loaders").LiveLoader<
-    infer TData,
-    infer TEntryFilter,
-    infer TCollectionFilter,
-    infer TError
+    infer TData extends Record<string, any>,
+    infer TEntryFilter extends Record<string, any>,
+    infer TCollectionFilter extends Record<string, any>,
+    infer TError extends Error
   >
     ? {
         data: TData extends Record<string, any> ? TData : Record<string, any>;
@@ -166,12 +166,13 @@ declare module "astro:content" {
     ExtractLoaderTypes<T>["collectionFilter"];
   type ExtractErrorType<T> = ExtractLoaderTypes<T>["error"];
 
-  type LiveLoaderDataType<C extends keyof LiveContentConfig["collections"]> =
+  type LiveLoaderDataType<C extends keyof LiveContentConfig["collections"]> = ( 
     LiveContentConfig["collections"][C]["schema"] extends undefined
       ? ExtractDataType<LiveContentConfig["collections"][C]["loader"]>
       : import("astro/zod").infer<
           Exclude<LiveContentConfig["collections"][C]["schema"], undefined>
-        >;
+        >
+  ) & Record<string, any>;
   type LiveLoaderEntryFilterType<
     C extends keyof LiveContentConfig["collections"],
   > = ExtractEntryFilterType<LiveContentConfig["collections"][C]["loader"]>;
