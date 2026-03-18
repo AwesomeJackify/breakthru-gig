@@ -20,8 +20,10 @@
   },
   "dependencies": {
     "@astrojs/cloudflare": "^13.1.2",
+    "@iconify-json/lucide": "^1.2.98",
     "@tailwindcss/vite": "^4.2.1",
     "astro": "^6.0.4",
+    "astro-icon": "^1.1.5",
     "daisyui": "^5.5.19",
     "gsap": "^3.14.2",
     "split-type": "^0.3.4",

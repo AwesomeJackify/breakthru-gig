@@ -16,9 +16,13 @@ const { nav } = config;
   <!-- Desktop nav links — hidden on mobile -->
   <div class="navbar-center hidden lg:flex">
     <ul class="menu menu-horizontal">
-      {nav.links.map((link) => (
-        <li><a href={link.href}>{link.label}</a></li>
-      ))}
+      {
+        nav.links.map((link) => (
+          <li>
+            <a href={link.href}>{link.label}</a>
+          </li>
+        ))
+      }
     </ul>
   </div>
 
@@ -52,9 +56,13 @@ const { nav } = config;
         tabindex="0"
         class="menu menu-sm dropdown-content mt-3 z-1 p-2 shadow bg-base-100 rounded-box w-52"
       >
-        {nav.links.map((link) => (
-          <li><a href={link.href}>{link.label}</a></li>
-        ))}
+        {
+          nav.links.map((link) => (
+            <li>
+              <a href={link.href}>{link.label}</a>
+            </li>
+          ))
+        }
         <li>
           <a href="#qualify" class="btn btn-primary btn-sm mt-2">{nav.cta}</a>
         </li>

@@ -1,0 +1,57 @@
+---
+// PhotoGallery.astro — 5-photo PT showcase grid
+// STARDRAFT: Replace placeholder slots with real photos from Myer
+// Suggested filenames: myer-1.jpg, myer-2.jpg, myer-3.jpg, myer-4.jpg, myer-5.jpg
+// Place images in src/assets/images/ and import them below
+---
+
+<section class="py-24 bg-base-200">
+  <div class="max-w-6xl mx-auto px-6">
+
+    <!-- Section header -->
+    <div class="text-center mb-12">
+      <p class="text-sm font-semibold uppercase tracking-widest opacity-50 mb-2">The Coach</p>
+      <h2 class="text-4xl font-bold">Built Different. Coached the Same Way.</h2>
+    </div>
+
+    <!--
+      STARDRAFT: 5-photo bento grid — replace each placeholder div with:
+      <Image src={myerPhoto1} alt="..." class="w-full h-full object-cover" />
+      after importing real photos.
+    -->
+    <div class="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-3 auto-rows-[220px]">
+
+      <!-- Photo 1: large, spans 2 rows on left -->
+      <div class="row-span-2 rounded-xl overflow-hidden bg-base-300 flex items-center justify-center text-base-content/20 text-sm font-medium tracking-wide">
+        <!-- STARDRAFT: Replace with <Image src={myer1} alt="Myer Bevan" class="w-full h-full object-cover" /> -->
+        Photo 1
+      </div>
+
+      <!-- Photo 2: top-right, first col -->
+      <div class="rounded-xl overflow-hidden bg-base-300 flex items-center justify-center text-base-content/20 text-sm font-medium tracking-wide">
+        <!-- STARDRAFT: Replace with <Image src={myer2} alt="Myer Bevan coaching" class="w-full h-full object-cover" /> -->
+        Photo 2
+      </div>
+
+      <!-- Photo 3: top-right, second col -->
+      <div class="rounded-xl overflow-hidden bg-base-300 flex items-center justify-center text-base-content/20 text-sm font-medium tracking-wide">
+        <!-- STARDRAFT: Replace with <Image src={myer3} alt="Myer Bevan training" class="w-full h-full object-cover" /> -->
+        Photo 3
+      </div>
+
+      <!-- Photo 4: bottom-right, first col -->
+      <div class="rounded-xl overflow-hidden bg-base-300 flex items-center justify-center text-base-content/20 text-sm font-medium tracking-wide">
+        <!-- STARDRAFT: Replace with <Image src={myer4} alt="Myer Bevan" class="w-full h-full object-cover" /> -->
+        Photo 4
+      </div>
+
+      <!-- Photo 5: bottom-right, second col -->
+      <div class="rounded-xl overflow-hidden bg-base-300 flex items-center justify-center text-base-content/20 text-sm font-medium tracking-wide">
+        <!-- STARDRAFT: Replace with <Image src={myer5} alt="Myer Bevan" class="w-full h-full object-cover" /> -->
+        Photo 5
+      </div>
+
+    </div>
+
+  </div>
+</section>

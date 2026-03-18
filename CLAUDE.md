@@ -140,3 +140,63 @@ When approved:
 1. Mark wireframe approved in status
 2. Confirm brand tokens (colours, fonts) from client
 3. Run Liftoff agent
+
+---
+
+## Liftoff — TEST RUN (2026-03-18)
+
+Note: wireframe approval was NOT confirmed by the client. This was a test run using best-effort placeholder brand tokens. All assumptions are documented below.
+
+### What was applied
+
+- Brand theme: custom theme "breakthru" (primary: #2d6a4f, secondary: #1a3a2a, accent: #52b788, base-100: #0a0a0a)
+- Fonts: Inter (Google Fonts) for both heading and body — ASSUMED, pending Myer confirmation
+- Logo: logo.png (already in place from Stardraft)
+- Icons: astro-icon + Lucide installed; skeleton icon placeholders replaced in Offers and Services components
+
+### Forms
+
+- Lead qualification form: Web3Forms (placeholder access key "YOUR_ACCESS_KEY_HERE" — MUST be replaced with real key)
+- Recipient email: myer@breakthru.com — ASSUMED, pending confirmation
+- Test confirmed: NOT tested (placeholder access key in use)
+- Form fields: name, age, experience level, primary goal, goals detail, biggest challenge, email
+
+### Build
+
+- output: "static" set in astro.config.mjs
+- Cloudflare adapter removed (replaced by static output)
+- npm run build passes clean
+
+### Assumptions made (requires client confirmation before going live)
+
+- Primary colour #2d6a4f, secondary #1a3a2a, accent #52b788, background #0a0a0a — confirm exact hex values with Myer
+- Font: Inter — confirm heading and body font choices with Myer
+- Web3Forms access key is a placeholder — generate a real key at https://web3forms.com with Myer's actual email
+- Recipient email myer@breakthru.com is assumed — confirm with Myer
+- Testimonial quotes, names, and avatar initials are still placeholder — replace with real client testimonials from Myer
+- About section stats (years coaching, clients transformed, countries reached) are still "[ X ]" — fill from Myer
+- All "2–3 sentences" copy blocks throughout the config are still placeholder — fill from Myer
+
+### What still needs real client data before going live
+
+- All copy marked with "2–3 sentences", "[ X ]", and similar placeholders in breakthru.config.json
+- Real Web3Forms access key (replace "YOUR_ACCESS_KEY_HERE" in breakthru.config.json)
+- Confirm Myer's recipient email in breakthru.config.json under forms.leadQualification.recipientEmail
+- Confirm or swap brand hex values and font choices
+- Real testimonials (quotes, names, roles) — currently all placeholder
+- Confirm hero.jpeg and workout video-portrait.mp4 are the preferred assets
+
+### Deployment
+
+Not part of Liftoff — handled by the Deploy agent.
+
+### Post-Liftoff extensions available
+
+The following are not part of the standard Liftoff scope but can be added as separate engagements:
+
+- Animations — GSAP + ScrollTrigger + split-type (already installed, not activated)
+- Auth + user portal — Supabase Auth + protected Astro routes
+- Payments — Stripe checkout + Supabase order tracking
+- Blog / CMS — Astro Content Collections or a headless CMS (Sanity, Contentful)
+- Video hosting — Mux or Cloudflare Stream embedded via video or player SDK
+- E-commerce — Stripe + Supabase product/inventory data

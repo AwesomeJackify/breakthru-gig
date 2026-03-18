@@ -7,10 +7,10 @@
   "nav": {
     "logoAlt": "Breakthru",
     "links": [
-      { "label": "About Myer",    "href": "#about" },
+      { "label": "About Myer", "href": "#about" },
       { "label": "What We Offer", "href": "#offers" },
-      { "label": "Programmes",    "href": "#services" },
-      { "label": "Apply",         "href": "#qualify" }
+      { "label": "Programmes", "href": "#services" },
+      { "label": "Apply", "href": "#qualify" }
     ],
     "cta": "Start Your Breakthru"
   },
@@ -182,5 +182,14 @@
   "footer": {
     "businessName": "Breakthru",
     "tagline": "Online personal training by Myer Bevan — former NZ international footballer"
+  },
+
+  "forms": {
+    "leadQualification": {
+      "accessKey": "d13a48a5-ecee-4470-b468-e72cf0c2b5aa",
+      "recipientEmail": "myer@breakthru.com",
+      "successMessage": "Application received — Myer reviews every submission personally and will be in touch within 48 hours.",
+      "errorMessage": "Something went wrong. Please try emailing Myer directly."
+    }
   }
 }
