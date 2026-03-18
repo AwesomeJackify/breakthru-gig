@@ -2,6 +2,8 @@
 // Hero.astro — full-height hero with image left, headline + CTAs right
 import { Image } from "astro:assets";
 import heroImg from "../assets/images/hero.jpeg";
+import config from "../../breakthru.config.json";
+const { hero } = config;
 ---
 
 <section id="hero" class="hero min-h-[85vh] bg-base-200">
@@ -10,39 +12,25 @@ import heroImg from "../assets/images/hero.jpeg";
     <div class="w-full lg:w-1/2 shrink-0">
       <Image
         src={heroImg}
-        alt="Myer Bevan — Breakthru online personal trainer"
+        alt={hero.imageAlt}
         class="w-full rounded-xl shadow-2xl object-cover max-h-[600px]"
       />
     </div>
 
     <!-- Copy column -->
     <div class="w-full lg:w-1/2 flex flex-col gap-6">
-      <!-- Eyebrow label -->
-      <span class="badge badge-outline">Online Personal Training</span>
+      <span class="badge badge-outline">{hero.eyebrow}</span>
 
-      <h1 class="text-5xl font-bold leading-tight">
-        Your headline here — one bold statement that captures the Breakthru
-        transformation promise
-      </h1>
+      <h1 class="text-5xl font-bold leading-tight">{hero.headline}</h1>
 
-      <p class="text-xl opacity-70">
-        Two to three sentences describing who Myer coaches, what makes Breakthru
-        different, and the outcome clients can expect — sustainable strength,
-        confidence, and real results.
-      </p>
+      <p class="text-xl opacity-70">{hero.body}</p>
 
       <div class="flex flex-col sm:flex-row gap-4">
-        <a href="#qualify" class="btn btn-primary btn-lg"
-          >Start Your Breakthru</a
-        >
-        <a href="#about" class="btn btn-outline btn-lg">Meet Myer</a>
+        <a href="#qualify" class="btn btn-primary btn-lg">{hero.ctaPrimary}</a>
+        <a href="#about" class="btn btn-outline btn-lg">{hero.ctaSecondary}</a>
       </div>
 
-      <!-- Social proof line -->
-      <p class="text-sm opacity-50">
-        One-line trust signal — e.g. "Trusted by athletes and beginners across
-        20+ countries"
-      </p>
+      <p class="text-sm opacity-50">{hero.trustSignal}</p>
     </div>
   </div>
 </section>

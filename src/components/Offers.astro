@@ -1,6 +1,7 @@
 ---
 // Offers.astro — What Breakthru Offers: coaching approach and outcomes in card grid
-import { offers } from "../data/offers";
+import config from "../../breakthru.config.json";
+const { offers } = config;
 ---
 
 <section id="offers" class="py-24 bg-base-200">
@@ -8,24 +9,20 @@ import { offers } from "../data/offers";
 
     <!-- Section header -->
     <div class="text-center mb-16">
-      <p class="text-sm font-semibold uppercase tracking-widest opacity-50 mb-2">What Breakthru Offers</p>
-      <h2 class="text-4xl font-bold max-w-xl mx-auto leading-tight">
-        The coaching approach and outcomes clients can expect
-      </h2>
-      <p class="mt-4 max-w-2xl mx-auto opacity-70">
-        Two sentences framing the Breakthru method: sustainable, evidence-backed, built around the individual — whether a complete beginner or a competitive athlete.
-      </p>
+      <p class="text-sm font-semibold uppercase tracking-widest opacity-50 mb-2">{offers.sectionLabel}</p>
+      <h2 class="text-4xl font-bold max-w-xl mx-auto leading-tight">{offers.headline}</h2>
+      <p class="mt-4 max-w-2xl mx-auto opacity-70">{offers.body}</p>
     </div>
 
     <!-- Offering cards — 3 col desktop, 1 col mobile -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      {offers.map((offer) => (
+      {offers.cards.map((card) => (
         <div class="card card-border">
           <div class="card-body">
             <!-- Icon placeholder — replace with astro-icon at Liftoff -->
             <div class="skeleton w-10 h-10 mb-4 rounded-lg"></div>
-            <h3 class="card-title">{offer.title}</h3>
-            <p>{offer.body}</p>
+            <h3 class="card-title">{card.title}</h3>
+            <p>{card.body}</p>
           </div>
         </div>
       ))}
@@ -33,7 +30,7 @@ import { offers } from "../data/offers";
 
     <!-- Section CTA -->
     <div class="text-center mt-12">
-      <a href="#qualify" class="btn btn-primary btn-lg">Apply to Work With Myer</a>
+      <a href="#qualify" class="btn btn-primary btn-lg">{offers.cta}</a>
     </div>
 
   </div>

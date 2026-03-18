@@ -2,30 +2,29 @@
 // Nav.astro — sticky top navbar with mobile dropdown and CTA
 import { Image } from "astro:assets";
 import logoImg from "../assets/images/logo.png";
+import config from "../../breakthru.config.json";
+const { nav } = config;
 ---
 
 <div class="navbar sticky top-0 z-50 bg-base-100 border-b border-base-200">
   <div class="navbar-start">
     <a href="#hero" class="btn btn-ghost px-2">
-      <Image src={logoImg} alt="Breakthru" class="h-10 w-auto" />
+      <Image src={logoImg} alt={nav.logoAlt} class="h-10 w-auto" />
     </a>
   </div>
 
   <!-- Desktop nav links — hidden on mobile -->
   <div class="navbar-center hidden lg:flex">
     <ul class="menu menu-horizontal">
-      <li><a href="#about">About Myer</a></li>
-      <li><a href="#offers">What We Offer</a></li>
-      <li><a href="#services">Programmes</a></li>
-      <li><a href="#qualify">Apply</a></li>
+      {nav.links.map((link) => (
+        <li><a href={link.href}>{link.label}</a></li>
+      ))}
     </ul>
   </div>
 
   <div class="navbar-end">
     <!-- Desktop CTA -->
-    <a href="#qualify" class="btn btn-primary hidden lg:flex"
-      >Start Your Breakthru</a
-    >
+    <a href="#qualify" class="btn btn-primary hidden lg:flex">{nav.cta}</a>
 
     <!-- Mobile hamburger -->
     <div class="dropdown dropdown-end lg:hidden">
@@ -53,14 +52,11 @@ import logoImg from "../assets/images/logo.png";
         tabindex="0"
         class="menu menu-sm dropdown-content mt-3 z-1 p-2 shadow bg-base-100 rounded-box w-52"
       >
-        <li><a href="#about">About Myer</a></li>
-        <li><a href="#offers">What We Offer</a></li>
-        <li><a href="#services">Programmes</a></li>
-        <li><a href="#qualify">Apply</a></li>
+        {nav.links.map((link) => (
+          <li><a href={link.href}>{link.label}</a></li>
+        ))}
         <li>
-          <a href="#qualify" class="btn btn-primary btn-sm mt-2"
-            >Start Your Breakthru</a
-          >
+          <a href="#qualify" class="btn btn-primary btn-sm mt-2">{nav.cta}</a>
         </li>
       </ul>
     </div>

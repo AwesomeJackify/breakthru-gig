@@ -1,13 +1,14 @@
 ---
 // About.astro — two-column layout: video left, copy right; optional stats row below
 import workoutVideo from '../assets/videos/workout video-portrait.mp4';
+import config from "../../breakthru.config.json";
+const { about } = config;
 ---
 
 <section id="about" class="py-24">
   <div class="max-w-6xl mx-auto px-6">
 
-    <!-- Section label -->
-    <p class="text-sm font-semibold uppercase tracking-widest opacity-50 mb-2">About Myer</p>
+    <p class="text-sm font-semibold uppercase tracking-widest opacity-50 mb-2">{about.sectionLabel}</p>
 
     <div class="flex flex-col lg:flex-row gap-16 items-center">
 
@@ -20,47 +21,25 @@ import workoutVideo from '../assets/videos/workout video-portrait.mp4';
           loop
           playsinline
           class="w-full aspect-[9/16] object-cover rounded-xl shadow-2xl"
-          aria-label="Breakthru training session footage"
+          aria-label={about.videoAlt}
         ></video>
       </div>
 
       <!-- Copy column -->
       <div class="w-full lg:w-1/2 flex flex-col gap-6">
-        <h2 class="text-4xl font-bold leading-tight">
-          From international footballer to transformation coach — Myer Bevan's story
-        </h2>
+        <h2 class="text-4xl font-bold leading-tight">{about.headline}</h2>
 
-        <p>
-          2–3 sentences about Myer's athletic background: his career as a professional footballer representing New Zealand internationally, what he learned about performance, body and mind at that level.
-        </p>
-
-        <p>
-          2–3 sentences describing the pivot — why he became a certified fitness coach, what drove him to help everyday people and athletes alike reach their potential through sustainable habits.
-        </p>
-
-        <p>
-          2–3 sentences on coaching philosophy: rejecting extreme measures and quick fixes in favour of strength, confidence, and lasting change. What "Breakthru" means to him and to clients.
-        </p>
+        {about.paragraphs.map((p) => <p>{p}</p>)}
 
         <div class="flex flex-col sm:flex-row gap-4 mt-2">
-          <div class="card card-border flex-1">
-            <div class="card-body items-center text-center">
-              <div class="text-3xl font-bold">[ X ]</div>
-              <p class="text-sm opacity-60">Years coaching experience</p>
+          {about.stats.map((stat) => (
+            <div class="card card-border flex-1">
+              <div class="card-body items-center text-center">
+                <div class="text-3xl font-bold">{stat.value}</div>
+                <p class="text-sm opacity-60">{stat.label}</p>
+              </div>
             </div>
-          </div>
-          <div class="card card-border flex-1">
-            <div class="card-body items-center text-center">
-              <div class="text-3xl font-bold">[ X ]</div>
-              <p class="text-sm opacity-60">Clients transformed</p>
-            </div>
-          </div>
-          <div class="card card-border flex-1">
-            <div class="card-body items-center text-center">
-              <div class="text-3xl font-bold">[ X ]</div>
-              <p class="text-sm opacity-60">Countries reached</p>
-            </div>
-          </div>
+          ))}
         </div>
       </div>
 

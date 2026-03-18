@@ -1,6 +1,7 @@
 ---
 // Services.astro — Coaching packages / service tiers
-import { services } from "../data/services";
+import config from "../../breakthru.config.json";
+const { services } = config;
 ---
 
 <section id="services" class="py-24 bg-base-100">
@@ -8,18 +9,14 @@ import { services } from "../data/services";
 
     <!-- Section header -->
     <div class="text-center mb-16">
-      <p class="text-sm font-semibold uppercase tracking-widest opacity-50 mb-2">Work With Myer</p>
-      <h2 class="text-4xl font-bold max-w-xl mx-auto leading-tight">
-        Choose the programme that fits your life
-      </h2>
-      <p class="mt-4 max-w-2xl mx-auto opacity-70">
-        Every Breakthru programme is built around you — your schedule, your goals, your starting point. Pick your level and let's get to work.
-      </p>
+      <p class="text-sm font-semibold uppercase tracking-widest opacity-50 mb-2">{services.sectionLabel}</p>
+      <h2 class="text-4xl font-bold max-w-xl mx-auto leading-tight">{services.headline}</h2>
+      <p class="mt-4 max-w-2xl mx-auto opacity-70">{services.body}</p>
     </div>
 
     <!-- Service tier cards — 3 col desktop, 1 col mobile -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
-      {services.map((s) => (
+      {services.tiers.map((s) => (
         <div class={`card card-border flex flex-col relative${s.popular ? " border-2 border-primary" : ""}`}>
           {s.popular && (
             <div class="absolute -top-3 left-1/2 -translate-x-1/2">
@@ -55,10 +52,7 @@ import { services } from "../data/services";
       ))}
     </div>
 
-    <!-- Reassurance note -->
-    <p class="text-center text-sm opacity-50 mt-10">
-      Not sure which is right for you? The application form helps Myer recommend the best fit.
-    </p>
+    <p class="text-center text-sm opacity-50 mt-10">{services.reassurance}</p>
 
   </div>
 </section>

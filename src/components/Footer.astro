@@ -1,18 +1,20 @@
 ---
 // Footer.astro — simple footer with business name, nav links, and copyright
+import config from "../../breakthru.config.json";
+const { footer, nav } = config;
 ---
 
 <footer class="footer footer-center p-10 border-t border-base-200">
   <nav>
     <div class="grid grid-flow-col gap-6">
-      <a href="#about" class="link link-hover">About Myer</a>
-      <a href="#offers" class="link link-hover">What We Offer</a>
-      <a href="#qualify" class="link link-hover">Apply</a>
+      {nav.links.slice(0, 3).map((link) => (
+        <a href={link.href} class="link link-hover">{link.label}</a>
+      ))}
     </div>
   </nav>
   <aside>
-    <p class="font-bold text-lg">Breakthru</p>
-    <p class="text-sm opacity-60">Online personal training by Myer Bevan — former NZ international footballer</p>
-    <p class="text-sm opacity-40">&copy; {new Date().getFullYear()} Breakthru. All rights reserved.</p>
+    <p class="font-bold text-lg">{footer.businessName}</p>
+    <p class="text-sm opacity-60">{footer.tagline}</p>
+    <p class="text-sm opacity-40">&copy; {new Date().getFullYear()} {footer.businessName}. All rights reserved.</p>
   </aside>
 </footer>

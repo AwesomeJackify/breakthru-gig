@@ -29,6 +29,7 @@
 - Images: always use Astro `<Image />` — never raw `<img>`
 - No React unless a component genuinely needs client-side state
 - DaisyUI wireframe theme active until Liftoff
+- **All client-editable text lives in `breakthru.config.json`** (project root) — components import from it, never hardcode copy inline
 
 ## Dependency policy
 
@@ -117,11 +118,15 @@ Asset filenames describe their content and, where relevant, their orientation �
 - Submit button disabled with "Form submission coming in build phase" badge
 - All 6 testimonial card avatar placeholders (STARDRAFT comment) — replace with real client photos and quotes
 
+### Content file
+
+All site copy is managed from `breakthru.config.json` at the project root. Every component imports from it — no text is hardcoded inline. To hand copy to the client or swap placeholder text at Liftoff, edit only this file.
+
 ### Notes for Liftoff
 
+- **Copy:** fill all placeholder text in `breakthru.config.json` with real content from Myer — search for `[ X ]` to find outstanding gaps
 - Hero image: hero.jpeg is live — confirm with Myer this is the preferred hero shot or swap at Liftoff
 - About section: workout video-portrait.mp4 is live as autoplay loop at aspect-[9/16] portrait ratio — confirm with Myer or swap for a still portrait if preferred
-- All stat figures in About section ([ X ]) need real numbers from client
 - All card icon skeletons in Offers need real icons (astro-icon + Lucide recommended)
 - Testimonials: replace all placeholder quotes and avatar initials with real client testimonials and photos from Myer
 - Lead form action + Resend API route to wire up on Liftoff
