@@ -1,6 +1,7 @@
 ---
 // Testimonials.astro — client testimonial card grid with star ratings and avatar placeholders
 // STARDRAFT: all quotes, names, and avatars are placeholders — replace with real testimonials from Myer
+import { testimonials } from "../data/testimonials";
 ---
 
 <section id="testimonials" class="py-24 bg-base-100">
@@ -19,207 +20,42 @@
 
     <!-- Testimonial card grid — 3 col desktop, 1 col mobile -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {testimonials.map((t, idx) => (
+        <div class="card card-border">
+          <div class="card-body gap-4">
 
-      <!-- Testimonial 1 -->
-      <!-- STARDRAFT: non-functional — replace with real client testimonial -->
-      <div class="card card-border">
-        <div class="card-body gap-4">
+            <!-- Star rating -->
+            <div class="rating rating-sm">
+              {Array.from({ length: 5 }, (_, i) => (
+                <input
+                  type="radio"
+                  name={`rating-t${idx}`}
+                  class="mask mask-star"
+                  checked={i + 1 === t.rating}
+                  aria-label={`${i + 1} star${i + 1 > 1 ? "s" : ""}`}
+                />
+              ))}
+            </div>
 
-          <!-- Star rating -->
-          <div class="rating rating-sm">
-            <input type="radio" name="rating-t1" class="mask mask-star" aria-label="1 star" />
-            <input type="radio" name="rating-t1" class="mask mask-star" aria-label="2 stars" />
-            <input type="radio" name="rating-t1" class="mask mask-star" aria-label="3 stars" />
-            <input type="radio" name="rating-t1" class="mask mask-star" aria-label="4 stars" />
-            <input type="radio" name="rating-t1" class="mask mask-star" checked aria-label="5 stars" />
-          </div>
+            <p class="opacity-80">"{t.quote}"</p>
 
-          <p class="opacity-80">
-            "Client name — one sentence describing their experience and result with Breakthru. Make it specific to the transformation achieved."
-          </p>
-
-          <!-- Author -->
-          <div class="flex items-center gap-3 mt-2">
-            <!-- STARDRAFT: non-functional — replace with real client avatar photo -->
-            <div class="avatar avatar-placeholder">
-              <div class="bg-neutral text-neutral-content w-10 rounded-full">
-                <span class="text-sm">AB</span>
+            <!-- Author -->
+            <div class="flex items-center gap-3 mt-2">
+              <!-- STARDRAFT: replace with real client avatar photo -->
+              <div class="avatar avatar-placeholder">
+                <div class="bg-neutral text-neutral-content w-10 rounded-full">
+                  <span class="text-sm">{t.initials}</span>
+                </div>
+              </div>
+              <div>
+                <p class="font-semibold text-sm">{t.name}</p>
+                <p class="text-xs opacity-50">{t.role}</p>
               </div>
             </div>
-            <div>
-              <p class="font-semibold text-sm">Client Name</p>
-              <p class="text-xs opacity-50">Role or location — e.g. "Strength athlete, Auckland"</p>
-            </div>
-          </div>
 
+          </div>
         </div>
-      </div>
-
-      <!-- Testimonial 2 -->
-      <!-- STARDRAFT: non-functional — replace with real client testimonial -->
-      <div class="card card-border">
-        <div class="card-body gap-4">
-
-          <div class="rating rating-sm">
-            <input type="radio" name="rating-t2" class="mask mask-star" aria-label="1 star" />
-            <input type="radio" name="rating-t2" class="mask mask-star" aria-label="2 stars" />
-            <input type="radio" name="rating-t2" class="mask mask-star" aria-label="3 stars" />
-            <input type="radio" name="rating-t2" class="mask mask-star" aria-label="4 stars" />
-            <input type="radio" name="rating-t2" class="mask mask-star" checked aria-label="5 stars" />
-          </div>
-
-          <p class="opacity-80">
-            "Client name — one sentence describing their experience and result with Breakthru. Make it specific to the transformation achieved."
-          </p>
-
-          <div class="flex items-center gap-3 mt-2">
-            <!-- STARDRAFT: non-functional — replace with real client avatar photo -->
-            <div class="avatar avatar-placeholder">
-              <div class="bg-neutral text-neutral-content w-10 rounded-full">
-                <span class="text-sm">CD</span>
-              </div>
-            </div>
-            <div>
-              <p class="font-semibold text-sm">Client Name</p>
-              <p class="text-xs opacity-50">Role or location — e.g. "Busy parent, Wellington"</p>
-            </div>
-          </div>
-
-        </div>
-      </div>
-
-      <!-- Testimonial 3 -->
-      <!-- STARDRAFT: non-functional — replace with real client testimonial -->
-      <div class="card card-border">
-        <div class="card-body gap-4">
-
-          <div class="rating rating-sm">
-            <input type="radio" name="rating-t3" class="mask mask-star" aria-label="1 star" />
-            <input type="radio" name="rating-t3" class="mask mask-star" aria-label="2 stars" />
-            <input type="radio" name="rating-t3" class="mask mask-star" aria-label="3 stars" />
-            <input type="radio" name="rating-t3" class="mask mask-star" aria-label="4 stars" />
-            <input type="radio" name="rating-t3" class="mask mask-star" checked aria-label="5 stars" />
-          </div>
-
-          <p class="opacity-80">
-            "Client name — one sentence describing their experience and result with Breakthru. Make it specific to the transformation achieved."
-          </p>
-
-          <div class="flex items-center gap-3 mt-2">
-            <!-- STARDRAFT: non-functional — replace with real client avatar photo -->
-            <div class="avatar avatar-placeholder">
-              <div class="bg-neutral text-neutral-content w-10 rounded-full">
-                <span class="text-sm">EF</span>
-              </div>
-            </div>
-            <div>
-              <p class="font-semibold text-sm">Client Name</p>
-              <p class="text-xs opacity-50">Role or location — e.g. "Semi-pro footballer, Christchurch"</p>
-            </div>
-          </div>
-
-        </div>
-      </div>
-
-      <!-- Testimonial 4 -->
-      <!-- STARDRAFT: non-functional — replace with real client testimonial -->
-      <div class="card card-border">
-        <div class="card-body gap-4">
-
-          <div class="rating rating-sm">
-            <input type="radio" name="rating-t4" class="mask mask-star" aria-label="1 star" />
-            <input type="radio" name="rating-t4" class="mask mask-star" aria-label="2 stars" />
-            <input type="radio" name="rating-t4" class="mask mask-star" aria-label="3 stars" />
-            <input type="radio" name="rating-t4" class="mask mask-star" aria-label="4 stars" />
-            <input type="radio" name="rating-t4" class="mask mask-star" checked aria-label="5 stars" />
-          </div>
-
-          <p class="opacity-80">
-            "Client name — one sentence describing their experience and result with Breakthru. Make it specific to the transformation achieved."
-          </p>
-
-          <div class="flex items-center gap-3 mt-2">
-            <!-- STARDRAFT: non-functional — replace with real client avatar photo -->
-            <div class="avatar avatar-placeholder">
-              <div class="bg-neutral text-neutral-content w-10 rounded-full">
-                <span class="text-sm">GH</span>
-              </div>
-            </div>
-            <div>
-              <p class="font-semibold text-sm">Client Name</p>
-              <p class="text-xs opacity-50">Role or location — e.g. "First-time trainer, Sydney"</p>
-            </div>
-          </div>
-
-        </div>
-      </div>
-
-      <!-- Testimonial 5 -->
-      <!-- STARDRAFT: non-functional — replace with real client testimonial -->
-      <div class="card card-border">
-        <div class="card-body gap-4">
-
-          <div class="rating rating-sm">
-            <input type="radio" name="rating-t5" class="mask mask-star" aria-label="1 star" />
-            <input type="radio" name="rating-t5" class="mask mask-star" aria-label="2 stars" />
-            <input type="radio" name="rating-t5" class="mask mask-star" aria-label="3 stars" />
-            <input type="radio" name="rating-t5" class="mask mask-star" aria-label="4 stars" />
-            <input type="radio" name="rating-t5" class="mask mask-star" checked aria-label="5 stars" />
-          </div>
-
-          <p class="opacity-80">
-            "Client name — one sentence describing their experience and result with Breakthru. Make it specific to the transformation achieved."
-          </p>
-
-          <div class="flex items-center gap-3 mt-2">
-            <!-- STARDRAFT: non-functional — replace with real client avatar photo -->
-            <div class="avatar avatar-placeholder">
-              <div class="bg-neutral text-neutral-content w-10 rounded-full">
-                <span class="text-sm">IJ</span>
-              </div>
-            </div>
-            <div>
-              <p class="font-semibold text-sm">Client Name</p>
-              <p class="text-xs opacity-50">Role or location — e.g. "Competitive runner, Brisbane"</p>
-            </div>
-          </div>
-
-        </div>
-      </div>
-
-      <!-- Testimonial 6 -->
-      <!-- STARDRAFT: non-functional — replace with real client testimonial -->
-      <div class="card card-border">
-        <div class="card-body gap-4">
-
-          <div class="rating rating-sm">
-            <input type="radio" name="rating-t6" class="mask mask-star" aria-label="1 star" />
-            <input type="radio" name="rating-t6" class="mask mask-star" aria-label="2 stars" />
-            <input type="radio" name="rating-t6" class="mask mask-star" aria-label="3 stars" />
-            <input type="radio" name="rating-t6" class="mask mask-star" aria-label="4 stars" />
-            <input type="radio" name="rating-t6" class="mask mask-star" checked aria-label="5 stars" />
-          </div>
-
-          <p class="opacity-80">
-            "Client name — one sentence describing their experience and result with Breakthru. Make it specific to the transformation achieved."
-          </p>
-
-          <div class="flex items-center gap-3 mt-2">
-            <!-- STARDRAFT: non-functional — replace with real client avatar photo -->
-            <div class="avatar avatar-placeholder">
-              <div class="bg-neutral text-neutral-content w-10 rounded-full">
-                <span class="text-sm">KL</span>
-              </div>
-            </div>
-            <div>
-              <p class="font-semibold text-sm">Client Name</p>
-              <p class="text-xs opacity-50">Role or location — e.g. "Personal trainer, London"</p>
-            </div>
-          </div>
-
-        </div>
-      </div>
-
+      ))}
     </div>
 
   </div>

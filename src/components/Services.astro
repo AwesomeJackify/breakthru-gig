@@ -1,5 +1,6 @@
 ---
 // Services.astro — Coaching packages / service tiers
+import { services } from "../data/services";
 ---
 
 <section id="services" class="py-24 bg-base-100">
@@ -18,133 +19,40 @@
 
     <!-- Service tier cards — 3 col desktop, 1 col mobile -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
+      {services.map((s) => (
+        <div class={`card card-border flex flex-col relative${s.popular ? " border-2 border-primary" : ""}`}>
+          {s.popular && (
+            <div class="absolute -top-3 left-1/2 -translate-x-1/2">
+              <span class="badge badge-primary text-xs font-semibold uppercase tracking-wider px-4 py-3">Most Popular</span>
+            </div>
+          )}
+          <div class="card-body flex flex-col gap-4">
+            <div>
+              <p class="text-xs font-semibold uppercase tracking-widest opacity-50 mb-1">{s.tier}</p>
+              <h3 class="text-2xl font-bold">{s.title}</h3>
+              <p class="mt-2 opacity-70 text-sm">{s.description}</p>
+            </div>
 
-      <!-- Tier 1: Foundation -->
-      <div class="card card-border flex flex-col">
-        <div class="card-body flex flex-col gap-4">
-          <div>
-            <p class="text-xs font-semibold uppercase tracking-widest opacity-50 mb-1">Foundation</p>
-            <h3 class="text-2xl font-bold">Self-Guided Plan</h3>
-            <p class="mt-2 opacity-70 text-sm">
-              1–2 sentences describing this entry-level option: a personalised programme delivered to the client's app, with check-ins to track progress.
-            </p>
+            <!-- Price placeholder -->
+            <div class="skeleton h-8 w-32 rounded"></div>
+
+            <!-- Feature list -->
+            <ul class="space-y-2 text-sm flex-1">
+              {s.features.map((feature) => (
+                <li class="flex items-start gap-2">
+                  <div class="skeleton w-4 h-4 mt-0.5 rounded-full shrink-0"></div>
+                  <span>{feature}</span>
+                </li>
+              ))}
+            </ul>
+
+            <a
+              href="#qualify"
+              class={`btn btn-block mt-auto${s.popular ? " btn-primary" : " btn-outline"}`}
+            >Apply Now</a>
           </div>
-
-          <!-- Price placeholder -->
-          <div class="skeleton h-8 w-32 rounded"></div>
-
-          <!-- Feature list -->
-          <ul class="space-y-2 text-sm flex-1">
-            <li class="flex items-start gap-2">
-              <div class="skeleton w-4 h-4 mt-0.5 rounded-full shrink-0"></div>
-              <span>Personalised training programme</span>
-            </li>
-            <li class="flex items-start gap-2">
-              <div class="skeleton w-4 h-4 mt-0.5 rounded-full shrink-0"></div>
-              <span>Monthly programme refresh</span>
-            </li>
-            <li class="flex items-start gap-2">
-              <div class="skeleton w-4 h-4 mt-0.5 rounded-full shrink-0"></div>
-              <span>Nutrition guidance & meal frameworks</span>
-            </li>
-            <li class="flex items-start gap-2">
-              <div class="skeleton w-4 h-4 mt-0.5 rounded-full shrink-0"></div>
-              <span>Access to the Breakthru app</span>
-            </li>
-          </ul>
-
-          <a href="#qualify" class="btn btn-outline btn-block mt-auto">Apply Now</a>
         </div>
-      </div>
-
-      <!-- Tier 2: Signature (highlighted / most popular) -->
-      <div class="card card-border border-2 border-primary flex flex-col relative">
-        <!-- Most popular badge -->
-        <div class="absolute -top-3 left-1/2 -translate-x-1/2">
-          <span class="badge badge-primary text-xs font-semibold uppercase tracking-wider px-4 py-3">Most Popular</span>
-        </div>
-        <div class="card-body flex flex-col gap-4">
-          <div>
-            <p class="text-xs font-semibold uppercase tracking-widest opacity-50 mb-1">Signature</p>
-            <h3 class="text-2xl font-bold">1-on-1 Coaching</h3>
-            <p class="mt-2 opacity-70 text-sm">
-              1–2 sentences describing this core offering: full access to Myer, weekly check-ins, real-time adjustments, and everything in Foundation.
-            </p>
-          </div>
-
-          <!-- Price placeholder -->
-          <div class="skeleton h-8 w-32 rounded"></div>
-
-          <!-- Feature list -->
-          <ul class="space-y-2 text-sm flex-1">
-            <li class="flex items-start gap-2">
-              <div class="skeleton w-4 h-4 mt-0.5 rounded-full shrink-0"></div>
-              <span>Everything in Foundation</span>
-            </li>
-            <li class="flex items-start gap-2">
-              <div class="skeleton w-4 h-4 mt-0.5 rounded-full shrink-0"></div>
-              <span>Weekly video check-ins with Myer</span>
-            </li>
-            <li class="flex items-start gap-2">
-              <div class="skeleton w-4 h-4 mt-0.5 rounded-full shrink-0"></div>
-              <span>24/7 messaging support</span>
-            </li>
-            <li class="flex items-start gap-2">
-              <div class="skeleton w-4 h-4 mt-0.5 rounded-full shrink-0"></div>
-              <span>Real-time programme adjustments</span>
-            </li>
-            <li class="flex items-start gap-2">
-              <div class="skeleton w-4 h-4 mt-0.5 rounded-full shrink-0"></div>
-              <span>Mindset and habit coaching</span>
-            </li>
-          </ul>
-
-          <a href="#qualify" class="btn btn-primary btn-block mt-auto">Apply Now</a>
-        </div>
-      </div>
-
-      <!-- Tier 3: Elite -->
-      <div class="card card-border flex flex-col">
-        <div class="card-body flex flex-col gap-4">
-          <div>
-            <p class="text-xs font-semibold uppercase tracking-widest opacity-50 mb-1">Elite</p>
-            <h3 class="text-2xl font-bold">Performance & Athletes</h3>
-            <p class="mt-2 opacity-70 text-sm">
-              1–2 sentences describing the premium athlete-focused tier: sport-specific conditioning, periodisation, and high-frequency coaching access.
-            </p>
-          </div>
-
-          <!-- Price placeholder -->
-          <div class="skeleton h-8 w-32 rounded"></div>
-
-          <!-- Feature list -->
-          <ul class="space-y-2 text-sm flex-1">
-            <li class="flex items-start gap-2">
-              <div class="skeleton w-4 h-4 mt-0.5 rounded-full shrink-0"></div>
-              <span>Everything in Signature</span>
-            </li>
-            <li class="flex items-start gap-2">
-              <div class="skeleton w-4 h-4 mt-0.5 rounded-full shrink-0"></div>
-              <span>Sport-specific periodisation</span>
-            </li>
-            <li class="flex items-start gap-2">
-              <div class="skeleton w-4 h-4 mt-0.5 rounded-full shrink-0"></div>
-              <span>Bi-weekly video calls</span>
-            </li>
-            <li class="flex items-start gap-2">
-              <div class="skeleton w-4 h-4 mt-0.5 rounded-full shrink-0"></div>
-              <span>Priority response & scheduling</span>
-            </li>
-            <li class="flex items-start gap-2">
-              <div class="skeleton w-4 h-4 mt-0.5 rounded-full shrink-0"></div>
-              <span>Performance testing & benchmarking</span>
-            </li>
-          </ul>
-
-          <a href="#qualify" class="btn btn-outline btn-block mt-auto">Apply Now</a>
-        </div>
-      </div>
-
+      ))}
     </div>
 
     <!-- Reassurance note -->

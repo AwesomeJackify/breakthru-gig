@@ -1,5 +1,6 @@
 ---
 // Offers.astro — What Breakthru Offers: coaching approach and outcomes in card grid
+import { offers } from "../data/offers";
 ---
 
 <section id="offers" class="py-24 bg-base-200">
@@ -18,74 +19,16 @@
 
     <!-- Offering cards — 3 col desktop, 1 col mobile -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-
-      <!-- Card 1 -->
-      <div class="card card-border">
-        <div class="card-body">
-          <!-- Icon placeholder -->
-          <div class="skeleton w-10 h-10 mb-4 rounded-lg"></div>
-          <h3 class="card-title">Personalised Programming</h3>
-          <p>
-            2–3 sentences describing how training plans are built around the individual client's starting point, goals, schedule, and lifestyle — not a generic template.
-          </p>
+      {offers.map((offer) => (
+        <div class="card card-border">
+          <div class="card-body">
+            <!-- Icon placeholder — replace with astro-icon at Liftoff -->
+            <div class="skeleton w-10 h-10 mb-4 rounded-lg"></div>
+            <h3 class="card-title">{offer.title}</h3>
+            <p>{offer.body}</p>
+          </div>
         </div>
-      </div>
-
-      <!-- Card 2 -->
-      <div class="card card-border">
-        <div class="card-body">
-          <div class="skeleton w-10 h-10 mb-4 rounded-lg"></div>
-          <h3 class="card-title">Mindset and Habit Coaching</h3>
-          <p>
-            2–3 sentences on the mindset and behaviour-change side of Breakthru — how Myer addresses confidence, consistency, and the mental side of transformation alongside the physical work.
-          </p>
-        </div>
-      </div>
-
-      <!-- Card 3 -->
-      <div class="card card-border">
-        <div class="card-body">
-          <div class="skeleton w-10 h-10 mb-4 rounded-lg"></div>
-          <h3 class="card-title">Strength and Body Transformation</h3>
-          <p>
-            2–3 sentences on the physical outcomes: building real, lasting strength, improving body composition, and developing fitness that holds up beyond the programme.
-          </p>
-        </div>
-      </div>
-
-      <!-- Card 4 -->
-      <div class="card card-border">
-        <div class="card-body">
-          <div class="skeleton w-10 h-10 mb-4 rounded-lg"></div>
-          <h3 class="card-title">100% Online Delivery</h3>
-          <p>
-            2–3 sentences explaining the online-only model — how it works, what the client receives week to week, and why location is never a barrier to getting started.
-          </p>
-        </div>
-      </div>
-
-      <!-- Card 5 -->
-      <div class="card card-border">
-        <div class="card-body">
-          <div class="skeleton w-10 h-10 mb-4 rounded-lg"></div>
-          <h3 class="card-title">For All Fitness Levels</h3>
-          <p>
-            2–3 sentences making explicit that Breakthru is not only for advanced athletes — complete beginners are welcome and the approach scales from day one to elite marginal gains.
-          </p>
-        </div>
-      </div>
-
-      <!-- Card 6 -->
-      <div class="card card-border">
-        <div class="card-body">
-          <div class="skeleton w-10 h-10 mb-4 rounded-lg"></div>
-          <h3 class="card-title">No Quick Fixes</h3>
-          <p>
-            2–3 sentences on the Breakthru philosophy of rejecting extreme measures — why Myer coaches for sustainable long-term results rather than short-term performance that doesn't last.
-          </p>
-        </div>
-      </div>
-
+      ))}
     </div>
 
     <!-- Section CTA -->
