@@ -2,7 +2,7 @@
 import { Image } from "astro:assets";
 import heroImg from "../assets/images/hero.jpeg";
 import config from "../../breakthru.config.json";
-const { hero, about } = config;
+const { hero } = config;
 ---
 
 <section id="hero" class="bg-base-200 py-16">
@@ -26,28 +26,9 @@ const { hero, about } = config;
       </div>
     </div>
 
-    <!-- Bottom row: stats + CTAs + trust signal, centred -->
-    <div class="flex flex-col items-center gap-6 text-center">
-      <!-- Stats -->
-      <div class="flex flex-col sm:flex-row gap-4 w-full max-w-2xl">
-        {
-          about.stats.map((stat) => (
-            <div class="card card-border flex-1">
-              <div class="card-body items-center text-center py-4">
-                <div class="text-3xl font-bold">{stat.value}</div>
-                <p class="text-sm opacity-60">{stat.label}</p>
-              </div>
-            </div>
-          ))
-        }
-      </div>
-
-      <!-- CTAs -->
-      <div class="flex flex-col sm:flex-row gap-4">
-        <a href="#qualify" class="btn btn-primary btn-lg">{hero.ctaPrimary}</a>
-      </div>
-
-      <!-- Trust signal -->
+    <!-- Bottom row: CTA + trust signal, centred -->
+    <div class="flex flex-col items-center gap-4 text-center">
+      <a href="#qualify" class="btn btn-primary btn-lg">{hero.ctaPrimary}</a>
       <p class="text-sm opacity-50">{hero.trustSignal}</p>
     </div>
   </div>

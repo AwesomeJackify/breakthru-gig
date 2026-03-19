@@ -7,7 +7,7 @@
   "nav": {
     "logoAlt": "Breakthru",
     "links": [
-      { "label": "About Myer", "href": "#hero" },
+      { "label": "About", "href": "#hero" },
       { "label": "Programmes", "href": "#services" },
       { "label": "Apply", "href": "#qualify" }
     ],
@@ -23,18 +23,10 @@
     "imageAlt": "Myer Bevan — Breakthru online personal trainer"
   },
 
-  "about": {
-    "stats": [
-      { "value": "[ X ]", "label": "Years coaching experience" },
-      { "value": "[ X ]", "label": "Clients transformed" },
-      { "value": "[ X ]", "label": "Countries reached" }
-    ]
-  },
-
   "services": {
     "sectionLabel": "Work With Myer",
-    "headline": "Choose the programme that fits your life",
-    "body": "Every Breakthru programme is built around you — your schedule, your goals, your starting point. Pick your level and let's get to work.",
+    "headline": "Choose your breakthru",
+    "body": "Select the plan that fits you and become part of this movement",
     "reassurance": "Not sure which is right for you? The application form helps Myer recommend the best fit.",
     "tiers": [
       {
