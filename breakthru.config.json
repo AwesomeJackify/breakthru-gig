@@ -7,8 +7,7 @@
   "nav": {
     "logoAlt": "Breakthru",
     "links": [
-      { "label": "About Myer", "href": "#about" },
-      { "label": "What We Offer", "href": "#offers" },
+      { "label": "About Myer", "href": "#hero" },
       { "label": "Programmes", "href": "#services" },
       { "label": "Apply", "href": "#qualify" }
     ],
@@ -20,107 +19,15 @@
     "headline": "About the founder",
     "body": "Hi - I'm Myer Bevan.\n\nI am a professional athlete who has played football around the world for the past ten years, as well as playing for the New Zealand National team. I am also now a qualified fitness coach.\n\nThrough my experiences being a professional athlete, I fell in love with the gym and that love then transitioned into becoming a fitness coach / personal trainer by trade. The gym is a place that cannot only help you gain confidence and transform your body, but a place that can transform your mind.\n\nI've learnt that true transformation doesn't come from extreme measures and quick fixes, but from understanding your body, building habits that last, and creating a mindset and lifestyle you truly enjoy.\n\nMy purpose? To help you gain confidence, gain strength and work with you to create a fitness journey you enjoy. Whether you've never trained before, or you're looking to get just that 1% better, I'm here to help you chase those goals and Breakthru the obstacles in your way.\n\nFitness should be something you enjoy, not something you dread.\n\nBreakthru is here to transform your body and your mind.\n\nAre you ready?",
     "ctaPrimary": "Start Your Breakthru",
-    "ctaSecondary": "Meet Myer",
     "trustSignal": "One-line trust signal — e.g. \"Trusted by athletes and beginners across 20+ countries\"",
     "imageAlt": "Myer Bevan — Breakthru online personal trainer"
   },
 
   "about": {
-    "sectionLabel": "About Myer",
-    "headline": "From international footballer to transformation coach — Myer Bevan's story",
-    "paragraphs": [
-      "2–3 sentences about Myer's athletic background: his career as a professional footballer representing New Zealand internationally, what he learned about performance, body and mind at that level.",
-      "2–3 sentences describing the pivot — why he became a certified fitness coach, what drove him to help everyday people and athletes alike reach their potential through sustainable habits.",
-      "2–3 sentences on coaching philosophy: rejecting extreme measures and quick fixes in favour of strength, confidence, and lasting change. What \"Breakthru\" means to him and to clients."
-    ],
     "stats": [
       { "value": "[ X ]", "label": "Years coaching experience" },
       { "value": "[ X ]", "label": "Clients transformed" },
       { "value": "[ X ]", "label": "Countries reached" }
-    ],
-    "videoAlt": "Breakthru training session footage"
-  },
-
-  "offers": {
-    "sectionLabel": "What Breakthru Offers",
-    "headline": "The coaching approach and outcomes clients can expect",
-    "body": "Two sentences framing the Breakthru method: sustainable, evidence-backed, built around the individual — whether a complete beginner or a competitive athlete.",
-    "cta": "Apply to Work With Myer",
-    "cards": [
-      {
-        "title": "Personalised Programming",
-        "body": "2–3 sentences describing how training plans are built around the individual client's starting point, goals, schedule, and lifestyle — not a generic template."
-      },
-      {
-        "title": "Mindset and Habit Coaching",
-        "body": "2–3 sentences on the mindset and behaviour-change side of Breakthru — how Myer addresses confidence, consistency, and the mental side of transformation alongside the physical work."
-      },
-      {
-        "title": "Strength and Body Transformation",
-        "body": "2–3 sentences on the physical outcomes: building real, lasting strength, improving body composition, and developing fitness that holds up beyond the programme."
-      },
-      {
-        "title": "100% Online Delivery",
-        "body": "2–3 sentences explaining the online-only model — how it works, what the client receives week to week, and why location is never a barrier to getting started."
-      },
-      {
-        "title": "For All Fitness Levels",
-        "body": "2–3 sentences making explicit that Breakthru is not only for advanced athletes — complete beginners are welcome and the approach scales from day one to elite marginal gains."
-      },
-      {
-        "title": "No Quick Fixes",
-        "body": "2–3 sentences on the Breakthru philosophy of rejecting extreme measures — why Myer coaches for sustainable long-term results rather than short-term performance that doesn't last."
-      }
-    ]
-  },
-
-  "testimonials": {
-    "sectionLabel": "What Clients Say",
-    "headline": "Real people, real results with Breakthru",
-    "body": "One to two sentences introducing the social proof section — clients from all backgrounds and levels who broke through to their goals with Myer's coaching.",
-    "cards": [
-      {
-        "quote": "Client quote — one sentence describing their experience and result with Breakthru. Make it specific to the transformation achieved.",
-        "name": "Client Name",
-        "role": "Strength athlete, Auckland",
-        "initials": "AB",
-        "rating": 5
-      },
-      {
-        "quote": "Client quote — one sentence describing their experience and result with Breakthru. Make it specific to the transformation achieved.",
-        "name": "Client Name",
-        "role": "Busy parent, Wellington",
-        "initials": "CD",
-        "rating": 5
-      },
-      {
-        "quote": "Client quote — one sentence describing their experience and result with Breakthru. Make it specific to the transformation achieved.",
-        "name": "Client Name",
-        "role": "Semi-pro footballer, Christchurch",
-        "initials": "EF",
-        "rating": 5
-      },
-      {
-        "quote": "Client quote — one sentence describing their experience and result with Breakthru. Make it specific to the transformation achieved.",
-        "name": "Client Name",
-        "role": "First-time trainer, Sydney",
-        "initials": "GH",
-        "rating": 5
-      },
-      {
-        "quote": "Client quote — one sentence describing their experience and result with Breakthru. Make it specific to the transformation achieved.",
-        "name": "Client Name",
-        "role": "Competitive runner, Brisbane",
-        "initials": "IJ",
-        "rating": 5
-      },
-      {
-        "quote": "Client quote — one sentence describing their experience and result with Breakthru. Make it specific to the transformation achieved.",
-        "name": "Client Name",
-        "role": "Personal trainer, London",
-        "initials": "KL",
-        "rating": 5
-      }
     ]
   },
 

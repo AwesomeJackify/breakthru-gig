@@ -7,9 +7,8 @@ const { hero, about } = config;
 
 <section id="hero" class="bg-base-200 py-16">
   <div class="max-w-6xl mx-auto px-6 flex flex-col gap-10">
-
     <!-- Top row: image + bio -->
-    <div class="flex flex-col lg:flex-row gap-12 items-start">
+    <div class="flex flex-col lg:flex-row gap-12 items-center">
       <!-- Hero image -->
       <div class="w-full lg:w-1/2 shrink-0">
         <Image
@@ -29,29 +28,27 @@ const { hero, about } = config;
 
     <!-- Bottom row: stats + CTAs + trust signal, centred -->
     <div class="flex flex-col items-center gap-6 text-center">
-
       <!-- Stats -->
       <div class="flex flex-col sm:flex-row gap-4 w-full max-w-2xl">
-        {about.stats.map((stat) => (
-          <div class="card card-border flex-1">
-            <div class="card-body items-center text-center py-4">
-              <div class="text-3xl font-bold">{stat.value}</div>
-              <p class="text-sm opacity-60">{stat.label}</p>
+        {
+          about.stats.map((stat) => (
+            <div class="card card-border flex-1">
+              <div class="card-body items-center text-center py-4">
+                <div class="text-3xl font-bold">{stat.value}</div>
+                <p class="text-sm opacity-60">{stat.label}</p>
+              </div>
             </div>
-          </div>
-        ))}
+          ))
+        }
       </div>
 
       <!-- CTAs -->
       <div class="flex flex-col sm:flex-row gap-4">
         <a href="#qualify" class="btn btn-primary btn-lg">{hero.ctaPrimary}</a>
-        <a href="#about" class="btn btn-outline btn-lg">{hero.ctaSecondary}</a>
       </div>
 
       <!-- Trust signal -->
       <p class="text-sm opacity-50">{hero.trustSignal}</p>
-
     </div>
-
   </div>
 </section>
