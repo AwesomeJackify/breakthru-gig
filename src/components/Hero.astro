@@ -1,36 +1,57 @@
 ---
-// Hero.astro — full-height hero with image left, headline + CTAs right
 import { Image } from "astro:assets";
 import heroImg from "../assets/images/hero.jpeg";
 import config from "../../breakthru.config.json";
-const { hero } = config;
+const { hero, about } = config;
 ---
 
-<section id="hero" class="hero min-h-[85vh] bg-base-200">
-  <div class="hero-content flex-col lg:flex-row gap-12 max-w-6xl px-6 py-16">
-    <!-- Hero image -->
-    <div class="w-full lg:w-1/2 shrink-0">
-      <Image
-        src={heroImg}
-        alt={hero.imageAlt}
-        class="w-full rounded-xl shadow-2xl object-cover max-h-[600px]"
-      />
+<section id="hero" class="bg-base-200 py-16">
+  <div class="max-w-6xl mx-auto px-6 flex flex-col gap-10">
+
+    <!-- Top row: image + bio -->
+    <div class="flex flex-col lg:flex-row gap-12 items-start">
+      <!-- Hero image -->
+      <div class="w-full lg:w-1/2 shrink-0">
+        <Image
+          src={heroImg}
+          alt={hero.imageAlt}
+          class="w-full rounded-xl shadow-2xl object-cover max-h-[600px]"
+        />
+      </div>
+
+      <!-- Bio -->
+      <div class="w-full lg:w-1/2 flex flex-col gap-4">
+        <span class="badge badge-outline">{hero.eyebrow}</span>
+        <h1 class="text-5xl font-bold leading-tight">{hero.headline}</h1>
+        <p class="opacity-70 whitespace-pre-line">{hero.body}</p>
+      </div>
     </div>
 
-    <!-- Copy column -->
-    <div class="w-full lg:w-1/2 flex flex-col gap-6">
-      <span class="badge badge-outline">{hero.eyebrow}</span>
+    <!-- Bottom row: stats + CTAs + trust signal, centred -->
+    <div class="flex flex-col items-center gap-6 text-center">
 
-      <h1 class="text-5xl font-bold leading-tight">{hero.headline}</h1>
+      <!-- Stats -->
+      <div class="flex flex-col sm:flex-row gap-4 w-full max-w-2xl">
+        {about.stats.map((stat) => (
+          <div class="card card-border flex-1">
+            <div class="card-body items-center text-center py-4">
+              <div class="text-3xl font-bold">{stat.value}</div>
+              <p class="text-sm opacity-60">{stat.label}</p>
+            </div>
+          </div>
+        ))}
+      </div>
 
-      <p class="text-xl opacity-70">{hero.body}</p>
-
+      <!-- CTAs -->
       <div class="flex flex-col sm:flex-row gap-4">
         <a href="#qualify" class="btn btn-primary btn-lg">{hero.ctaPrimary}</a>
         <a href="#about" class="btn btn-outline btn-lg">{hero.ctaSecondary}</a>
       </div>
 
+      <!-- Trust signal -->
       <p class="text-sm opacity-50">{hero.trustSignal}</p>
+
     </div>
+
   </div>
 </section>
