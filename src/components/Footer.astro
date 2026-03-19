@@ -1,20 +1,25 @@
 ---
-// Footer.astro — simple footer with business name, nav links, and copyright
+import { Image } from "astro:assets";
+import logo from "../assets/images/logo.png";
 import config from "../../breakthru.config.json";
 const { footer, nav } = config;
 ---
 
-<footer class="footer footer-center p-10 border-t border-base-200">
+<footer class="border-t border-base-200 py-10 flex flex-col items-center gap-6 text-center">
+
+  <!-- Logo -->
+  <Image src={logo} alt={footer.businessName} class="h-10 w-auto" />
+
+  <!-- Nav links -->
   <nav>
-    <div class="grid grid-flow-col gap-6">
-      {nav.links.slice(0, 3).map((link) => (
-        <a href={link.href} class="link link-hover">{link.label}</a>
+    <div class="flex flex-wrap justify-center gap-4 sm:gap-6">
+      {nav.links.map((link) => (
+        <a href={link.href} class="link link-hover text-sm">{link.label}</a>
       ))}
     </div>
   </nav>
-  <aside>
-    <p class="font-bold text-lg">{footer.businessName}</p>
-    <p class="text-sm opacity-60">{footer.tagline}</p>
-    <p class="text-sm opacity-40">&copy; {new Date().getFullYear()} {footer.businessName}. All rights reserved.</p>
-  </aside>
+
+  <!-- Rights -->
+  <p class="text-sm opacity-40">&copy; {new Date().getFullYear()} {footer.businessName}. All rights reserved.</p>
+
 </footer>
