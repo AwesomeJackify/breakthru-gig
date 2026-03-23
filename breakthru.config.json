@@ -26,43 +26,39 @@
   "services": {
     "headline": "Choose your breakthru",
     "body": "Select the plan that fits you and become part of this movement",
-    "reassurance": "Not sure which is right for you? The application form helps Myer recommend the best fit.",
     "tiers": [
       {
-        "tier": "Foundation",
-        "title": "Self-Guided Plan",
-        "description": "1–2 sentences describing this entry-level option: a personalised programme delivered to the client's app, with check-ins to track progress.",
+        "tier": "Option 1",
+        "title": "12 Week Programme",
+        "description": "A one-off 12-week training programme fully tailored to you — built around your goals, your schedule, and your body.",
         "features": [
-          "Personalised training programme",
-          "Monthly programme refresh",
-          "Nutrition guidance & meal frameworks",
-          "Access to the Breakthru app"
+          "Personalised 12-week training programme",
+          "Tailored to your goals and experience level",
+          "Structured week-by-week progression"
         ],
         "popular": false
       },
       {
-        "tier": "Signature",
-        "title": "1-on-1 Coaching",
-        "description": "1–2 sentences describing this core offering: full access to Myer, weekly check-ins, real-time adjustments, and everything in Foundation.",
+        "tier": "Most Popular",
+        "title": "Join Breakthru",
+        "description": "The full Breakthru experience — everything you need to train, eat, and think like an athlete.",
         "features": [
-          "Everything in Foundation",
-          "Weekly video check-ins with Myer",
-          "24/7 messaging support",
-          "Real-time programme adjustments",
-          "Mindset and habit coaching"
+          "12-week training programmes",
+          "Access to daily workouts",
+          "Workout challenges",
+          "Meal ideas",
+          "24/7 messaging support & community WhatsApp group"
         ],
         "popular": true
       },
       {
-        "tier": "Elite",
-        "title": "Performance & Athletes",
-        "description": "1–2 sentences describing the premium athlete-focused tier: sport-specific conditioning, periodisation, and high-frequency coaching access.",
+        "tier": "Option 3",
+        "title": "Eat Like Me — 30 Day Meal Plan",
+        "description": "Creating habits and consistency through fuelling. A 30-day meal plan designed to build a sustainable relationship with food.",
         "features": [
-          "Everything in Signature",
-          "Sport-specific periodisation",
-          "Bi-weekly video calls",
-          "Priority response & scheduling",
-          "Performance testing & benchmarking"
+          "30-day structured meal plan",
+          "Habit-building nutrition framework",
+          "Practical, consistent fuelling strategies"
         ],
         "popular": false
       }
@@ -70,9 +66,9 @@
   },
 
   "form": {
-    "sectionLabel": "Apply",
+    "sectionLabel": "",
     "headline": "Is Breakthru right for you?",
-    "body": "Two sentences explaining the purpose of this form: Myer reviews every application personally and only takes on clients he knows he can help achieve a genuine transformation.",
+    "body": "Don't know if we're right for you? Apply here and help the team understand your goals, your obstacles and let's build a genuine transformation. Time to Breakthru!",
     "submitLabel": "Submit Application",
     "responseNote": "Myer reviews every application personally. You will hear back within 48 hours."
   },

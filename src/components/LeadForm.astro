@@ -10,7 +10,7 @@ const { accessKey, successMessage, errorMessage } = forms.leadQualification;
 
     <!-- Section header -->
     <div class="text-center mb-12">
-      <p class="text-sm font-semibold uppercase tracking-widest opacity-50 mb-2">{form.sectionLabel}</p>
+      {form.sectionLabel && <p class="text-sm font-semibold uppercase tracking-widest opacity-50 mb-2">{form.sectionLabel}</p>}
       <h2 class="text-4xl font-bold leading-tight mb-4">{form.headline}</h2>
       <p class="opacity-70">{form.body}</p>
     </div>
