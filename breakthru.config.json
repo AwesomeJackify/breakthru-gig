@@ -7,7 +7,7 @@
   "nav": {
     "logoAlt": "Breakthru",
     "links": [
-      { "label": "About", "href": "#hero" },
+      { "label": "About the Founder", "href": "#hero" },
       { "label": "Programmes", "href": "#services" },
       { "label": "Apply", "href": "#qualify" }
     ],
