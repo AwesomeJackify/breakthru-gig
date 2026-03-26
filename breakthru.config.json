@@ -16,7 +16,7 @@
 
   "hero": {
     "eyebrow": "Online Personal Training",
-    "headline": "About",
+    "headline": "About the Founder",
     "body": "Hi, I'm Myer.\n\nI am a professional athlete who has played football around the world for the past ten years, as well as playing for the New Zealand National team. I am also a qualified fitness coach.\n\nThrough my experiences being a professional athlete, I fell in love with the gym and that love then transitioned into becoming a fitness coach / personal trainer by trade. The gym is a place that cannot only help you gain confidence and transform your body, but a place that can transform your mind.\n\nI've learnt that true transformation doesn't come from extreme measures and quick fixes, but from understanding your body, building habits that last, and creating a mindset and lifestyle you truly enjoy.\n\nMy purpose? To help you gain confidence, gain strength and work with you to create a fitness journey you enjoy. Whether you've never trained before, or you're looking to get just that 1% better, I'm here to help you chase those goals and Breakthru the obstacles in your way.\n\nFitness should be something you enjoy, not something you dread.\n\nBreakthru is here to transform your body and your mind.\n\nAre you ready?",
     "ctaPrimary": "Start Your Breakthru",
     "trustSignal": "Trusted by athletes and beginners across 20+ countries",
@@ -37,7 +37,8 @@
           "Structured week by week progression"
         ],
         "popular": false,
-        "price": ""
+        "price": "$82.99",
+        "billing": "One-off payment"
       },
       {
         "tier": "Most Popular",
@@ -51,7 +52,8 @@
           "24/7 messaging support & community WhatsApp group"
         ],
         "popular": true,
-        "price": ""
+        "price": "$9.99 / month",
+        "billing": "6-month minimum term"
       },
       {
         "tier": "Option 3",
@@ -63,7 +65,8 @@
           "Practical, consistent fuelling strategies"
         ],
         "popular": false,
-        "price": ""
+        "price": "$35.99",
+        "billing": "One-off payment"
       }
     ]
   },
@@ -73,7 +76,7 @@
     "headline": "Is Breakthru right for you?",
     "body": "Don't know if we're right for you? Apply here and help the team understand your goals, your obstacles and let's build a genuine transformation. Time to Breakthru!",
     "submitLabel": "Submit Application",
-    "responseNote": "Myer reviews every application personally. You will hear back within 48 hours."
+    "responseNote": "The Breakthru team will assess and review each application and will get in touch."
   },
 
   "footer": {

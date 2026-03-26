@@ -37,6 +37,17 @@ const { accessKey, successMessage, errorMessage } = forms.leadQualification;
           <span class="fieldset-label">Helps us understand your context and experience stage</span>
         </fieldset>
 
+        <!-- Gender -->
+        <fieldset class="fieldset">
+          <legend class="fieldset-legend">Gender</legend>
+          <select name="gender" required class="select w-full">
+            <option value="" disabled selected>Select your gender</option>
+            <option>Male</option>
+            <option>Female</option>
+            <option>Rather not say</option>
+          </select>
+        </fieldset>
+
         <!-- Years of training experience -->
         <fieldset class="fieldset">
           <legend class="fieldset-legend">Years of training experience</legend>
@@ -60,9 +71,8 @@ const { accessKey, successMessage, errorMessage } = forms.leadQualification;
             <option>Build strength and muscle</option>
             <option>Lose body fat and transform my physique</option>
             <option>Improve athletic performance / marginal gains</option>
-            <option>Build confidence and consistency</option>
             <option>General fitness and health</option>
-            <option>Multiple goals — I'll describe below</option>
+            <option>Multiple goals / other goals. I'll describe below.</option>
           </select>
           <span class="fieldset-label">Your primary focus — you can expand on this below</span>
         </fieldset>
@@ -71,7 +81,7 @@ const { accessKey, successMessage, errorMessage } = forms.leadQualification;
         <fieldset class="fieldset">
           <legend class="fieldset-legend">Tell us about your goals</legend>
           <textarea name="goals_detail" required class="textarea w-full h-32" placeholder="Describe what you want to achieve, what has and hasn't worked for you before, and why now is the right time for Breakthru"></textarea>
-          <span class="fieldset-label">The more context you give, the better we can assess fit</span>
+          <span class="fieldset-label">The more context you give the better the team can assess fit.</span>
         </fieldset>
 
         <!-- Biggest challenge -->
@@ -84,7 +94,7 @@ const { accessKey, successMessage, errorMessage } = forms.leadQualification;
         <fieldset class="fieldset">
           <legend class="fieldset-legend">Email address</legend>
           <input type="email" name="email" required class="input w-full" placeholder="you@example.com" />
-          <span class="fieldset-label">We'll reach out here if your application is a good fit</span>
+          <span class="fieldset-label">The team will reach out here if your application is a good fit</span>
         </fieldset>
 
         <!-- Submit -->
