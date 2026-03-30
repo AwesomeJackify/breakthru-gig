@@ -53,7 +53,7 @@
         ],
         "popular": true,
         "price": "$9.99 / month",
-        "billing": ""
+        "billing": "monthly subscription"
       },
       {
         "tier": "Option 3",
