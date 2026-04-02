@@ -19,7 +19,7 @@ const { nav } = config;
       {
         nav.links.map((link) => (
           <li>
-            <a href={link.href}>{link.label}</a>
+            <a href={link.href.startsWith("#") ? `/${link.href}` : link.href}>{link.label}</a>
           </li>
         ))
       }
@@ -28,7 +28,7 @@ const { nav } = config;
 
   <div class="navbar-end">
     <!-- Desktop CTA -->
-    <a href="#services" class="btn btn-primary hidden lg:flex">{nav.cta}</a>
+    <a href="/#services" class="btn btn-primary hidden lg:flex">{nav.cta}</a>
 
     <!-- Mobile hamburger -->
     <div class="dropdown dropdown-end lg:hidden">
@@ -59,12 +59,12 @@ const { nav } = config;
         {
           nav.links.map((link) => (
             <li>
-              <a href={link.href}>{link.label}</a>
+              <a href={link.href.startsWith("#") ? `/${link.href}` : link.href}>{link.label}</a>
             </li>
           ))
         }
         <li>
-          <a href="#services" class="btn btn-primary btn-sm mt-2">{nav.cta}</a>
+          <a href="/#services" class="btn btn-primary btn-sm mt-2">{nav.cta}</a>
         </li>
       </ul>
     </div>
