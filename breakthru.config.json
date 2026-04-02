@@ -17,7 +17,7 @@
   "hero": {
     "eyebrow": "Online Personal Training",
     "headline": "About the Founder",
-    "body": "Hi, I'm Myer.\n\nI am a professional athlete who has played football around the world for the past ten years, as well as playing for the New Zealand National team. I am also a qualified fitness coach.\n\nThrough my experiences being a professional athlete, I fell in love with the gym and that love then transitioned into becoming a fitness coach / personal trainer by trade. The gym is a place that cannot only help you gain confidence and transform your body, but a place that can transform your mind.\n\nI've learnt that true transformation doesn't come from extreme measures and quick fixes, but from understanding your body, building habits that last, and creating a mindset and lifestyle you truly enjoy.\n\nMy purpose? To help you gain confidence, gain strength and work with you to create a fitness journey you enjoy. Whether you've never trained before, or you're looking to get just that 1% better, I'm here to help you chase those goals and Breakthru the obstacles in your way.\n\nFitness should be something you enjoy, not something you dread.\n\nBreakthru is here to transform your body and your mind.\n\nAre you ready?",
+    "body": "Hi, I'm Myer Bevan.\n\nI am a professional athlete who has played football around the world for the past ten years, as well as playing for the New Zealand National team. I am also a qualified fitness coach.\n\nThrough my experiences being a professional athlete, I fell in love with the gym and that love then transitioned into becoming a fitness coach / personal trainer by trade. The gym is a place that cannot only help you gain confidence and transform your body, but a place that can transform your mind.\n\nI've learnt that true transformation doesn't come from extreme measures and quick fixes, but from understanding your body, building habits that last, and creating a mindset and lifestyle you truly enjoy.\n\nMy purpose? To help you gain confidence, gain strength and work with you to create a fitness journey you enjoy. Whether you've never trained before, or you're looking to get just that 1% better, I'm here to help you chase those goals and Breakthru the obstacles in your way.\n\nFitness should be something you enjoy, not something you dread.\n\nBreakthru is here to transform your body and your mind.\n\nAre you ready?",
     "ctaPrimary": "Start Your Breakthru",
     "trustSignal": "Home to all levels of fitness. Start your transformation today.",
     "imageAlt": "Myer Bevan — Breakthru online personal trainer"
@@ -30,7 +30,7 @@
       {
         "tier": "Option 1",
         "title": "12 Week Programme",
-        "description": "A one off training programme fully tailored to you - built around your body and your goals. Putting structure into your workouts and creating habits.",
+        "description": "A one-off training programme fully tailored to you - built around your body and your goals. Putting structure into your workouts and creating habits.",
         "features": [
           "Personalized 12 week workout programme",
           "Tailored to your goals and experience level",
@@ -43,7 +43,7 @@
       {
         "tier": "Most Popular",
         "title": "Join Breakthru",
-        "description": "The full Breakthru experience - everything you need to train, ideas on nutrition and day to day guidance around workouts. Breakthru your obstacles and become the best version of you.",
+        "description": "The full Breakthru experience - everything you need to train, ideas on nutrition and day-to-day guidance around workouts. Breakthru your obstacles and become the best version of you.",
         "features": [
           "12 week training programme",
           "Access to daily workouts",
@@ -58,7 +58,7 @@
       {
         "tier": "Option 3",
         "title": "Eat Like Me — 30 Day Meal Plan",
-        "description": "Creating habits and consistency through fuelling. Breakthru's founders 30 day meal plan thats designed to build a sustainable relationship with food and give you ideas on what to eat day to day.",
+        "description": "Creating habits and consistency through fuelling. Breakthru's founder has developed a 30 day meal plan that's designed to build a sustainable relationship with food and give you ideas on what to eat day-to-day.",
         "features": [
           "30 day structured meal plan",
           "Habit building nutrition framework",
@@ -87,7 +87,7 @@
   "forms": {
     "leadQualification": {
       "accessKey": "d13a48a5-ecee-4470-b468-e72cf0c2b5aa",
-      "recipientEmail": "myer@breakthru.com",
+      "recipientEmail": "hello@breakthru.fit",
       "successMessage": "Application received — Myer reviews every submission personally and will be in touch within 48 hours.",
       "errorMessage": "Something went wrong. Please try emailing Myer directly."
     }

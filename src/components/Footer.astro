@@ -14,10 +14,16 @@ const { footer, nav } = config;
   <nav>
     <div class="flex flex-wrap justify-center gap-4 sm:gap-6">
       {nav.links.map((link) => (
-        <a href={link.href} class="link link-hover text-sm">{link.label}</a>
+        <a href={link.href.startsWith("#") ? `/${link.href}` : link.href} class="link link-hover text-sm">{link.label}</a>
       ))}
     </div>
   </nav>
+
+  <!-- Legal links -->
+  <div class="flex gap-4 text-sm opacity-50">
+    <a href="/terms" class="link link-hover">Terms &amp; Conditions</a>
+    <a href="/privacy" class="link link-hover">Privacy Policy</a>
+  </div>
 
   <!-- Rights -->
   <p class="text-sm opacity-40">&copy; {new Date().getFullYear()} {footer.businessName}. All rights reserved.</p>
