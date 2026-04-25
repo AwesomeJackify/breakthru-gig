@@ -1,0 +1,85 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Nav from "../components/Nav.astro";
+import Footer from "../components/Footer.astro";
+import config from "../../breakthru.config.json";
+
+const user = Astro.locals.user;
+const focusProduct = Astro.url.searchParams.get("product");
+const tiers = focusProduct
+  ? config.services.tiers.filter((t: { product?: string }) => t.product === focusProduct)
+  : config.services.tiers;
+---
+
+<Layout title="Plans — Breakthru" description="Choose a Breakthru plan and start your transformation.">
+  <Nav />
+  <main class="min-h-screen px-4 py-24">
+    <div class="max-w-5xl mx-auto">
+      <div class="text-center mb-12">
+        {focusProduct ? (
+          <>
+            <h1 class="text-4xl font-bold mb-3">{tiers[0]?.title ?? config.services.headline}</h1>
+            <p class="text-base-content/60 text-lg">{tiers[0]?.description ?? config.services.body}</p>
+            <a href="/subscribe" class="inline-block mt-4 text-sm text-base-content/50 hover:text-base-content underline underline-offset-2">View all plans</a>
+          </>
+        ) : (
+          <>
+            <h1 class="text-4xl font-bold mb-3">{config.services.headline}</h1>
+            <p class="text-base-content/60 text-lg">{config.services.body}</p>
+          </>
+        )}
+      </div>
+
+      <div class:list={["grid gap-6", focusProduct ? "grid-cols-1 max-w-md mx-auto" : "grid-cols-1 md:grid-cols-3"]}>
+        {tiers.map((tier: { tier: string; title: string; description: string; features: string[]; popular: boolean; price: string; billing: string; product: string }) => (
+          <div class:list={["card bg-base-200 border", tier.popular ? "border-primary shadow-lg" : "border-base-300"]}>
+            {tier.popular && (
+              <div class="bg-primary text-primary-content text-center text-xs font-semibold py-1 px-4 rounded-t-2xl">
+                {tier.tier}
+              </div>
+            )}
+            <div class="card-body gap-4">
+              <div>
+                <p class="text-xs text-base-content/50 uppercase tracking-widest mb-1">{!tier.popular ? tier.tier : ""}</p>
+                <h2 class="card-title text-xl">{tier.title}</h2>
+                <p class="text-sm text-base-content/60 mt-1">{tier.description}</p>
+              </div>
+
+              <div>
+                <span class="text-3xl font-bold">{tier.price}</span>
+                <span class="text-sm text-base-content/50 ml-1">{tier.billing}</span>
+              </div>
+
+              <ul class="flex flex-col gap-2">
+                {tier.features.map((f) => (
+                  <li class="flex items-start gap-2 text-sm">
+                    <svg class="w-4 h-4 text-success mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    {f}
+                  </li>
+                ))}
+              </ul>
+
+              <div class="card-actions mt-auto pt-2">
+                {user ? (
+                  <form method="POST" action={tier.product === "subscription" ? "/api/checkout/subscription" : "/api/checkout/one-time"} class="w-full">
+                    <input type="hidden" name="product" value={tier.product} />
+                    <button type="submit" class:list={["btn w-full", tier.popular ? "btn-primary" : "btn-outline"]}>
+                      Get started
+                    </button>
+                  </form>
+                ) : (
+                  <a href="/login" class:list={["btn w-full", tier.popular ? "btn-primary" : "btn-outline"]}>
+                    Sign in to buy
+                  </a>
+                )}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </main>
+  <Footer />
+</Layout>

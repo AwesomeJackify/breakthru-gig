@@ -1,0 +1,60 @@
+---
+import DashboardLayout from "../../layouts/DashboardLayout.astro";
+import { getUserEntitlements, canWatchVideo } from "../../lib/access";
+import { getSignedPlaybackUrl } from "../../lib/mux";
+
+const { id } = Astro.params;
+const user = Astro.locals.user!;
+const supabase = Astro.locals.supabase;
+
+const { data: video } = await supabase
+  .from("videos")
+  .select("id, title, description, category, access, mux_playback_id, status")
+  .eq("id", id)
+  .eq("status", "ready")
+  .single();
+
+if (!video) return Astro.redirect("/videos");
+
+const entitlements = await getUserEntitlements(user.id, supabase);
+const allowed = canWatchVideo(entitlements, video.access as "subscription" | "programme_12week");
+if (!allowed) return Astro.redirect("/subscribe");
+
+const signedUrl = await getSignedPlaybackUrl(video.mux_playback_id);
+---
+
+<DashboardLayout title={`${video.title} — Breakthru`}>
+  <main class="min-h-screen px-6 py-10">
+    <div class="max-w-4xl mx-auto">
+      <a href="/videos" class="btn btn-ghost btn-sm mb-6 gap-2 pl-0">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+        Back to library
+      </a>
+
+      <div class="aspect-video bg-black rounded-xl overflow-hidden mb-6">
+        <mux-player
+          playback-id={video.mux_playback_id}
+          src={signedUrl}
+          metadata-video-title={video.title}
+          metadata-viewer-user-id={user.id}
+          class="w-full h-full"
+          style="--controls: auto;"
+        ></mux-player>
+      </div>
+
+      <div class="flex items-start gap-3">
+        <div class="flex-1">
+          <span class="badge badge-outline capitalize text-xs mb-2">{video.category}</span>
+          <h1 class="text-2xl font-bold">{video.title}</h1>
+          {video.description && (
+            <p class="text-base-content/60 mt-2">{video.description}</p>
+          )}
+        </div>
+      </div>
+    </div>
+  </main>
+</DashboardLayout>
+
+<script type="module" src="https://cdn.jsdelivr.net/npm/@mux/mux-player/dist/mux-player.mjs"></script>

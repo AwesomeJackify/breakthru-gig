@@ -2,7 +2,8 @@
 // LeadForm.astro — Lead qualification form wired to Web3Forms
 import config from "../../breakthru.config.json";
 const { form, forms, site } = config;
-const { accessKey, successMessage, errorMessage } = forms.leadQualification;
+const { successMessage, errorMessage } = forms.leadQualification;
+const accessKey = import.meta.env.WEB3FORMS_ACCESS_KEY;
 ---
 
 <section id="qualify" class="py-24">

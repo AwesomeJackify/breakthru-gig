@@ -16,17 +16,23 @@
     "generate-types": "wrangler types"
   },
   "lint-staged": {
-    "*.{js,ts,jsx,tsx,astro}": "eslint --fix"
+    "*.{js,ts,jsx,tsx,astro}": "eslint --fix --no-warn-ignored"
   },
   "dependencies": {
     "@astrojs/cloudflare": "^13.1.2",
+    "@astrojs/node": "^10.0.6",
     "@iconify-json/lucide": "^1.2.98",
+    "@mux/mux-node": "^14.0.1",
+    "@mux/upchunk": "^3.5.0",
+    "@supabase/ssr": "^0.10.2",
+    "@supabase/supabase-js": "^2.104.1",
     "@tailwindcss/vite": "^4.2.1",
-    "astro": "^6.0.4",
+    "astro": "^6.1.9",
     "astro-icon": "^1.1.5",
     "daisyui": "^5.5.19",
     "gsap": "^3.14.2",
     "split-type": "^0.3.4",
+    "stripe": "^22.1.0",
     "tailwindcss": "^4.2.1"
   },
   "devDependencies": {

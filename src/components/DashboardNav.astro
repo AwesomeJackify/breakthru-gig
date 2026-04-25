@@ -1,0 +1,102 @@
+---
+import { Image } from "astro:assets";
+import { Icon } from "astro-icon/components";
+import logoImg from "../assets/images/logo.png";
+
+const user = Astro.locals.user!;
+const pathname = Astro.url.pathname;
+
+const links = [
+  { label: "Home",      href: "/dashboard", icon: "lucide:house" },
+  { label: "Videos",    href: "/videos",    icon: "lucide:video" },
+  { label: "Downloads", href: "/downloads", icon: "lucide:download" },
+];
+
+const adminLinks = [
+  { label: "Admin",  href: "/admin",        icon: "lucide:shield" },
+  { label: "Upload", href: "/admin/upload", icon: "lucide:upload" },
+];
+---
+
+<aside class="flex flex-col h-full bg-base-200 w-64 border-r border-base-300">
+  <!-- Logo -->
+  <div class="px-4 py-5 border-b border-base-300">
+    <a href="/dashboard" class="flex items-center gap-2">
+      <Image src={logoImg} alt="Breakthru" class="h-8 w-auto" />
+    </a>
+  </div>
+
+  <!-- Nav links -->
+  <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-1">
+    {links.map((link) => {
+      const active = pathname === link.href || (link.href !== "/dashboard" && pathname.startsWith(link.href));
+      return (
+        <a
+          href={link.href}
+          class:list={[
+            "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
+            active
+              ? "bg-primary text-primary-content"
+              : "text-base-content/70 hover:bg-base-300 hover:text-base-content",
+          ]}
+        >
+          <Icon name={link.icon} class="w-5 h-5 shrink-0" />
+          {link.label}
+        </a>
+      );
+    })}
+
+    {user.is_admin && (
+      <div class="pt-4">
+        <p class="px-3 pb-2 text-xs font-semibold text-base-content/40 uppercase tracking-wider">Admin</p>
+        {adminLinks.map((link) => {
+          const active = pathname === link.href;
+          return (
+            <a
+              href={link.href}
+              class:list={[
+                "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
+                active
+                  ? "bg-primary text-primary-content"
+                  : "text-base-content/70 hover:bg-base-300 hover:text-base-content",
+              ]}
+            >
+              <Icon name={link.icon} class="w-5 h-5 shrink-0" />
+              {link.label}
+            </a>
+          );
+        })}
+      </div>
+    )}
+  </nav>
+
+  <!-- User footer -->
+  <div class="px-3 py-4 border-t border-base-300">
+    <div class="flex items-center gap-3 px-3 py-2 rounded-lg bg-base-300 mb-2">
+      <div class="avatar avatar-placeholder">
+        <div class="bg-primary text-primary-content rounded-full w-8">
+          <span class="text-xs font-bold">{user.email.slice(0, 2).toUpperCase()}</span>
+        </div>
+      </div>
+      <div class="flex-1 min-w-0">
+        <p class="text-xs text-base-content/60 truncate">{user.email}</p>
+      </div>
+    </div>
+    <form action="/api/auth/logout" method="POST">
+      <button
+        type="submit"
+        class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-base-content/60 hover:bg-base-300 hover:text-base-content transition-colors cursor-pointer"
+      >
+        <Icon name="lucide:log-out" class="w-5 h-5 shrink-0" />
+        Log out
+      </button>
+    </form>
+    <a
+      href="/"
+      class="flex items-center gap-2 px-3 mt-2 text-xs text-base-content/30 hover:text-base-content/60 transition-colors"
+    >
+      <Icon name="lucide:arrow-up-right" class="w-3 h-3 shrink-0" />
+      breakthru.fit
+    </a>
+  </div>
+</aside>

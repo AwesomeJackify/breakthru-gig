@@ -1,0 +1,178 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Nav from "../components/Nav.astro";
+import Footer from "../components/Footer.astro";
+
+if (Astro.locals.user) {
+  return Astro.redirect("/dashboard");
+}
+---
+
+<Layout
+  title="Sign in — Breakthru"
+  description="Sign in to your Breakthru account."
+>
+  <Nav />
+  <main class="min-h-screen flex items-center justify-center px-4 py-24">
+    <div class="w-full max-w-md">
+      <div class="text-center mb-8">
+        <h1 class="text-3xl font-bold mb-2">Welcome back</h1>
+        <p class="text-base-content/60">
+          Sign in to access your Breakthru portal.
+        </p>
+      </div>
+
+      <div role="tablist" class="tabs tabs-border mb-6">
+        <button
+          role="tab"
+          class="tab tab-active"
+          id="tab-signin"
+          data-tab="signin">Sign in</button
+        >
+        <button role="tab" class="tab" id="tab-signup" data-tab="signup"
+          >Create account</button
+        >
+      </div>
+
+      <div id="panel-signin">
+        <form id="signin-form" class="flex flex-col gap-4">
+          <fieldset class="fieldset">
+            <legend class="fieldset-legend">Email</legend>
+            <input
+              type="email"
+              name="email"
+              class="input w-full"
+              placeholder="you@example.com"
+              required
+            />
+          </fieldset>
+          <fieldset class="fieldset">
+            <legend class="fieldset-legend">Password</legend>
+            <input
+              type="password"
+              name="password"
+              class="input w-full"
+              placeholder="••••••••"
+              required
+            />
+          </fieldset>
+          <div id="signin-error" class="alert alert-error hidden text-sm"></div>
+          <button type="submit" class="btn btn-primary w-full mt-2"
+            >Sign in</button
+          >
+        </form>
+      </div>
+
+      <div id="panel-signup" class="hidden">
+        <form id="signup-form" class="flex flex-col gap-4">
+          <fieldset class="fieldset">
+            <legend class="fieldset-legend">Email</legend>
+            <input
+              type="email"
+              name="email"
+              class="input w-full"
+              placeholder="you@example.com"
+              required
+            />
+          </fieldset>
+          <fieldset class="fieldset">
+            <legend class="fieldset-legend">Password</legend>
+            <input
+              type="password"
+              name="password"
+              class="input w-full"
+              placeholder="Min. 8 characters"
+              required
+              minlength="8"
+            />
+          </fieldset>
+          <div id="signup-error" class="alert alert-error hidden text-sm"></div>
+          <div id="signup-success" class="alert alert-success hidden text-sm">
+            Check your email to confirm your account.
+          </div>
+          <button type="submit" class="btn btn-primary w-full mt-2"
+            >Create account</button
+          >
+        </form>
+      </div>
+
+      <p class="text-center text-sm text-base-content/50 mt-6">
+        Ready to join? <a href="/subscribe" class="link link-primary"
+          >View plans</a
+        >
+      </p>
+    </div>
+  </main>
+  <Footer />
+</Layout>
+
+<script>
+  import { createBrowserClient } from "@supabase/ssr";
+
+  const supabase = createBrowserClient(
+    import.meta.env.PUBLIC_SUPABASE_URL,
+    import.meta.env.PUBLIC_SUPABASE_ANON_KEY,
+  );
+
+  // Tab switching
+  const tabs = document.querySelectorAll<HTMLButtonElement>("[data-tab]");
+
+  function switchTab(target: string) {
+    tabs.forEach((t) => t.classList.toggle("tab-active", t.dataset.tab === target));
+    (document.getElementById("panel-signin") as HTMLElement).classList.toggle("hidden", target !== "signin");
+    (document.getElementById("panel-signup") as HTMLElement).classList.toggle("hidden", target !== "signup");
+  }
+
+  tabs.forEach((tab) => {
+    tab.addEventListener("click", () => switchTab(tab.dataset.tab!));
+  });
+
+  if (new URLSearchParams(window.location.search).get("signup") === "1") {
+    switchTab("signup");
+  }
+
+  // Sign in
+  document
+    .getElementById("signin-form")!
+    .addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const form = e.target as HTMLFormElement;
+      const errorEl = document.getElementById("signin-error")!;
+      errorEl.classList.add("hidden");
+      const { error } = await supabase.auth.signInWithPassword({
+        email: (form.elements.namedItem("email") as HTMLInputElement).value,
+        password: (form.elements.namedItem("password") as HTMLInputElement)
+          .value,
+      });
+      if (error) {
+        errorEl.textContent = error.message;
+        errorEl.classList.remove("hidden");
+      } else {
+        window.location.href = "/dashboard";
+      }
+    });
+
+  // Sign up
+  document
+    .getElementById("signup-form")!
+    .addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const form = e.target as HTMLFormElement;
+      const errorEl = document.getElementById("signup-error")!;
+      const successEl = document.getElementById("signup-success")!;
+      errorEl.classList.add("hidden");
+      successEl.classList.add("hidden");
+      const { error } = await supabase.auth.signUp({
+        email: (form.elements.namedItem("email") as HTMLInputElement).value,
+        password: (form.elements.namedItem("password") as HTMLInputElement)
+          .value,
+      });
+      if (error) {
+        errorEl.textContent = error.message;
+        errorEl.classList.remove("hidden");
+      } else {
+        successEl.classList.remove("hidden");
+        form.reset();
+      }
+    });
+</script>
