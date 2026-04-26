@@ -21,7 +21,10 @@ const { title = "Member's Zone — Breakthru" } = Astro.props;
     <title>{title}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
   </head>
   <body class="h-full bg-base-100">
     <!-- DaisyUI drawer: sidebar on desktop, slide-out on mobile -->
@@ -31,8 +34,14 @@ const { title = "Member's Zone — Breakthru" } = Astro.props;
       <!-- Page content -->
       <div class="drawer-content flex flex-col h-full">
         <!-- Mobile top bar -->
-        <header class="lg:hidden flex items-center gap-3 px-4 py-3 border-b border-base-300 bg-base-200 sticky top-0 z-30">
-          <label for="dashboard-drawer" class="btn btn-ghost btn-sm" aria-label="Open menu">
+        <header
+          class="lg:hidden flex items-center gap-3 px-4 py-3 border-b border-base-300 bg-base-200 sticky top-0 z-30"
+        >
+          <label
+            for="dashboard-drawer"
+            class="btn btn-ghost btn-sm"
+            aria-label="Open menu"
+          >
             <Icon name="lucide:menu" class="h-5 w-5" />
           </label>
           <span class="font-semibold text-sm">Member's Zone</span>
@@ -46,7 +55,10 @@ const { title = "Member's Zone — Breakthru" } = Astro.props;
 
       <!-- Sidebar -->
       <div class="drawer-side z-40">
-        <label for="dashboard-drawer" aria-label="Close menu" class="drawer-overlay"></label>
+        <label
+          for="dashboard-drawer"
+          aria-label="Close menu"
+          class="drawer-overlay"></label>
         <DashboardNav />
       </div>
     </div>

@@ -118,9 +118,17 @@ if (Astro.locals.user) {
   const tabs = document.querySelectorAll<HTMLButtonElement>("[data-tab]");
 
   function switchTab(target: string) {
-    tabs.forEach((t) => t.classList.toggle("tab-active", t.dataset.tab === target));
-    (document.getElementById("panel-signin") as HTMLElement).classList.toggle("hidden", target !== "signin");
-    (document.getElementById("panel-signup") as HTMLElement).classList.toggle("hidden", target !== "signup");
+    tabs.forEach((t) =>
+      t.classList.toggle("tab-active", t.dataset.tab === target),
+    );
+    (document.getElementById("panel-signin") as HTMLElement).classList.toggle(
+      "hidden",
+      target !== "signin",
+    );
+    (document.getElementById("panel-signup") as HTMLElement).classList.toggle(
+      "hidden",
+      target !== "signup",
+    );
   }
 
   tabs.forEach((tab) => {
@@ -148,7 +156,7 @@ if (Astro.locals.user) {
         errorEl.textContent = error.message;
         errorEl.classList.remove("hidden");
       } else {
-        window.location.href = "/dashboard";
+        window.location.href = "/videos";
       }
     });
 
