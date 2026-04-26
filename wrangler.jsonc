@@ -6,5 +6,11 @@
 	"name": "breakthru-gig-video-portal",
 	"assets": {
 		"directory": "./dist",
-	}
+	},
+	"kv_namespaces": [
+		{
+			"binding": "SESSION",
+			"id": "breakthru-gig-session"
+		}
+	]
 }
