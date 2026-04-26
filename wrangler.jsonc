@@ -3,14 +3,8 @@
 	"compatibility_flags": [
 		"nodejs_compat"
 	],
-	"name": "breakthru-gig-video-portal",
+	"name": "breakthru-gig",
 	"assets": {
 		"directory": "./dist",
-	},
-	"kv_namespaces": [
-		{
-			"binding": "SESSION",
-			"id": "breakthru-gig-session"
-		}
-	]
+	}
 }
