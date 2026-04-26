@@ -5,8 +5,6 @@ import { Icon } from "astro-icon/components";
 import logoImg from "../assets/images/logo.png";
 import config from "../../breakthru.config.json";
 const { nav } = config;
-
-const user = Astro.locals.user ?? null;
 ---
 
 <div class="navbar sticky top-0 z-50 bg-base-100 border-b border-base-200">
@@ -32,9 +30,6 @@ const user = Astro.locals.user ?? null;
   </div>
 
   <div class="navbar-end gap-2">
-    {!user && (
-      <a href="/login" class="btn btn-ghost btn-sm hidden lg:flex">Sign in</a>
-    )}
     <!-- Desktop CTA -->
     <a href="/dashboard" class="btn btn-primary hidden lg:flex">{nav.cta}</a>
 
@@ -64,9 +59,6 @@ const user = Astro.locals.user ?? null;
         <li>
           <a href="/dashboard" class="btn btn-primary btn-sm mt-2">{nav.cta}</a>
         </li>
-        {!user && (
-          <li><a href="/login">Sign in</a></li>
-        )}
       </ul>
     </div>
   </div>
