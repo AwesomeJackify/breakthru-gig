@@ -11,7 +11,7 @@
       { "label": "Programmes", "href": "#services" },
       { "label": "Apply", "href": "#qualify" }
     ],
-    "cta": "Start Your Breakthru"
+    "cta": "Members Zone"
   },
 
   "hero": {
@@ -38,7 +38,8 @@
         ],
         "popular": false,
         "price": "$82.99",
-        "billing": "One-off payment"
+        "billing": "One-off payment",
+        "product": "12week_programme"
       },
       {
         "tier": "Most Popular",
@@ -53,7 +54,8 @@
         ],
         "popular": true,
         "price": "$9.99 / month",
-        "billing": "monthly subscription"
+        "billing": "monthly subscription",
+        "product": "subscription"
       },
       {
         "tier": "Option 3",
@@ -66,7 +68,8 @@
         ],
         "popular": false,
         "price": "$35.99",
-        "billing": "One-off payment"
+        "billing": "One-off payment",
+        "product": "meal_plan_pdf"
       }
     ]
   },
@@ -86,7 +89,6 @@
 
   "forms": {
     "leadQualification": {
-      "accessKey": "d13a48a5-ecee-4470-b468-e72cf0c2b5aa",
       "recipientEmail": "hello@breakthru.fit",
       "successMessage": "Application received — Myer reviews every submission personally and will be in touch within 48 hours.",
       "errorMessage": "Something went wrong. Please try emailing Myer directly."

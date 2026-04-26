@@ -1,0 +1,258 @@
+---
+import DashboardLayout from "../../layouts/DashboardLayout.astro";
+import { Icon } from "astro-icon/components";
+import { getUserEntitlements } from "../../lib/access";
+
+const user = Astro.locals.user!;
+const supabase = Astro.locals.supabase;
+
+const [entitlements, subResult, profileResult] = await Promise.all([
+  getUserEntitlements(user.id, supabase),
+  supabase
+    .from("subscriptions")
+    .select("status, current_period_end")
+    .eq("user_id", user.id)
+    .order("current_period_end", { ascending: false })
+    .limit(1)
+    .maybeSingle(),
+  supabase
+    .from("profiles")
+    .select("stripe_customer_id")
+    .eq("id", user.id)
+    .single(),
+]);
+
+const subscription = subResult.data;
+const hasStripeCustomer = !!profileResult.data?.stripe_customer_id;
+const hasAnything =
+  entitlements.hasSubscription ||
+  entitlements.hasProgramme ||
+  entitlements.hasMealPlan ||
+  subscription?.status === "canceled";
+
+const renewsAt = subscription?.current_period_end
+  ? new Date(subscription.current_period_end).toLocaleDateString("en-NZ", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    })
+  : null;
+
+const cards = [
+  {
+    label: "Video library",
+    description:
+      "Access your full workout, nutrition, and mindset video library.",
+    href: "/videos",
+    unlockHref: "/subscribe?product=subscription",
+    available: entitlements.hasSubscription || entitlements.hasProgramme,
+    lockedMessage: "Requires an active membership.",
+    icon: "lucide:video",
+  },
+  {
+    label: "Downloads",
+    description: "Access your meal plans, programme PDFs, and resources.",
+    href: "/downloads",
+    unlockHref: "/subscribe",
+    available: entitlements.hasMealPlan || entitlements.hasProgramme,
+    lockedMessage: "Add a programme or meal plan to unlock downloads.",
+    icon: "lucide:download",
+  },
+];
+---
+
+<DashboardLayout title="Dashboard — Breakthru">
+  <div class="px-6 py-10 max-w-4xl mx-auto space-y-10">
+    <!-- Welcome -->
+    <div>
+      <h1 class="text-2xl font-bold">Welcome back.</h1>
+      <p class="text-base-content/50 mt-1 text-sm">{user.email}</p>
+    </div>
+
+    <!-- Quick access cards -->
+    <div class="grid sm:grid-cols-2 gap-4">
+      {
+        cards.map((card) => (
+          <div
+            class:list={[
+              "card border transition-colors",
+              card.available
+                ? "bg-base-200 border-base-300 hover:border-primary"
+                : "bg-base-200/50 border-base-300 opacity-60",
+            ]}
+          >
+            <div class="card-body p-6">
+              <div
+                class:list={[
+                  "mb-3",
+                  card.available ? "text-primary" : "text-base-content/30",
+                ]}
+              >
+                <Icon name={card.icon} class="w-6 h-6" />
+              </div>
+              <h2 class="font-semibold text-base">{card.label}</h2>
+              <p class="text-sm text-base-content/50 mt-1">
+                {card.available ? card.description : card.lockedMessage}
+              </p>
+              <div class="card-actions mt-4">
+                {card.available ? (
+                  <a href={card.href} class="btn btn-primary btn-sm">
+                    Open
+                  </a>
+                ) : (
+                  <a href={card.unlockHref} class="btn btn-outline btn-sm">
+                    Unlock
+                  </a>
+                )}
+              </div>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+
+    <!-- Billing -->
+    <div class="card bg-base-200 border border-base-300">
+      <div class="card-body p-6">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="font-semibold text-base">Billing</h2>
+          {
+            hasStripeCustomer && (
+              <form action="/api/stripe/portal" method="POST">
+                <button type="submit" class="btn btn-ghost btn-xs">
+                  Manage billing
+                </button>
+              </form>
+            )
+          }
+        </div>
+
+        <div class="flex flex-col divide-y divide-base-300">
+          <!-- Monthly membership -->
+          <div class="flex items-center gap-3 py-3 first:pt-0 last:pb-0">
+            {
+              entitlements.hasSubscription ? (
+                <span class="badge badge-success badge-sm shrink-0">
+                  Active
+                </span>
+              ) : subscription?.status === "canceled" ? (
+                <span class="badge badge-ghost badge-sm shrink-0">
+                  Cancelled
+                </span>
+              ) : (
+                <span class="badge badge-ghost badge-sm shrink-0">
+                  Inactive
+                </span>
+              )
+            }
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-medium">Monthly membership</p>
+              {
+                entitlements.hasSubscription && renewsAt && (
+                  <p class="text-xs text-base-content/50">Renews {renewsAt}</p>
+                )
+              }
+              {
+                subscription?.status === "canceled" && (
+                  <p class="text-xs text-base-content/50">Access ended</p>
+                )
+              }
+            </div>
+            {
+              !entitlements.hasSubscription && (
+                <a
+                  href="/subscribe?product=subscription"
+                  class="btn btn-primary btn-xs shrink-0"
+                >
+                  {subscription?.status === "canceled"
+                    ? "Resubscribe"
+                    : "Subscribe"}
+                </a>
+              )
+            }
+          </div>
+
+          <!-- 12-week programme -->
+          <div class="flex items-center gap-3 py-3 first:pt-0 last:pb-0">
+            {entitlements.hasSubscription ? (
+              <div class="tooltip tooltip-right shrink-0" data-tip="Included with your monthly membership">
+                <span class="badge badge-success badge-sm cursor-help">Included</span>
+              </div>
+            ) : (
+              <span class:list={["badge badge-sm shrink-0", entitlements.hasProgramme ? "badge-success" : "badge-ghost"]}>
+                {entitlements.hasProgramme ? "Purchased" : "Not purchased"}
+              </span>
+            )}
+            <div class="flex-1">
+              <p class="text-sm font-medium">12-week programme</p>
+              {entitlements.hasSubscription && (
+                <p class="text-xs text-base-content/50">Included with monthly membership</p>
+              )}
+              {!entitlements.hasSubscription && entitlements.hasProgramme && (
+                <p class="text-xs text-base-content/50">One-time purchase</p>
+              )}
+            </div>
+            {!entitlements.hasProgramme && (
+              <a href="/subscribe?product=12week_programme" class="btn btn-outline btn-xs shrink-0">Add</a>
+            )}
+          </div>
+
+          <!-- Meal plan -->
+          <div class="flex items-center gap-3 py-3 first:pt-0 last:pb-0">
+            {entitlements.hasSubscription ? (
+              <div class="tooltip tooltip-right shrink-0" data-tip="Included with your monthly membership">
+                <span class="badge badge-success badge-sm cursor-help">Included</span>
+              </div>
+            ) : (
+              <span class:list={["badge badge-sm shrink-0", entitlements.hasMealPlan ? "badge-success" : "badge-ghost"]}>
+                {entitlements.hasMealPlan ? "Purchased" : "Not purchased"}
+              </span>
+            )}
+            <div class="flex-1">
+              <p class="text-sm font-medium">Meal plan</p>
+              {entitlements.hasSubscription && (
+                <p class="text-xs text-base-content/50">Included with monthly membership</p>
+              )}
+              {!entitlements.hasSubscription && entitlements.hasMealPlan && (
+                <p class="text-xs text-base-content/50">One-time purchase</p>
+              )}
+            </div>
+            {!entitlements.hasMealPlan && (
+              <a href="/subscribe?product=meal_plan_pdf" class="btn btn-outline btn-xs shrink-0">Add</a>
+            )}
+          </div>
+        </div>
+
+        {
+          !hasAnything && (
+            <div class="mt-4 pt-4 border-t border-base-300">
+              <p class="text-sm text-base-content/50 mb-3">
+                No purchases yet. Get started with a membership or programme.
+              </p>
+              <a href="/subscribe" class="btn btn-primary btn-sm">
+                View plans
+              </a>
+            </div>
+          )
+        }
+      </div>
+    </div>
+
+    <!-- Admin section -->
+    {
+      user.is_admin && (
+        <div class="border border-warning/30 bg-warning/5 rounded-xl p-6">
+          <h2 class="font-semibold text-sm text-warning mb-3">Admin</h2>
+          <div class="flex flex-wrap gap-2">
+            <a href="/admin" class="btn btn-sm btn-outline">
+              Video library
+            </a>
+            <a href="/admin/upload" class="btn btn-sm btn-outline">
+              Upload video
+            </a>
+          </div>
+        </div>
+      )
+    }
+  </div>
+</DashboardLayout>

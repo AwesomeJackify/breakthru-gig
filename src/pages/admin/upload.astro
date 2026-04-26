@@ -1,0 +1,408 @@
+---
+import DashboardLayout from "../../layouts/DashboardLayout.astro";
+---
+
+<DashboardLayout title="Upload video — Breakthru Admin">
+  <main class="min-h-screen px-6 py-10">
+    <div class="max-w-4xl mx-auto">
+      <div class="mb-8">
+        <a href="/admin" class="btn btn-ghost btn-sm pl-0 gap-2">
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M15 19l-7-7 7-7"></path>
+          </svg>
+          Back to library
+        </a>
+        <h1 class="text-3xl font-bold mt-4">Upload video</h1>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Upload zone -->
+        <div>
+          <div
+            id="drop-zone"
+            class="border-2 border-dashed border-base-300 rounded-xl flex flex-col items-center justify-center gap-4 p-12 text-center cursor-pointer transition-colors hover:border-primary hover:bg-primary/5"
+          >
+            <div id="dz-idle">
+              <svg
+                class="w-12 h-12 text-base-content/30 mx-auto mb-3"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="1.5"
+                  d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                ></path>
+              </svg>
+              <p class="font-semibold text-base-content/60">
+                Drag and drop your video here
+              </p>
+              <p class="text-sm text-base-content/40 mt-1">
+                or click to browse
+              </p>
+              <p class="text-xs text-base-content/30 mt-3">
+                MP4, MOV, MKV — up to 10 GB
+              </p>
+            </div>
+            <div id="dz-file" class="hidden w-full">
+              <svg
+                class="w-10 h-10 text-primary mx-auto mb-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15 10l4.553-2.069A1 1 0 0121 8.87v6.26a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
+                ></path>
+              </svg>
+              <p
+                id="file-name"
+                class="font-medium text-sm truncate max-w-full px-2"
+              >
+              </p>
+              <p id="file-size" class="text-xs text-base-content/40 mt-1"></p>
+            </div>
+            <input
+              id="file-input"
+              type="file"
+              accept="video/*"
+              class="hidden"
+            />
+          </div>
+
+          <!-- Progress area -->
+          <div id="progress-area" class="hidden mt-6">
+            <div class="flex items-center justify-between text-sm mb-2">
+              <span id="progress-label" class="font-medium">Uploading...</span>
+              <span id="progress-pct" class="text-base-content/50">0%</span>
+            </div>
+            <progress
+              id="progress-bar"
+              class="progress progress-primary w-full"
+              value="0"
+              max="100"></progress>
+          </div>
+
+          <!-- Processing state -->
+          <div id="processing-area" class="hidden mt-6 flex items-center gap-3">
+            <span class="loading loading-spinner loading-sm text-primary"
+            ></span>
+            <span class="text-sm font-medium">Processing video...</span>
+          </div>
+
+          <!-- Ready state -->
+          <div id="ready-area" class="hidden mt-6">
+            <div class="flex items-center gap-2 mb-4">
+              <span class="badge badge-success">Ready</span>
+              <span class="text-sm">Your video is live.</span>
+            </div>
+            <div
+              id="thumbnail-preview"
+              class="aspect-video bg-base-300 rounded-lg overflow-hidden"
+            >
+              <img
+                id="thumbnail-img"
+                src=""
+                alt="Video thumbnail"
+                class="w-full h-full object-cover"
+              />
+            </div>
+            <a id="view-link" href="#" class="btn btn-primary w-full mt-4"
+              >View video</a
+            >
+          </div>
+
+          <!-- Error state -->
+          <div id="error-area" class="hidden mt-6 alert alert-error">
+            <span id="error-msg">Upload failed.</span>
+            <button id="retry-btn" class="btn btn-sm btn-ghost ml-auto"
+              >Retry</button
+            >
+          </div>
+        </div>
+
+        <!-- Metadata form -->
+        <div id="meta-form" class="hidden">
+          <div class="card bg-base-200">
+            <div class="card-body gap-4">
+              <h2 class="card-title text-lg">Video details</h2>
+              <fieldset class="fieldset">
+                <legend class="fieldset-legend"
+                  >Title <span class="text-error">*</span></legend
+                >
+                <input
+                  id="meta-title"
+                  type="text"
+                  class="input w-full"
+                  placeholder="e.g. Full body workout — week 1"
+                  required
+                />
+              </fieldset>
+              <fieldset class="fieldset">
+                <legend class="fieldset-legend">Description</legend>
+                <textarea
+                  id="meta-description"
+                  class="textarea w-full"
+                  rows="3"
+                  placeholder="Optional description..."></textarea>
+              </fieldset>
+              <fieldset class="fieldset">
+                <legend class="fieldset-legend">Category</legend>
+                <select id="meta-category" class="select w-full">
+                  <option value="workouts">Workouts</option>
+                  <option value="nutrition">Nutrition</option>
+                  <option value="mindset">Mindset</option>
+                </select>
+              </fieldset>
+              <fieldset class="fieldset">
+                <legend class="fieldset-legend">Access</legend>
+                <select id="meta-access" class="select w-full">
+                  <option value="subscription"
+                    >All members (subscription)</option
+                  >
+                  <option value="programme_12week"
+                    >12-week programme only</option
+                  >
+                </select>
+              </fieldset>
+              <button
+                id="save-meta-btn"
+                class="btn btn-outline w-full"
+                disabled
+              >
+                Save details
+              </button>
+              <p class="text-xs text-base-content/40">
+                Details are saved after upload completes.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</DashboardLayout>
+
+<script>
+  import { createUpload as UpChunkCreate } from "@mux/upchunk";
+
+  const dropZone = document.getElementById("drop-zone")!;
+  const fileInput = document.getElementById("file-input") as HTMLInputElement;
+  const dzIdle = document.getElementById("dz-idle")!;
+  const dzFile = document.getElementById("dz-file")!;
+  const fileName = document.getElementById("file-name")!;
+  const fileSize = document.getElementById("file-size")!;
+  const progressArea = document.getElementById("progress-area")!;
+  const progressLabel = document.getElementById("progress-label")!;
+  const progressPct = document.getElementById("progress-pct")!;
+  const progressBar = document.getElementById(
+    "progress-bar",
+  ) as HTMLProgressElement;
+  const processingArea = document.getElementById("processing-area")!;
+  const readyArea = document.getElementById("ready-area")!;
+  const thumbnailImg = document.getElementById(
+    "thumbnail-img",
+  ) as HTMLImageElement;
+  const viewLink = document.getElementById("view-link") as HTMLAnchorElement;
+  const errorArea = document.getElementById("error-area")!;
+  const errorMsg = document.getElementById("error-msg")!;
+  const retryBtn = document.getElementById("retry-btn")!;
+  const metaForm = document.getElementById("meta-form")!;
+  const saveMetaBtn = document.getElementById(
+    "save-meta-btn",
+  ) as HTMLButtonElement;
+
+  let currentUploadId: string | null = null;
+  let currentVideoId: string | null = null;
+  let pollingTimer: ReturnType<typeof setInterval> | null = null;
+
+  function formatBytes(bytes: number) {
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    if (bytes < 1024 * 1024 * 1024)
+      return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+    return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
+  }
+
+  function showError(msg: string) {
+    progressArea.classList.add("hidden");
+    processingArea.classList.add("hidden");
+    errorMsg.textContent = msg;
+    errorArea.classList.remove("hidden");
+  }
+
+  function startPolling() {
+    if (!currentUploadId) return;
+    pollingTimer = setInterval(async () => {
+      try {
+        const res = await fetch(
+          `/api/admin/upload/status?uploadId=${currentUploadId}`,
+        );
+        const data = (await res.json()) as {
+          status: string;
+          videoId: string;
+          playbackId: string;
+        };
+        if (data.status === "ready") {
+          clearInterval(pollingTimer!);
+          processingArea.classList.add("hidden");
+          currentVideoId = data.videoId;
+          thumbnailImg.src = `https://image.mux.com/${data.playbackId}/thumbnail.jpg?width=640`;
+          viewLink.href = `/videos/${data.videoId}`;
+          readyArea.classList.remove("hidden");
+          saveMetaBtn.removeAttribute("disabled");
+        } else if (data.status === "errored") {
+          clearInterval(pollingTimer!);
+          showError("Video processing failed. Please try again.");
+        }
+      } catch {
+        // keep polling
+      }
+    }, 5000);
+  }
+
+  async function startUpload(file: File) {
+    if (!file.type.startsWith("video/")) {
+      showError("Please select a video file.");
+      return;
+    }
+
+    // Show file info
+    dzIdle.classList.add("hidden");
+    dzFile.classList.remove("hidden");
+    fileName.textContent = file.name;
+    fileSize.textContent = formatBytes(file.size);
+    metaForm.classList.remove("hidden");
+
+    // Get upload URL
+    let uploadUrl: string;
+    let videoId: string;
+    let uploadId: string;
+    try {
+      const res = await fetch("/api/admin/upload/create", { method: "POST" });
+      if (!res.ok) throw new Error("Failed to get upload URL");
+      const data = (await res.json()) as {
+        uploadUrl: string;
+        videoId: string;
+        uploadId: string;
+      };
+      uploadUrl = data.uploadUrl;
+      videoId = data.videoId;
+      uploadId = data.uploadId;
+      currentUploadId = uploadId;
+      currentVideoId = videoId;
+    } catch {
+      showError("Failed to initialise upload. Please try again.");
+      return;
+    }
+
+    progressArea.classList.remove("hidden");
+
+    const upload = UpChunkCreate({
+      endpoint: uploadUrl,
+      file,
+      chunkSize: 30720,
+    });
+
+    upload.on("progress", (e: { detail: number }) => {
+      const pct = Math.round(e.detail);
+      progressBar.value = pct;
+      progressPct.textContent = `${pct}%`;
+      if (pct === 100) {
+        progressLabel.textContent = "Upload complete";
+      }
+    });
+
+    upload.on("success", () => {
+      progressArea.classList.add("hidden");
+      processingArea.classList.remove("hidden");
+      startPolling();
+    });
+
+    upload.on("error", (e: { detail: { message: string } }) => {
+      showError(e.detail?.message ?? "Upload failed. Please try again.");
+    });
+  }
+
+  // Drop zone interactions
+  dropZone.addEventListener("click", () => fileInput.click());
+  fileInput.addEventListener("change", () => {
+    const file = fileInput.files?.[0];
+    if (file) startUpload(file);
+  });
+
+  dropZone.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    dropZone.classList.add("border-primary", "bg-primary/5");
+  });
+  dropZone.addEventListener("dragleave", () => {
+    dropZone.classList.remove("border-primary", "bg-primary/5");
+  });
+  dropZone.addEventListener("drop", (e) => {
+    e.preventDefault();
+    dropZone.classList.remove("border-primary", "bg-primary/5");
+    const file = e.dataTransfer?.files[0];
+    if (file) startUpload(file);
+  });
+
+  // Retry
+  retryBtn.addEventListener("click", () => {
+    errorArea.classList.add("hidden");
+    dzIdle.classList.remove("hidden");
+    dzFile.classList.add("hidden");
+    metaForm.classList.add("hidden");
+    progressArea.classList.add("hidden");
+    fileInput.value = "";
+    currentUploadId = null;
+    currentVideoId = null;
+  });
+
+  // Save metadata
+  saveMetaBtn.addEventListener("click", async () => {
+    if (!currentVideoId) return;
+    const title = (
+      document.getElementById("meta-title") as HTMLInputElement
+    ).value.trim();
+    if (!title) {
+      alert("Please enter a title.");
+      return;
+    }
+    saveMetaBtn.textContent = "Saving...";
+    saveMetaBtn.setAttribute("disabled", "true");
+    const res = await fetch(`/api/admin/videos/${currentVideoId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        title,
+        description: (
+          document.getElementById("meta-description") as HTMLTextAreaElement
+        ).value,
+        category: (
+          document.getElementById("meta-category") as HTMLSelectElement
+        ).value,
+        access: (document.getElementById("meta-access") as HTMLSelectElement)
+          .value,
+      }),
+    });
+    if (res.ok) {
+      saveMetaBtn.textContent = "Saved!";
+    } else {
+      saveMetaBtn.textContent = "Save details";
+      saveMetaBtn.removeAttribute("disabled");
+      alert("Failed to save. Please try again.");
+    }
+  });
+</script>

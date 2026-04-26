@@ -1,0 +1,89 @@
+---
+import DashboardLayout from "../../layouts/DashboardLayout.astro";
+import { getUserEntitlements } from "../../lib/access";
+
+const user = Astro.locals.user!;
+const supabase = Astro.locals.supabase;
+
+const entitlements = await getUserEntitlements(user.id, supabase);
+
+if (!entitlements.hasSubscription && !entitlements.hasProgramme) {
+  return Astro.redirect("/subscribe");
+}
+
+const { data: videos } = await supabase
+  .from("videos")
+  .select("id, title, description, category, access, mux_playback_id, duration, status")
+  .eq("status", "ready")
+  .order("created_at", { ascending: false });
+
+const categories = ["all", "workouts", "nutrition", "mindset"] as const;
+type Category = (typeof categories)[number];
+
+const activeCategory = (Astro.url.searchParams.get("category") ?? "all") as Category;
+
+const filtered =
+  activeCategory === "all"
+    ? (videos ?? [])
+    : (videos ?? []).filter((v: { category: string }) => v.category === activeCategory);
+---
+
+<DashboardLayout title="Videos — Breakthru">
+  <main class="min-h-screen px-6 py-10">
+    <div class="max-w-6xl mx-auto">
+      <div class="flex items-center justify-between mb-8">
+        <h1 class="text-3xl font-bold">Video library</h1>
+        {user.is_admin && (
+          <a href="/admin/upload" class="btn btn-primary btn-sm">Upload video</a>
+        )}
+      </div>
+
+      <div role="tablist" class="tabs tabs-border mb-8">
+        {categories.map((cat) => (
+          <a
+            role="tab"
+            href={cat === "all" ? "/videos" : `/videos?category=${cat}`}
+            class:list={["tab capitalize", activeCategory === cat && "tab-active"]}
+          >
+            {cat}
+          </a>
+        ))}
+      </div>
+
+      {filtered.length === 0 ? (
+        <div class="text-center py-24 text-base-content/40">
+          <p class="text-lg">No videos here yet. Check back soon.</p>
+        </div>
+      ) : (
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filtered.map((video: { id: string; title: string; description: string; category: string; mux_playback_id: string; duration: number }) => (
+            <a href={`/videos/${video.id}`} class="card bg-base-200 hover:bg-base-300 transition-colors overflow-hidden group">
+              <figure class="aspect-video bg-base-300 relative overflow-hidden">
+                {video.mux_playback_id && (
+                  <img
+                    src={`https://image.mux.com/${video.mux_playback_id}/thumbnail.jpg?width=640`}
+                    alt={video.title}
+                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    loading="lazy"
+                  />
+                )}
+                {video.duration && (
+                  <span class="absolute bottom-2 right-2 bg-black/80 text-white text-xs px-1.5 py-0.5 rounded">
+                    {Math.floor(video.duration / 60)}:{String(video.duration % 60).padStart(2, "0")}
+                  </span>
+                )}
+              </figure>
+              <div class="card-body p-4">
+                <span class="badge badge-outline capitalize text-xs">{video.category}</span>
+                <h2 class="font-semibold mt-1 leading-snug">{video.title}</h2>
+                {video.description && (
+                  <p class="text-sm text-base-content/60 line-clamp-2">{video.description}</p>
+                )}
+              </div>
+            </a>
+          ))}
+        </div>
+      )}
+    </div>
+  </main>
+</DashboardLayout>

@@ -1,0 +1,66 @@
+---
+import DashboardLayout from "../../layouts/DashboardLayout.astro";
+import { Icon } from "astro-icon/components";
+import { getUserEntitlements } from "../../lib/access";
+
+const user = Astro.locals.user!;
+const supabase = Astro.locals.supabase;
+
+const entitlements = await getUserEntitlements(user.id, supabase);
+
+const downloads = [
+  {
+    label: "Eat Like Me — Meal Plan PDF",
+    description: "Myer's full 30-day meal plan. Real food, sustainable habits.",
+    href: "/downloads/meal-plan",
+    unlockHref: "/subscribe?product=meal_plan_pdf",
+    available: entitlements.hasMealPlan,
+    lockedMessage: "Included with the meal plan add-on.",
+    icon: "lucide:file-text",
+  },
+  {
+    label: "12-Week Programme Guide",
+    description: "The full training guide — structure, progressions, and coaching notes.",
+    href: "/downloads/programme",
+    unlockHref: "/subscribe?product=12week_programme",
+    available: entitlements.hasProgramme,
+    lockedMessage: "Included with the 12-week programme.",
+    icon: "lucide:book-open",
+  },
+];
+---
+
+<DashboardLayout title="Downloads — Breakthru">
+  <div class="px-6 py-10 max-w-3xl mx-auto">
+    <div class="mb-8">
+      <h1 class="text-2xl font-bold">Downloads</h1>
+      <p class="text-base-content/50 mt-1 text-sm">Your purchased resources and guides.</p>
+    </div>
+
+    <div class="flex flex-col gap-4">
+      {downloads.map((item) => (
+        <div class:list={["card border flex-row items-center gap-4 p-5", item.available ? "bg-base-200 border-base-300 hover:border-primary transition-colors" : "bg-base-200/50 border-base-300 opacity-60"]}>
+          <div class:list={["shrink-0", item.available ? "text-primary" : "text-base-content/30"]}>
+            <Icon name={item.icon} class="w-6 h-6" />
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="font-semibold text-sm">{item.label}</p>
+            <p class="text-xs text-base-content/50 mt-0.5">
+              {item.available ? item.description : item.lockedMessage}
+            </p>
+          </div>
+          <div class="shrink-0">
+            {item.available ? (
+              <a href={item.href} class="btn btn-primary btn-sm gap-2">
+                <Icon name="lucide:download" class="w-4 h-4" />
+                Download
+              </a>
+            ) : (
+              <a href={item.unlockHref} class="btn btn-outline btn-sm">Unlock</a>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</DashboardLayout>

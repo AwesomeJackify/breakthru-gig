@@ -1,7 +1,10 @@
 {
-  "compatibility_date": "2026-03-12",
-  "name": "breakthru-gig",
-  "assets": {
-    "directory": "./dist",
-  },
+	"compatibility_date": "2026-03-12",
+	"compatibility_flags": [
+		"nodejs_compat"
+	],
+	"name": "breakthru-gig",
+	"assets": {
+		"directory": "./dist",
+	}
 }

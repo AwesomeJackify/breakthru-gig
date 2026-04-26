@@ -1,0 +1,132 @@
+---
+import DashboardLayout from "../../layouts/DashboardLayout.astro";
+
+const supabase = Astro.locals.supabase;
+
+const { data: videos } = await supabase
+  .from("videos")
+  .select("id, title, category, access, status, created_at")
+  .order("created_at", { ascending: false });
+
+const statusBadge: Record<string, string> = {
+  ready: "badge-success",
+  processing: "badge-warning",
+  uploading: "badge-info",
+  errored: "badge-error",
+};
+---
+
+<DashboardLayout title="Admin — Breakthru">
+  <main class="min-h-screen px-6 py-10">
+    <div class="max-w-6xl mx-auto">
+      <div class="flex items-center justify-between mb-8">
+        <div>
+          <h1 class="text-3xl font-bold">Video library</h1>
+          <p class="text-base-content/50 text-sm mt-1">{videos?.length ?? 0} videos</p>
+        </div>
+        <a href="/admin/upload" class="btn btn-primary gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+          </svg>
+          Upload video
+        </a>
+      </div>
+
+      {!videos || videos.length === 0 ? (
+        <div class="text-center py-24 border border-dashed border-base-300 rounded-xl">
+          <p class="text-base-content/40 mb-4">No videos yet.</p>
+          <a href="/admin/upload" class="btn btn-primary">Upload your first video</a>
+        </div>
+      ) : (
+        <div class="overflow-x-auto rounded-xl border border-base-300">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Category</th>
+                <th>Access</th>
+                <th>Status</th>
+                <th>Uploaded</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {videos.map((v: { id: string; title: string; category: string; access: string; status: string; created_at: string }) => (
+                <tr class="hover">
+                  <td class="font-medium max-w-xs truncate">{v.title}</td>
+                  <td><span class="badge badge-outline capitalize">{v.category}</span></td>
+                  <td><span class="badge badge-ghost capitalize text-xs">{v.access === "subscription" ? "All members" : "Programme"}</span></td>
+                  <td>
+                    <span class:list={["badge capitalize text-xs", statusBadge[v.status] ?? "badge-ghost"]}>
+                      {v.status}
+                    </span>
+                  </td>
+                  <td class="text-base-content/50 text-sm">
+                    {new Date(v.created_at).toLocaleDateString("en-NZ", { day: "numeric", month: "short", year: "numeric" })}
+                  </td>
+                  <td>
+                    <div class="flex gap-2">
+                      {v.status === "ready" && (
+                        <a href={`/videos/${v.id}`} class="btn btn-ghost btn-xs">View</a>
+                      )}
+                      <button
+                        class="btn btn-ghost btn-xs text-error"
+                        data-delete-id={v.id}
+                        data-delete-title={v.title}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  </main>
+
+  <dialog id="delete-modal" class="modal">
+    <div class="modal-box">
+      <h3 class="font-bold text-lg">Delete video</h3>
+      <p class="py-4">Are you sure you want to delete "<span id="delete-title"></span>"? This cannot be undone.</p>
+      <div class="modal-action">
+        <form method="dialog">
+          <button class="btn btn-ghost">Cancel</button>
+        </form>
+        <button id="confirm-delete" class="btn btn-error">Delete</button>
+      </div>
+    </div>
+    <form method="dialog" class="modal-backdrop"><button>close</button></form>
+  </dialog>
+</DashboardLayout>
+
+<script>
+  let pendingDeleteId: string | null = null;
+  const modal = document.getElementById("delete-modal") as HTMLDialogElement;
+  const titleEl = document.getElementById("delete-title")!;
+  const confirmBtn = document.getElementById("confirm-delete")!;
+
+  document.querySelectorAll<HTMLButtonElement>("[data-delete-id]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      pendingDeleteId = btn.dataset.deleteId!;
+      titleEl.textContent = btn.dataset.deleteTitle ?? "";
+      modal.showModal();
+    });
+  });
+
+  confirmBtn.addEventListener("click", async () => {
+    if (!pendingDeleteId) return;
+    confirmBtn.textContent = "Deleting...";
+    confirmBtn.setAttribute("disabled", "true");
+    const res = await fetch(`/api/admin/videos/${pendingDeleteId}`, { method: "DELETE" });
+    if (res.ok) {
+      window.location.reload();
+    } else {
+      alert("Failed to delete video. Please try again.");
+      confirmBtn.textContent = "Delete";
+      confirmBtn.removeAttribute("disabled");
+    }
+  });
+</script>

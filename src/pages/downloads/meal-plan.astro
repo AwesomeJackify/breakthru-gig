@@ -1,0 +1,42 @@
+---
+import DashboardLayout from "../../layouts/DashboardLayout.astro";
+import { getUserEntitlements } from "../../lib/access";
+import { createSupabaseAdmin } from "../../lib/supabase";
+
+const user = Astro.locals.user!;
+const supabase = Astro.locals.supabase;
+
+const entitlements = await getUserEntitlements(user.id, supabase);
+if (!entitlements.hasMealPlan) {
+  return Astro.redirect("/subscribe");
+}
+
+const admin = createSupabaseAdmin();
+const { data: signedUrl, error: storageError } = await admin.storage
+  .from("downloads")
+  .createSignedUrl("eat-like-me.pdf", 300); // 5-minute expiry
+
+if (storageError) console.error("[meal-plan] storage error:", storageError.message);
+---
+
+<DashboardLayout title="Eat Like Me — Breakthru">
+  <main class="min-h-screen flex items-center justify-center px-6 py-10">
+    <div class="max-w-md w-full text-center">
+      <div class="text-5xl mb-6">📄</div>
+      <h1 class="text-3xl font-bold mb-3">Eat Like Me</h1>
+      <p class="text-base-content/60 mb-8">
+        Your 30-day meal plan is ready. Download it below and start building
+        a sustainable relationship with food.
+      </p>
+      {signedUrl?.signedUrl ? (
+        <a href={signedUrl.signedUrl} download class="btn btn-primary btn-lg w-full">
+          Download PDF
+        </a>
+      ) : (
+        <div class="alert alert-warning">
+          PDF not yet available. Please contact Myer directly.
+        </div>
+      )}
+    </div>
+  </main>
+</DashboardLayout>

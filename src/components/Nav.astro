@@ -1,6 +1,7 @@
 ---
 // Nav.astro — sticky top navbar with mobile dropdown and CTA
 import { Image } from "astro:assets";
+import { Icon } from "astro-icon/components";
 import logoImg from "../assets/images/logo.png";
 import config from "../../breakthru.config.json";
 const { nav } = config;
@@ -28,9 +29,9 @@ const { nav } = config;
     </ul>
   </div>
 
-  <div class="navbar-end">
+  <div class="navbar-end gap-2">
     <!-- Desktop CTA -->
-    <a href="/#services" class="btn btn-primary hidden lg:flex">{nav.cta}</a>
+    <a href="/dashboard" class="btn btn-primary hidden lg:flex">{nav.cta}</a>
 
     <!-- Mobile hamburger -->
     <div class="dropdown dropdown-end lg:hidden">
@@ -40,19 +41,7 @@ const { nav } = config;
         id="mobile-menu-btn"
         aria-label="Open menu"
       >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-5 w-5"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M4 6h16M4 12h16M4 18h16"></path>
-        </svg>
+        <Icon name="lucide:menu" class="h-5 w-5" />
       </button>
       <ul
         tabindex="0"
@@ -68,7 +57,7 @@ const { nav } = config;
           ))
         }
         <li>
-          <a href="/#services" class="btn btn-primary btn-sm mt-2">{nav.cta}</a>
+          <a href="/dashboard" class="btn btn-primary btn-sm mt-2">{nav.cta}</a>
         </li>
       </ul>
     </div>
