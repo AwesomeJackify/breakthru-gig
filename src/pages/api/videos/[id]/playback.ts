@@ -1,5 +1,5 @@
 import type { APIRoute } from "astro";
-import { getSignedPlaybackUrl } from "../../../../lib/mux";
+import { getPlaybackToken } from "../../../../lib/mux";
 import { getUserEntitlements, canWatchVideo } from "../../../../lib/access";
 
 export const GET: APIRoute = async ({ locals, params }) => {
@@ -22,8 +22,8 @@ export const GET: APIRoute = async ({ locals, params }) => {
     return new Response("Forbidden", { status: 403 });
   }
 
-  const url = await getSignedPlaybackUrl(video.mux_playback_id);
-  return new Response(JSON.stringify({ url }), {
+  const token = await getPlaybackToken(video.mux_playback_id);
+  return new Response(JSON.stringify({ token }), {
     headers: { "Content-Type": "application/json" },
   });
 };

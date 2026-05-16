@@ -1,6 +1,7 @@
 ---
 import DashboardLayout from "../../layouts/DashboardLayout.astro";
 import { getUserEntitlements } from "../../lib/access";
+import { getThumbnailToken } from "../../lib/mux";
 
 const user = Astro.locals.user!;
 const supabase = Astro.locals.supabase;
@@ -17,15 +18,17 @@ const { data: videos } = await supabase
   .eq("status", "ready")
   .order("created_at", { ascending: false });
 
-const categories = ["all", "workouts", "nutrition", "mindset"] as const;
-type Category = (typeof categories)[number];
+const allVideos = videos ?? [];
 
-const activeCategory = (Astro.url.searchParams.get("category") ?? "all") as Category;
-
-const filtered =
-  activeCategory === "all"
-    ? (videos ?? [])
-    : (videos ?? []).filter((v: { category: string }) => v.category === activeCategory);
+// Generate thumbnail tokens in parallel (local JWT signing — no network calls)
+const thumbTokens: Record<string, string> = {};
+await Promise.all(
+  allVideos
+    .filter((v: { mux_playback_id: string }) => v.mux_playback_id)
+    .map(async (v: { mux_playback_id: string }) => {
+      thumbTokens[v.mux_playback_id] = await getThumbnailToken(v.mux_playback_id);
+    }),
+);
 ---
 
 <DashboardLayout title="Videos — Breakthru">
@@ -38,52 +41,96 @@ const filtered =
         )}
       </div>
 
-      <div role="tablist" class="tabs tabs-border mb-8">
-        {categories.map((cat) => (
-          <a
-            role="tab"
-            href={cat === "all" ? "/videos" : `/videos?category=${cat}`}
-            class:list={["tab capitalize", activeCategory === cat && "tab-active"]}
-          >
-            {cat}
-          </a>
-        ))}
+      <!-- Category filter (client-side, no page reload) -->
+      <div class="filter mb-8" id="category-filter">
+        <input
+          class="btn filter-reset"
+          type="radio"
+          name="cat"
+          aria-label="All"
+          checked
+        />
+        <input class="btn" type="radio" name="cat" value="workouts" aria-label="Workouts" />
+        <input class="btn" type="radio" name="cat" value="nutrition" aria-label="Nutrition" />
+        <input class="btn" type="radio" name="cat" value="mindset" aria-label="Mindset" />
       </div>
 
-      {filtered.length === 0 ? (
+      {allVideos.length === 0 ? (
         <div class="text-center py-24 text-base-content/40">
-          <p class="text-lg">No videos here yet. Check back soon.</p>
+          <svg class="w-16 h-16 mx-auto mb-4 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 10l4.553-2.069A1 1 0 0121 8.87v6.26a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+          </svg>
+          <p class="text-lg font-medium">No videos yet</p>
+          <p class="text-sm mt-1">Check back soon for new content.</p>
         </div>
       ) : (
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filtered.map((video: { id: string; title: string; description: string; category: string; mux_playback_id: string; duration: number }) => (
-            <a href={`/videos/${video.id}`} class="card bg-base-200 hover:bg-base-300 transition-colors overflow-hidden group">
-              <figure class="aspect-video bg-base-300 relative overflow-hidden">
-                {video.mux_playback_id && (
-                  <img
-                    src={`https://image.mux.com/${video.mux_playback_id}/thumbnail.jpg?width=640`}
-                    alt={video.title}
-                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    loading="lazy"
-                  />
-                )}
-                {video.duration && (
-                  <span class="absolute bottom-2 right-2 bg-black/80 text-white text-xs px-1.5 py-0.5 rounded">
-                    {Math.floor(video.duration / 60)}:{String(video.duration % 60).padStart(2, "0")}
-                  </span>
-                )}
-              </figure>
-              <div class="card-body p-4">
-                <span class="badge badge-outline capitalize text-xs">{video.category}</span>
-                <h2 class="font-semibold mt-1 leading-snug">{video.title}</h2>
-                {video.description && (
-                  <p class="text-sm text-base-content/60 line-clamp-2">{video.description}</p>
-                )}
-              </div>
-            </a>
-          ))}
-        </div>
+        <>
+          <div id="video-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {allVideos.map((video: { id: string; title: string; description: string; category: string; mux_playback_id: string; duration: number }) => (
+              <a
+                href={`/videos/${video.id}`}
+                class="card bg-base-200 hover:bg-base-300 transition-colors overflow-hidden group"
+                data-category={video.category}
+              >
+                <figure class="aspect-video bg-base-300 relative overflow-hidden">
+                  {video.mux_playback_id && thumbTokens[video.mux_playback_id] ? (
+                    <img
+                      src={`https://image.mux.com/${video.mux_playback_id}/thumbnail.jpg?token=${thumbTokens[video.mux_playback_id]}&width=640`}
+                      alt={video.title}
+                      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div class="skeleton w-full h-full absolute inset-0"></div>
+                  )}
+                  {video.duration > 0 && (
+                    <span class="absolute bottom-2 right-2 bg-black/80 text-white text-xs px-1.5 py-0.5 rounded">
+                      {Math.floor(video.duration / 60)}:{String(video.duration % 60).padStart(2, "0")}
+                    </span>
+                  )}
+                </figure>
+                <div class="card-body p-4">
+                  <span class="badge badge-outline capitalize text-xs">{video.category}</span>
+                  <h2 class="font-semibold mt-1 leading-snug">{video.title}</h2>
+                  {video.description && (
+                    <p class="text-sm text-base-content/60 line-clamp-2">{video.description}</p>
+                  )}
+                </div>
+              </a>
+            ))}
+          </div>
+
+          <!-- Per-category empty state (shown by JS when filtered) -->
+          <div id="empty-filtered" class="hidden text-center py-24 text-base-content/40">
+            <p class="text-lg font-medium">No videos in this category yet.</p>
+            <p class="text-sm mt-1">More content coming soon.</p>
+          </div>
+        </>
       )}
     </div>
   </main>
 </DashboardLayout>
+
+<script>
+  const radios = document.querySelectorAll<HTMLInputElement>('[name="cat"]');
+  const cards = document.querySelectorAll<HTMLElement>("[data-category]");
+  const emptyState = document.getElementById("empty-filtered");
+
+  function applyFilter(value: string) {
+    let visible = 0;
+    cards.forEach((card) => {
+      const match = !value || card.dataset.category === value;
+      card.style.display = match ? "" : "none";
+      if (match) visible++;
+    });
+    if (emptyState) emptyState.classList.toggle("hidden", visible > 0);
+  }
+
+  radios.forEach((radio) => {
+    radio.addEventListener("change", () => {
+      // getAttribute returns null when no value attr is set (filter-reset);
+      // radio.value would return "on" which matches nothing
+      applyFilter(radio.getAttribute("value") ?? "");
+    });
+  });
+</script>

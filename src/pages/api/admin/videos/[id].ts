@@ -1,6 +1,6 @@
 import type { APIRoute } from "astro";
 import { createSupabaseAdmin } from "../../../../lib/supabase";
-import { deleteAsset } from "../../../../lib/mux";
+import { deleteAsset, cancelUpload, updateAssetMetadata } from "../../../../lib/mux";
 
 export const DELETE: APIRoute = async ({ locals, params }) => {
   if (!locals.user?.is_admin) {
@@ -13,19 +13,30 @@ export const DELETE: APIRoute = async ({ locals, params }) => {
   const admin = createSupabaseAdmin();
   const { data: video } = await admin
     .from("videos")
-    .select("mux_asset_id")
+    .select("mux_asset_id, mux_upload_id")
     .eq("id", id)
     .single();
 
-  if (video?.mux_asset_id) {
+  if (!video) return new Response("Not found", { status: 404 });
+
+  // Clean up Mux — asset takes priority; fall back to cancelling the upload
+  if (video.mux_asset_id) {
     try {
       await deleteAsset(video.mux_asset_id);
     } catch {
-      // Asset may already be deleted on Mux — proceed with DB deletion
+      // Already deleted on Mux — safe to continue
+    }
+  } else if (video.mux_upload_id) {
+    try {
+      await cancelUpload(video.mux_upload_id);
+    } catch {
+      // Upload may have already completed or expired — safe to continue
     }
   }
 
-  await admin.from("videos").delete().eq("id", id);
+  const { error } = await admin.from("videos").delete().eq("id", id);
+
+  if (error) return new Response("Failed to delete", { status: 500 });
 
   return new Response(JSON.stringify({ success: true }), {
     headers: { "Content-Type": "application/json" },
@@ -48,6 +59,14 @@ export const PATCH: APIRoute = async ({ locals, params, request }) => {
   };
 
   const admin = createSupabaseAdmin();
+
+  // Fetch the mux_asset_id so we can sync to Mux
+  const { data: existing } = await admin
+    .from("videos")
+    .select("mux_asset_id")
+    .eq("id", id)
+    .single();
+
   const { error } = await admin.from("videos").update({
     title: body.title,
     description: body.description,
@@ -56,6 +75,15 @@ export const PATCH: APIRoute = async ({ locals, params, request }) => {
   }).eq("id", id);
 
   if (error) return new Response("Failed to update", { status: 500 });
+
+  // Sync title + description to Mux asset (best-effort, don't fail the request)
+  if (existing?.mux_asset_id && body.title) {
+    try {
+      await updateAssetMetadata(existing.mux_asset_id, body.title, body.description);
+    } catch {
+      // Non-fatal — Supabase is the source of truth
+    }
+  }
 
   return new Response(JSON.stringify({ success: true }), {
     headers: { "Content-Type": "application/json" },

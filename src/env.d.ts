@@ -12,7 +12,8 @@ interface ImportMetaEnv {
   readonly STRIPE_PRICE_MEAL_PLAN: string;
   readonly MUX_TOKEN_ID: string;
   readonly MUX_TOKEN_SECRET: string;
-  readonly MUX_WEBHOOK_SECRET: string;
+  readonly MUX_SIGNING_KEY_ID: string;
+  readonly MUX_PRIVATE_KEY: string;
 }
 
 interface ImportMeta {

@@ -1,7 +1,11 @@
 ---
 import DashboardLayout from "../../layouts/DashboardLayout.astro";
 import { getUserEntitlements, canWatchVideo } from "../../lib/access";
-import { getSignedPlaybackUrl } from "../../lib/mux";
+import {
+  getPlaybackToken,
+  getThumbnailToken,
+  getStoryboardToken,
+} from "../../lib/mux";
 
 const { id } = Astro.params;
 const user = Astro.locals.user!;
@@ -17,44 +21,139 @@ const { data: video } = await supabase
 if (!video) return Astro.redirect("/videos");
 
 const entitlements = await getUserEntitlements(user.id, supabase);
-const allowed = canWatchVideo(entitlements, video.access as "subscription" | "programme_12week");
+const allowed = canWatchVideo(
+  entitlements,
+  video.access as "subscription" | "programme_12week",
+);
 if (!allowed) return Astro.redirect("/subscribe");
 
-const signedUrl = await getSignedPlaybackUrl(video.mux_playback_id);
+// Up-next videos from same category
+const { data: relatedVideos } = await supabase
+  .from("videos")
+  .select("id, title, description, mux_playback_id, duration, category")
+  .eq("status", "ready")
+  .eq("category", video.category)
+  .neq("id", video.id)
+  .limit(3);
+
+const upNext = relatedVideos ?? [];
+
+// Generate all tokens in parallel (local JWT signing — no network calls)
+const upNextIds = upNext
+  .map((v: { mux_playback_id: string }) => v.mux_playback_id)
+  .filter(Boolean);
+
+const [playbackToken, thumbnailToken, storyboardToken, ...upNextThumbTokens] =
+  await Promise.all([
+    getPlaybackToken(video.mux_playback_id),
+    getThumbnailToken(video.mux_playback_id),
+    getStoryboardToken(video.mux_playback_id),
+    ...upNextIds.map((pid: string) => getThumbnailToken(pid)),
+  ]);
+
+const upNextThumbMap: Record<string, string> = Object.fromEntries(
+  upNextIds.map((pid: string, i: number) => [pid, upNextThumbTokens[i]]),
+);
+
+const categoryLabel =
+  video.category.charAt(0).toUpperCase() + video.category.slice(1);
 ---
 
 <DashboardLayout title={`${video.title} — Breakthru`}>
   <main class="min-h-screen px-6 py-10">
     <div class="max-w-4xl mx-auto">
-      <a href="/videos" class="btn btn-ghost btn-sm mb-6 gap-2 pl-0">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-        </svg>
-        Back to library
-      </a>
+      <!-- Breadcrumbs -->
+      <div class="breadcrumbs text-sm mb-6">
+        <ul>
+          <li><a href="/videos">Library</a></li>
+          <li>
+            <a href={`/videos?category=${video.category}`}>{categoryLabel}</a>
+          </li>
+          <li class="max-w-xs truncate">{video.title}</li>
+        </ul>
+      </div>
 
-      <div class="aspect-video bg-black rounded-xl overflow-hidden mb-6">
+      <!-- Player -->
+      <div class="rounded-xl overflow-hidden mb-6 bg-black aspect-video">
         <mux-player
           playback-id={video.mux_playback_id}
-          src={signedUrl}
+          playback-token={playbackToken}
+          thumbnail-token={thumbnailToken}
+          storyboard-token={storyboardToken}
           metadata-video-title={video.title}
           metadata-viewer-user-id={user.id}
-          class="w-full h-full"
-          style="--controls: auto;"
-        ></mux-player>
+          style="width:100%;height:100%;"></mux-player>
       </div>
 
-      <div class="flex items-start gap-3">
-        <div class="flex-1">
-          <span class="badge badge-outline capitalize text-xs mb-2">{video.category}</span>
-          <h1 class="text-2xl font-bold">{video.title}</h1>
-          {video.description && (
-            <p class="text-base-content/60 mt-2">{video.description}</p>
-          )}
-        </div>
+      <!-- Video info -->
+      <div class="mb-10">
+        <span class="badge badge-outline capitalize text-xs mb-2"
+          >{video.category}</span
+        >
+        <h1 class="text-2xl font-bold">{video.title}</h1>
+        {
+          video.description && (
+            <p class="text-base-content/60 mt-3">{video.description}</p>
+          )
+        }
       </div>
+
+      <!-- Up next -->
+      {
+        upNext.length > 0 && (
+          <section>
+            <h2 class="text-lg font-semibold mb-4">Up next</h2>
+            <div class="flex flex-col gap-3">
+              {upNext.map(
+                (v: {
+                  id: string;
+                  title: string;
+                  description: string;
+                  mux_playback_id: string;
+                  duration: number;
+                  category: string;
+                }) => (
+                  <a
+                    href={`/videos/${v.id}`}
+                    class="card card-side bg-base-200 hover:bg-base-300 transition-colors overflow-hidden group"
+                  >
+                    <figure class="w-40 shrink-0 relative overflow-hidden">
+                      {v.mux_playback_id &&
+                      upNextThumbMap[v.mux_playback_id] ? (
+                        <img
+                          src={`https://image.mux.com/${v.mux_playback_id}/thumbnail.jpg?token=${upNextThumbMap[v.mux_playback_id]}&width=320`}
+                          alt={v.title}
+                          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          loading="lazy"
+                        />
+                      ) : (
+                        <div class="skeleton w-full h-full min-h-24" />
+                      )}
+                      {v.duration > 0 && (
+                        <span class="absolute bottom-1 right-1 bg-black/80 text-white text-xs px-1 py-px rounded">
+                          {Math.floor(v.duration / 60)}:
+                          {String(v.duration % 60).padStart(2, "0")}
+                        </span>
+                      )}
+                    </figure>
+                    <div class="card-body p-4">
+                      <h3 class="font-semibold leading-snug">{v.title}</h3>
+                      {v.description && (
+                        <p class="text-sm text-base-content/60 line-clamp-2">
+                          {v.description}
+                        </p>
+                      )}
+                    </div>
+                  </a>
+                ),
+              )}
+            </div>
+          </section>
+        )
+      }
     </div>
   </main>
 </DashboardLayout>
 
-<script type="module" src="https://cdn.jsdelivr.net/npm/@mux/mux-player/dist/mux-player.mjs"></script>
+<script type="module" src="https://cdn.jsdelivr.net/npm/@mux/mux-player"
+></script>

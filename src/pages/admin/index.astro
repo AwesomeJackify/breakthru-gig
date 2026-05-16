@@ -5,8 +5,17 @@ const supabase = Astro.locals.supabase;
 
 const { data: videos } = await supabase
   .from("videos")
-  .select("id, title, category, access, status, created_at")
+  .select("id, title, description, category, access, status, created_at")
   .order("created_at", { ascending: false });
+
+const total = videos?.length ?? 0;
+const readyCount = videos?.filter((v: { status: string }) => v.status === "ready").length ?? 0;
+const processingCount = videos?.filter((v: { status: string }) => v.status === "processing" || v.status === "uploading").length ?? 0;
+const workoutsCount = videos?.filter((v: { status: string; category: string }) => v.status === "ready" && v.category === "workouts").length ?? 0;
+const nutritionCount = videos?.filter((v: { status: string; category: string }) => v.status === "ready" && v.category === "nutrition").length ?? 0;
+const mindsetCount = videos?.filter((v: { status: string; category: string }) => v.status === "ready" && v.category === "mindset").length ?? 0;
+
+const hasInProgress = processingCount > 0;
 
 const statusBadge: Record<string, string> = {
   ready: "badge-success",
@@ -19,17 +28,44 @@ const statusBadge: Record<string, string> = {
 <DashboardLayout title="Admin — Breakthru">
   <main class="min-h-screen px-6 py-10">
     <div class="max-w-6xl mx-auto">
-      <div class="flex items-center justify-between mb-8">
-        <div>
-          <h1 class="text-3xl font-bold">Video library</h1>
-          <p class="text-base-content/50 text-sm mt-1">{videos?.length ?? 0} videos</p>
-        </div>
+      <div class="flex items-center justify-between mb-6">
+        <h1 class="text-3xl font-bold">Video library</h1>
         <a href="/admin/upload" class="btn btn-primary gap-2">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
           </svg>
           Upload video
         </a>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats stats-horizontal shadow w-full mb-8 border border-base-300">
+        <div class="stat">
+          <div class="stat-title">Total videos</div>
+          <div class="stat-value text-2xl">{total}</div>
+        </div>
+        <div class="stat">
+          <div class="stat-title">Ready</div>
+          <div class="stat-value text-2xl text-success">{readyCount}</div>
+        </div>
+        <div class="stat">
+          <div class="stat-title">Processing</div>
+          <div class="stat-value text-2xl">{processingCount}</div>
+          {processingCount > 0 && (
+            <div class="stat-desc flex items-center gap-1">
+              <span class="loading loading-spinner loading-xs"></span>
+              Auto-refreshing
+            </div>
+          )}
+        </div>
+        <div class="stat">
+          <div class="stat-title">By category</div>
+          <div class="stat-desc mt-1 flex flex-col gap-1">
+            <span><span class="badge badge-outline badge-xs">Workouts</span> {workoutsCount}</span>
+            <span><span class="badge badge-outline badge-xs">Nutrition</span> {nutritionCount}</span>
+            <span><span class="badge badge-outline badge-xs">Mindset</span> {mindsetCount}</span>
+          </div>
+        </div>
       </div>
 
       {!videos || videos.length === 0 ? (
@@ -51,11 +87,15 @@ const statusBadge: Record<string, string> = {
               </tr>
             </thead>
             <tbody>
-              {videos.map((v: { id: string; title: string; category: string; access: string; status: string; created_at: string }) => (
+              {videos.map((v: { id: string; title: string; description: string; category: string; access: string; status: string; created_at: string }) => (
                 <tr class="hover">
                   <td class="font-medium max-w-xs truncate">{v.title}</td>
                   <td><span class="badge badge-outline capitalize">{v.category}</span></td>
-                  <td><span class="badge badge-ghost capitalize text-xs">{v.access === "subscription" ? "All members" : "Programme"}</span></td>
+                  <td>
+                    <span class="badge badge-ghost capitalize text-xs">
+                      {v.access === "subscription" ? "All members" : "Programme"}
+                    </span>
+                  </td>
                   <td>
                     <span class:list={["badge capitalize text-xs", statusBadge[v.status] ?? "badge-ghost"]}>
                       {v.status}
@@ -69,6 +109,16 @@ const statusBadge: Record<string, string> = {
                       {v.status === "ready" && (
                         <a href={`/videos/${v.id}`} class="btn btn-ghost btn-xs">View</a>
                       )}
+                      <button
+                        class="btn btn-ghost btn-xs"
+                        data-edit-id={v.id}
+                        data-edit-title={v.title}
+                        data-edit-description={v.description ?? ""}
+                        data-edit-category={v.category}
+                        data-edit-access={v.access}
+                      >
+                        Edit
+                      </button>
                       <button
                         class="btn btn-ghost btn-xs text-error"
                         data-delete-id={v.id}
@@ -87,10 +137,13 @@ const statusBadge: Record<string, string> = {
     </div>
   </main>
 
+  <!-- Delete modal -->
   <dialog id="delete-modal" class="modal">
     <div class="modal-box">
       <h3 class="font-bold text-lg">Delete video</h3>
-      <p class="py-4">Are you sure you want to delete "<span id="delete-title"></span>"? This cannot be undone.</p>
+      <p class="py-4">
+        Are you sure you want to delete "<span id="delete-title"></span>"? This cannot be undone.
+      </p>
       <div class="modal-action">
         <form method="dialog">
           <button class="btn btn-ghost">Cancel</button>
@@ -100,33 +153,133 @@ const statusBadge: Record<string, string> = {
     </div>
     <form method="dialog" class="modal-backdrop"><button>close</button></form>
   </dialog>
+
+  <!-- Edit modal -->
+  <dialog id="edit-modal" class="modal">
+    <div class="modal-box">
+      <h3 class="font-bold text-lg mb-4">Edit video</h3>
+      <div class="flex flex-col gap-4">
+        <fieldset class="fieldset">
+          <legend class="fieldset-legend">Title <span class="text-error">*</span></legend>
+          <input id="edit-title" type="text" class="input w-full" />
+        </fieldset>
+        <fieldset class="fieldset">
+          <legend class="fieldset-legend">Description</legend>
+          <textarea id="edit-description" class="textarea w-full" rows="3"></textarea>
+        </fieldset>
+        <fieldset class="fieldset">
+          <legend class="fieldset-legend">Category</legend>
+          <select id="edit-category" class="select w-full">
+            <option value="workouts">Workouts</option>
+            <option value="nutrition">Nutrition</option>
+            <option value="mindset">Mindset</option>
+          </select>
+        </fieldset>
+        <fieldset class="fieldset">
+          <legend class="fieldset-legend">Access</legend>
+          <select id="edit-access" class="select w-full">
+            <option value="subscription">All members (subscription)</option>
+            <option value="programme_12week">12-week programme only</option>
+          </select>
+        </fieldset>
+        <div id="edit-error" class="alert alert-error hidden text-sm"></div>
+      </div>
+      <div class="modal-action">
+        <form method="dialog">
+          <button class="btn btn-ghost">Cancel</button>
+        </form>
+        <button id="confirm-edit" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+    <form method="dialog" class="modal-backdrop"><button>close</button></form>
+  </dialog>
 </DashboardLayout>
 
-<script>
-  let pendingDeleteId: string | null = null;
-  const modal = document.getElementById("delete-modal") as HTMLDialogElement;
-  const titleEl = document.getElementById("delete-title")!;
-  const confirmBtn = document.getElementById("confirm-delete")!;
+<script define:vars={{ hasInProgress }}>
+  // Delete
+  let pendingDeleteId = null;
+  const deleteModal = document.getElementById("delete-modal");
+  const deleteTitleEl = document.getElementById("delete-title");
+  const confirmDeleteBtn = document.getElementById("confirm-delete");
 
-  document.querySelectorAll<HTMLButtonElement>("[data-delete-id]").forEach((btn) => {
+  document.querySelectorAll("[data-delete-id]").forEach((btn) => {
     btn.addEventListener("click", () => {
-      pendingDeleteId = btn.dataset.deleteId!;
-      titleEl.textContent = btn.dataset.deleteTitle ?? "";
-      modal.showModal();
+      pendingDeleteId = btn.dataset.deleteId;
+      deleteTitleEl.textContent = btn.dataset.deleteTitle ?? "";
+      deleteModal.showModal();
     });
   });
 
-  confirmBtn.addEventListener("click", async () => {
+  confirmDeleteBtn.addEventListener("click", async () => {
     if (!pendingDeleteId) return;
-    confirmBtn.textContent = "Deleting...";
-    confirmBtn.setAttribute("disabled", "true");
+    confirmDeleteBtn.textContent = "Deleting...";
+    confirmDeleteBtn.setAttribute("disabled", "true");
     const res = await fetch(`/api/admin/videos/${pendingDeleteId}`, { method: "DELETE" });
     if (res.ok) {
       window.location.reload();
     } else {
       alert("Failed to delete video. Please try again.");
-      confirmBtn.textContent = "Delete";
-      confirmBtn.removeAttribute("disabled");
+      confirmDeleteBtn.textContent = "Delete";
+      confirmDeleteBtn.removeAttribute("disabled");
     }
   });
+
+  // Edit
+  let pendingEditId = null;
+  const editModal = document.getElementById("edit-modal");
+  const editTitleEl = document.getElementById("edit-title");
+  const editDescEl = document.getElementById("edit-description");
+  const editCatEl = document.getElementById("edit-category");
+  const editAccessEl = document.getElementById("edit-access");
+  const editErrorEl = document.getElementById("edit-error");
+  const confirmEditBtn = document.getElementById("confirm-edit");
+
+  document.querySelectorAll("[data-edit-id]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      pendingEditId = btn.dataset.editId;
+      editTitleEl.value = btn.dataset.editTitle ?? "";
+      editDescEl.value = btn.dataset.editDescription ?? "";
+      editCatEl.value = btn.dataset.editCategory ?? "workouts";
+      editAccessEl.value = btn.dataset.editAccess ?? "subscription";
+      editErrorEl.classList.add("hidden");
+      confirmEditBtn.textContent = "Save changes";
+      confirmEditBtn.removeAttribute("disabled");
+      editModal.showModal();
+    });
+  });
+
+  confirmEditBtn.addEventListener("click", async () => {
+    if (!pendingEditId) return;
+    const title = editTitleEl.value.trim();
+    if (!title) {
+      editErrorEl.textContent = "Title is required.";
+      editErrorEl.classList.remove("hidden");
+      return;
+    }
+    confirmEditBtn.textContent = "Saving...";
+    confirmEditBtn.setAttribute("disabled", "true");
+    const res = await fetch(`/api/admin/videos/${pendingEditId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        title,
+        description: editDescEl.value,
+        category: editCatEl.value,
+        access: editAccessEl.value,
+      }),
+    });
+    if (res.ok) {
+      window.location.reload();
+    } else {
+      editErrorEl.textContent = "Failed to save. Please try again.";
+      editErrorEl.classList.remove("hidden");
+      confirmEditBtn.textContent = "Save changes";
+      confirmEditBtn.removeAttribute("disabled");
+    }
+  });
+
+  // Auto-refresh when videos are still processing
+  if (hasInProgress) {
+    setTimeout(() => window.location.reload(), 10000);
+  }
 </script>

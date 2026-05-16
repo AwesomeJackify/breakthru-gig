@@ -7,14 +7,21 @@ export const POST: APIRoute = async ({ locals, request }) => {
     return new Response("Forbidden", { status: 403 });
   }
 
+  let body: { title?: string; category?: string; access?: string } = {};
+  try {
+    body = await request.json();
+  } catch {
+    // empty body is fine, use defaults
+  }
+
   const origin = new URL(request.url).origin;
   const upload = await createUploadUrl(origin);
 
   const admin = createSupabaseAdmin();
   const { data: video, error } = await admin.from("videos").insert({
-    title: "Untitled video",
-    category: "workouts",
-    access: "subscription",
+    title: body.title?.trim() || "Untitled video",
+    category: body.category || "workouts",
+    access: body.access || "subscription",
     mux_upload_id: upload.id,
     status: "uploading",
   }).select("id").single();

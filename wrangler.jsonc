@@ -3,7 +3,7 @@
 	"compatibility_flags": [
 		"nodejs_compat"
 	],
-	"name": "breakthru-gig",
+	"name": "breakthru-gig-video-portal",
 	"assets": {
 		"directory": "./dist",
 	}

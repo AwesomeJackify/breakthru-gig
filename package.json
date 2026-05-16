@@ -23,6 +23,7 @@
     "@astrojs/node": "^10.0.6",
     "@iconify-json/lucide": "^1.2.98",
     "@mux/mux-node": "^14.0.1",
+    "@mux/mux-player": "^3.13.0",
     "@mux/upchunk": "^3.5.0",
     "@supabase/ssr": "^0.10.2",
     "@supabase/supabase-js": "^2.104.1",

@@ -6,22 +6,13 @@ import DashboardLayout from "../../layouts/DashboardLayout.astro";
   <main class="min-h-screen px-6 py-10">
     <div class="max-w-4xl mx-auto">
       <div class="mb-8">
-        <a href="/admin" class="btn btn-ghost btn-sm pl-0 gap-2">
-          <svg
-            class="w-4 h-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M15 19l-7-7 7-7"></path>
-          </svg>
-          Back to library
-        </a>
-        <h1 class="text-3xl font-bold mt-4">Upload video</h1>
+        <div class="breadcrumbs text-sm mb-4">
+          <ul>
+            <li><a href="/admin">Library</a></li>
+            <li>Upload</li>
+          </ul>
+        </div>
+        <h1 class="text-3xl font-bold">Upload video</h1>
       </div>
 
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -29,9 +20,17 @@ import DashboardLayout from "../../layouts/DashboardLayout.astro";
         <div>
           <div
             id="drop-zone"
-            class="border-2 border-dashed border-base-300 rounded-xl flex flex-col items-center justify-center gap-4 p-12 text-center cursor-pointer transition-colors hover:border-primary hover:bg-primary/5"
+            class="relative border-2 border-dashed border-base-300 rounded-xl flex flex-col items-center justify-center gap-4 p-12 text-center transition-colors hover:border-primary hover:bg-primary/5"
           >
-            <div id="dz-idle">
+            <!-- Transparent full-size file input — this IS the click target -->
+            <input
+              id="file-input"
+              type="file"
+              accept="video/*"
+              class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+            />
+            <!-- Visual content sits below the input, pointer-events-none so clicks pass through -->
+            <div id="dz-idle" class="pointer-events-none">
               <svg
                 class="w-12 h-12 text-base-content/30 mx-auto mb-3"
                 fill="none"
@@ -48,14 +47,12 @@ import DashboardLayout from "../../layouts/DashboardLayout.astro";
               <p class="font-semibold text-base-content/60">
                 Drag and drop your video here
               </p>
-              <p class="text-sm text-base-content/40 mt-1">
-                or click to browse
-              </p>
+              <p class="text-sm text-base-content/40 mt-1">or click to browse</p>
               <p class="text-xs text-base-content/30 mt-3">
                 MP4, MOV, MKV — up to 10 GB
               </p>
             </div>
-            <div id="dz-file" class="hidden w-full">
+            <div id="dz-file" class="hidden w-full pointer-events-none">
               <svg
                 class="w-10 h-10 text-primary mx-auto mb-2"
                 fill="none"
@@ -69,19 +66,9 @@ import DashboardLayout from "../../layouts/DashboardLayout.astro";
                   d="M15 10l4.553-2.069A1 1 0 0121 8.87v6.26a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
                 ></path>
               </svg>
-              <p
-                id="file-name"
-                class="font-medium text-sm truncate max-w-full px-2"
-              >
-              </p>
+              <p id="file-name" class="font-medium text-sm truncate max-w-full px-2"></p>
               <p id="file-size" class="text-xs text-base-content/40 mt-1"></p>
             </div>
-            <input
-              id="file-input"
-              type="file"
-              accept="video/*"
-              class="hidden"
-            />
           </div>
 
           <!-- Progress area -->
@@ -94,25 +81,23 @@ import DashboardLayout from "../../layouts/DashboardLayout.astro";
               id="progress-bar"
               class="progress progress-primary w-full"
               value="0"
-              max="100"></progress>
+              max="100"
+            ></progress>
           </div>
 
           <!-- Processing state -->
-          <div id="processing-area" class="hidden mt-6 flex items-center gap-3">
-            <span class="loading loading-spinner loading-sm text-primary"
-            ></span>
-            <span class="text-sm font-medium">Processing video...</span>
+          <div id="processing-area" class="hidden mt-6">
+            <div class="flex items-center gap-3">
+              <span class="loading loading-spinner loading-sm text-primary"></span>
+              <span class="text-sm font-medium">Processing video...</span>
+            </div>
           </div>
 
           <!-- Ready state -->
           <div id="ready-area" class="hidden mt-6">
-            <div class="flex items-center gap-2 mb-4">
-              <span class="badge badge-success">Ready</span>
-              <span class="text-sm">Your video is live.</span>
-            </div>
             <div
               id="thumbnail-preview"
-              class="aspect-video bg-base-300 rounded-lg overflow-hidden"
+              class="aspect-video bg-base-300 rounded-xl overflow-hidden mb-4"
             >
               <img
                 id="thumbnail-img"
@@ -121,17 +106,13 @@ import DashboardLayout from "../../layouts/DashboardLayout.astro";
                 class="w-full h-full object-cover"
               />
             </div>
-            <a id="view-link" href="#" class="btn btn-primary w-full mt-4"
-              >View video</a
-            >
+            <a id="view-link" href="#" class="btn btn-primary w-full">View video</a>
           </div>
 
           <!-- Error state -->
           <div id="error-area" class="hidden mt-6 alert alert-error">
             <span id="error-msg">Upload failed.</span>
-            <button id="retry-btn" class="btn btn-sm btn-ghost ml-auto"
-              >Retry</button
-            >
+            <button id="retry-btn" class="btn btn-sm btn-ghost ml-auto">Retry</button>
           </div>
         </div>
 
@@ -139,19 +120,23 @@ import DashboardLayout from "../../layouts/DashboardLayout.astro";
         <div id="meta-form" class="hidden">
           <div class="card bg-base-200">
             <div class="card-body gap-4">
-              <h2 class="card-title text-lg">Video details</h2>
+              <div class="flex items-center justify-between">
+                <h2 class="card-title text-lg">Video details</h2>
+                <span id="saved-badge" class="badge badge-success hidden">Saved</span>
+              </div>
+
               <fieldset class="fieldset">
-                <legend class="fieldset-legend"
-                  >Title <span class="text-error">*</span></legend
-                >
+                <legend class="fieldset-legend">
+                  Title <span class="text-error">*</span>
+                </legend>
                 <input
                   id="meta-title"
                   type="text"
                   class="input w-full"
                   placeholder="e.g. Full body workout — week 1"
-                  required
                 />
               </fieldset>
+
               <fieldset class="fieldset">
                 <legend class="fieldset-legend">Description</legend>
                 <textarea
@@ -160,6 +145,7 @@ import DashboardLayout from "../../layouts/DashboardLayout.astro";
                   rows="3"
                   placeholder="Optional description..."></textarea>
               </fieldset>
+
               <fieldset class="fieldset">
                 <legend class="fieldset-legend">Category</legend>
                 <select id="meta-category" class="select w-full">
@@ -168,27 +154,25 @@ import DashboardLayout from "../../layouts/DashboardLayout.astro";
                   <option value="mindset">Mindset</option>
                 </select>
               </fieldset>
+
               <fieldset class="fieldset">
                 <legend class="fieldset-legend">Access</legend>
                 <select id="meta-access" class="select w-full">
-                  <option value="subscription"
-                    >All members (subscription)</option
-                  >
-                  <option value="programme_12week"
-                    >12-week programme only</option
-                  >
+                  <option value="subscription">All members (subscription)</option>
+                  <option value="programme_12week">12-week programme only</option>
                 </select>
               </fieldset>
-              <button
-                id="save-meta-btn"
-                class="btn btn-outline w-full"
-                disabled
-              >
-                Save details
-              </button>
-              <p class="text-xs text-base-content/40">
-                Details are saved after upload completes.
+
+              <p id="save-hint" class="text-xs text-base-content/40">
+                Details save automatically when upload completes.
               </p>
+
+              <button
+                id="update-btn"
+                class="btn btn-outline w-full hidden"
+              >
+                Update details
+              </button>
             </div>
           </div>
         </div>
@@ -204,27 +188,27 @@ import DashboardLayout from "../../layouts/DashboardLayout.astro";
   const fileInput = document.getElementById("file-input") as HTMLInputElement;
   const dzIdle = document.getElementById("dz-idle")!;
   const dzFile = document.getElementById("dz-file")!;
-  const fileName = document.getElementById("file-name")!;
-  const fileSize = document.getElementById("file-size")!;
+  const fileNameEl = document.getElementById("file-name")!;
+  const fileSizeEl = document.getElementById("file-size")!;
   const progressArea = document.getElementById("progress-area")!;
   const progressLabel = document.getElementById("progress-label")!;
   const progressPct = document.getElementById("progress-pct")!;
-  const progressBar = document.getElementById(
-    "progress-bar",
-  ) as HTMLProgressElement;
+  const progressBar = document.getElementById("progress-bar") as HTMLProgressElement;
   const processingArea = document.getElementById("processing-area")!;
   const readyArea = document.getElementById("ready-area")!;
-  const thumbnailImg = document.getElementById(
-    "thumbnail-img",
-  ) as HTMLImageElement;
+  const thumbnailImg = document.getElementById("thumbnail-img") as HTMLImageElement;
   const viewLink = document.getElementById("view-link") as HTMLAnchorElement;
   const errorArea = document.getElementById("error-area")!;
   const errorMsg = document.getElementById("error-msg")!;
   const retryBtn = document.getElementById("retry-btn")!;
   const metaForm = document.getElementById("meta-form")!;
-  const saveMetaBtn = document.getElementById(
-    "save-meta-btn",
-  ) as HTMLButtonElement;
+  const savedBadge = document.getElementById("saved-badge")!;
+  const saveHint = document.getElementById("save-hint")!;
+  const updateBtn = document.getElementById("update-btn") as HTMLButtonElement;
+  const metaTitle = document.getElementById("meta-title") as HTMLInputElement;
+  const metaDescription = document.getElementById("meta-description") as HTMLTextAreaElement;
+  const metaCategory = document.getElementById("meta-category") as HTMLSelectElement;
+  const metaAccess = document.getElementById("meta-access") as HTMLSelectElement;
 
   let currentUploadId: string | null = null;
   let currentVideoId: string | null = null;
@@ -232,8 +216,7 @@ import DashboardLayout from "../../layouts/DashboardLayout.astro";
 
   function formatBytes(bytes: number) {
     if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-    if (bytes < 1024 * 1024 * 1024)
-      return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+    if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
     return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
   }
 
@@ -244,26 +227,47 @@ import DashboardLayout from "../../layouts/DashboardLayout.astro";
     errorArea.classList.remove("hidden");
   }
 
+  async function saveMeta() {
+    if (!currentVideoId) return false;
+    const title = metaTitle.value.trim() || "Untitled video";
+    const res = await fetch(`/api/admin/videos/${currentVideoId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        title,
+        description: metaDescription.value,
+        category: metaCategory.value,
+        access: metaAccess.value,
+      }),
+    });
+    return res.ok;
+  }
+
   function startPolling() {
     if (!currentUploadId) return;
     pollingTimer = setInterval(async () => {
       try {
-        const res = await fetch(
-          `/api/admin/upload/status?uploadId=${currentUploadId}`,
-        );
+        const res = await fetch(`/api/admin/upload/status?uploadId=${currentUploadId}`);
         const data = (await res.json()) as {
           status: string;
           videoId: string;
           playbackId: string;
+          thumbToken: string;
         };
         if (data.status === "ready") {
           clearInterval(pollingTimer!);
           processingArea.classList.add("hidden");
           currentVideoId = data.videoId;
-          thumbnailImg.src = `https://image.mux.com/${data.playbackId}/thumbnail.jpg?width=640`;
+          thumbnailImg.src = `https://image.mux.com/${data.playbackId}/thumbnail.jpg?token=${data.thumbToken}&width=640`;
           viewLink.href = `/videos/${data.videoId}`;
           readyArea.classList.remove("hidden");
-          saveMetaBtn.removeAttribute("disabled");
+          // Auto-save all metadata
+          const ok = await saveMeta();
+          if (ok) {
+            savedBadge.classList.remove("hidden");
+            saveHint.classList.add("hidden");
+            updateBtn.classList.remove("hidden");
+          }
         } else if (data.status === "errored") {
           clearInterval(pollingTimer!);
           showError("Video processing failed. Please try again.");
@@ -280,19 +284,33 @@ import DashboardLayout from "../../layouts/DashboardLayout.astro";
       return;
     }
 
-    // Show file info
+    // Disable the file input overlay so it doesn't intercept further interaction
+    fileInput.classList.add("hidden");
+
+    // Show file info and metadata form immediately
     dzIdle.classList.add("hidden");
     dzFile.classList.remove("hidden");
-    fileName.textContent = file.name;
-    fileSize.textContent = formatBytes(file.size);
+    fileNameEl.textContent = file.name;
+    fileSizeEl.textContent = formatBytes(file.size);
     metaForm.classList.remove("hidden");
 
-    // Get upload URL
+    // Pre-fill title from filename
+    if (!metaTitle.value.trim()) {
+      metaTitle.value = file.name.replace(/\.[^/.]+$/, "").replace(/[-_]/g, " ");
+    }
+
+    // Get upload URL — send current form values upfront
     let uploadUrl: string;
-    let videoId: string;
-    let uploadId: string;
     try {
-      const res = await fetch("/api/admin/upload/create", { method: "POST" });
+      const res = await fetch("/api/admin/upload/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: metaTitle.value.trim() || file.name.replace(/\.[^/.]+$/, ""),
+          category: metaCategory.value,
+          access: metaAccess.value,
+        }),
+      });
       if (!res.ok) throw new Error("Failed to get upload URL");
       const data = (await res.json()) as {
         uploadUrl: string;
@@ -300,10 +318,8 @@ import DashboardLayout from "../../layouts/DashboardLayout.astro";
         uploadId: string;
       };
       uploadUrl = data.uploadUrl;
-      videoId = data.videoId;
-      uploadId = data.uploadId;
-      currentUploadId = uploadId;
-      currentVideoId = videoId;
+      currentVideoId = data.videoId;
+      currentUploadId = data.uploadId;
     } catch {
       showError("Failed to initialise upload. Please try again.");
       return;
@@ -321,9 +337,7 @@ import DashboardLayout from "../../layouts/DashboardLayout.astro";
       const pct = Math.round(e.detail);
       progressBar.value = pct;
       progressPct.textContent = `${pct}%`;
-      if (pct === 100) {
-        progressLabel.textContent = "Upload complete";
-      }
+      progressLabel.textContent = pct < 100 ? `Uploading...` : "Upload complete";
     });
 
     upload.on("success", () => {
@@ -337,8 +351,7 @@ import DashboardLayout from "../../layouts/DashboardLayout.astro";
     });
   }
 
-  // Drop zone interactions
-  dropZone.addEventListener("click", () => fileInput.click());
+  // File input change handler
   fileInput.addEventListener("change", () => {
     const file = fileInput.files?.[0];
     if (file) startUpload(file);
@@ -365,44 +378,25 @@ import DashboardLayout from "../../layouts/DashboardLayout.astro";
     dzFile.classList.add("hidden");
     metaForm.classList.add("hidden");
     progressArea.classList.add("hidden");
+    savedBadge.classList.add("hidden");
+    saveHint.classList.remove("hidden");
+    updateBtn.classList.add("hidden");
     fileInput.value = "";
+    fileInput.classList.remove("hidden");
     currentUploadId = null;
     currentVideoId = null;
   });
 
-  // Save metadata
-  saveMetaBtn.addEventListener("click", async () => {
-    if (!currentVideoId) return;
-    const title = (
-      document.getElementById("meta-title") as HTMLInputElement
-    ).value.trim();
-    if (!title) {
-      alert("Please enter a title.");
-      return;
-    }
-    saveMetaBtn.textContent = "Saving...";
-    saveMetaBtn.setAttribute("disabled", "true");
-    const res = await fetch(`/api/admin/videos/${currentVideoId}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        title,
-        description: (
-          document.getElementById("meta-description") as HTMLTextAreaElement
-        ).value,
-        category: (
-          document.getElementById("meta-category") as HTMLSelectElement
-        ).value,
-        access: (document.getElementById("meta-access") as HTMLSelectElement)
-          .value,
-      }),
-    });
-    if (res.ok) {
-      saveMetaBtn.textContent = "Saved!";
-    } else {
-      saveMetaBtn.textContent = "Save details";
-      saveMetaBtn.removeAttribute("disabled");
-      alert("Failed to save. Please try again.");
-    }
+  // Manual update after ready
+  updateBtn.addEventListener("click", async () => {
+    updateBtn.textContent = "Saving...";
+    updateBtn.setAttribute("disabled", "true");
+    const ok = await saveMeta();
+    updateBtn.textContent = ok ? "Saved!" : "Update details";
+    if (!ok) updateBtn.removeAttribute("disabled");
+    else setTimeout(() => {
+      updateBtn.textContent = "Update details";
+      updateBtn.removeAttribute("disabled");
+    }, 2000);
   });
 </script>

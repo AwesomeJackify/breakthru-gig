@@ -34,10 +34,10 @@ const adminLinks = [
         <a
           href={link.href}
           class:list={[
-            "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
+            "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors border-l-2",
             active
-              ? "bg-primary text-primary-content"
-              : "text-base-content/70 hover:bg-base-300 hover:text-base-content",
+              ? "border-primary bg-primary/10 text-base-content"
+              : "border-transparent text-base-content/70 hover:bg-base-300 hover:text-base-content",
           ]}
         >
           <Icon name={link.icon} class="w-5 h-5 shrink-0" />
@@ -55,10 +55,10 @@ const adminLinks = [
             <a
               href={link.href}
               class:list={[
-                "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
+                "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors border-l-2",
                 active
-                  ? "bg-primary text-primary-content"
-                  : "text-base-content/70 hover:bg-base-300 hover:text-base-content",
+                  ? "border-primary bg-primary/10 text-base-content"
+                  : "border-transparent text-base-content/70 hover:bg-base-300 hover:text-base-content",
               ]}
             >
               <Icon name={link.icon} class="w-5 h-5 shrink-0" />
@@ -74,7 +74,7 @@ const adminLinks = [
   <div class="px-3 py-4 border-t border-base-300">
     <div class="flex items-center gap-3 px-3 py-2 rounded-lg bg-base-300 mb-2">
       <div class="avatar avatar-placeholder">
-        <div class="bg-primary text-primary-content rounded-full w-8">
+        <div class="bg-primary text-primary-content rounded-full w-8 ring-1 ring-primary/30">
           <span class="text-xs font-bold">{user.email.slice(0, 2).toUpperCase()}</span>
         </div>
       </div>
