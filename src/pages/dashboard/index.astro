@@ -144,8 +144,8 @@ const cards = [
       </div>
 
       <div class="divide-y divide-base-300/60">
-        {/* Monthly membership */}
-        <div class="flex items-center gap-3 py-4">
+        {/* Monthly membership — highlighted row */}
+        <div class="flex items-center gap-3 py-4 px-4 -mx-4 rounded-xl bg-primary/5 border border-primary/20">
           {
             entitlements.hasSubscription ? (
               <span class="badge badge-success badge-sm shrink-0">Active</span>
@@ -156,7 +156,10 @@ const cards = [
             )
           }
           <div class="flex-1 min-w-0">
-            <p class="text-sm font-medium">Monthly membership</p>
+            <div class="flex items-center gap-2">
+              <p class="text-sm font-semibold">Monthly membership</p>
+              <span class="badge badge-primary badge-xs rounded-full">Most popular</span>
+            </div>
             {
               entitlements.hasSubscription && renewsAt && (
                 <p class="text-xs text-base-content/40 font-mono">
@@ -174,7 +177,7 @@ const cards = [
             !entitlements.hasSubscription && (
               <a
                 href="/subscribe?product=subscription"
-                class="btn btn-primary btn-xs shrink-0"
+                class="btn btn-warning btn-xs shrink-0 font-bold"
               >
                 {subscription?.status === "canceled"
                   ? "Resubscribe"
