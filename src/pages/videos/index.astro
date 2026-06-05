@@ -1,7 +1,9 @@
 ---
 import DashboardLayout from "../../layouts/DashboardLayout.astro";
+import { Icon } from "astro-icon/components";
 import { getUserEntitlements } from "../../lib/access";
 import { getThumbnailToken } from "../../lib/mux";
+import config from "../../../breakthru.config.json";
 
 const user = Astro.locals.user!;
 const supabase = Astro.locals.supabase;
@@ -14,7 +16,9 @@ if (!entitlements.hasSubscription && !entitlements.hasProgramme) {
 
 const { data: videos } = await supabase
   .from("videos")
-  .select("id, title, description, category, access, mux_playback_id, duration, status")
+  .select(
+    "id, title, description, category, access, mux_playback_id, duration, status",
+  )
   .eq("status", "ready")
   .order("created_at", { ascending: false });
 
@@ -26,111 +30,306 @@ await Promise.all(
   allVideos
     .filter((v: { mux_playback_id: string }) => v.mux_playback_id)
     .map(async (v: { mux_playback_id: string }) => {
-      thumbTokens[v.mux_playback_id] = await getThumbnailToken(v.mux_playback_id);
+      thumbTokens[v.mux_playback_id] = await getThumbnailToken(
+        v.mux_playback_id,
+      );
     }),
 );
+
+const videoCategories = config.videoCategories;
+
+type Video = {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  mux_playback_id: string;
+  duration: number;
+};
+
+const videosByCategory = Object.fromEntries(
+  videoCategories.map((cat) => [
+    cat.value,
+    allVideos.filter((v: Video) => v.category === cat.value),
+  ]),
+);
+
+// Up to 5 videos for the hero carousel — only ones with a thumbnail token
+const heroVideos = (allVideos as Video[])
+  .filter((v) => v.mux_playback_id && thumbTokens[v.mux_playback_id])
+  .slice(0, 5);
+
+function formatDuration(s: number) {
+  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
+}
 ---
 
 <DashboardLayout title="Videos — Breakthru">
-  <main class="min-h-screen px-6 py-10">
-    <div class="max-w-6xl mx-auto">
-      <div class="flex items-center justify-between mb-8">
-        <h1 class="text-3xl font-bold">Video library</h1>
-        {user.is_admin && (
-          <a href="/admin/upload" class="btn btn-primary btn-sm">Upload video</a>
-        )}
+  {
+    allVideos.length === 0 ? (
+      <div class="flex flex-col items-center justify-center min-h-screen text-base-content/40">
+        <Icon name="lucide:video" class="w-16 h-16 mb-4 opacity-20" />
+        <p class="text-lg font-medium">No videos yet</p>
+        <p class="text-sm mt-1">Check back soon for new content.</p>
       </div>
-
-      <!-- Category filter (client-side, no page reload) -->
-      <div class="filter mb-8" id="category-filter">
-        <input
-          class="btn filter-reset"
-          type="radio"
-          name="cat"
-          aria-label="All"
-          checked
-        />
-        <input class="btn" type="radio" name="cat" value="workouts" aria-label="Workouts" />
-        <input class="btn" type="radio" name="cat" value="nutrition" aria-label="Nutrition" />
-        <input class="btn" type="radio" name="cat" value="mindset" aria-label="Mindset" />
-      </div>
-
-      {allVideos.length === 0 ? (
-        <div class="text-center py-24 text-base-content/40">
-          <svg class="w-16 h-16 mx-auto mb-4 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 10l4.553-2.069A1 1 0 0121 8.87v6.26a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-          </svg>
-          <p class="text-lg font-medium">No videos yet</p>
-          <p class="text-sm mt-1">Check back soon for new content.</p>
-        </div>
-      ) : (
-        <>
-          <div id="video-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {allVideos.map((video: { id: string; title: string; description: string; category: string; mux_playback_id: string; duration: number }) => (
-              <a
-                href={`/videos/${video.id}`}
-                class="card bg-base-200 hover:bg-base-300 transition-colors overflow-hidden group"
-                data-category={video.category}
+    ) : (
+      <div class="pb-16">
+        {/* Hero carousel */}
+        {heroVideos.length > 0 && (
+          <div
+            id="hero"
+            class="relative w-full overflow-hidden"
+            style="height: clamp(320px, 55vw, 560px);"
+          >
+            {/* Slides — all stacked, opacity controls which is visible */}
+            {heroVideos.map((video, i) => (
+              <div
+                class="hero-slide absolute inset-0 transition-opacity duration-700"
+                class:list={[
+                  i === 0 ? "opacity-100" : "opacity-0 pointer-events-none",
+                ]}
+                data-index={i}
               >
-                <figure class="aspect-video bg-base-300 relative overflow-hidden">
-                  {video.mux_playback_id && thumbTokens[video.mux_playback_id] ? (
-                    <img
-                      src={`https://image.mux.com/${video.mux_playback_id}/thumbnail.jpg?token=${thumbTokens[video.mux_playback_id]}&width=640`}
-                      alt={video.title}
-                      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      loading="lazy"
-                    />
-                  ) : (
-                    <div class="skeleton w-full h-full absolute inset-0"></div>
-                  )}
-                  {video.duration > 0 && (
-                    <span class="absolute bottom-2 right-2 bg-black/80 text-white text-xs px-1.5 py-0.5 rounded">
-                      {Math.floor(video.duration / 60)}:{String(video.duration % 60).padStart(2, "0")}
-                    </span>
-                  )}
-                </figure>
-                <div class="card-body p-4">
-                  <span class="badge badge-outline capitalize text-xs">{video.category}</span>
-                  <h2 class="font-semibold mt-1 leading-snug">{video.title}</h2>
-                  {video.description && (
-                    <p class="text-sm text-base-content/60 line-clamp-2">{video.description}</p>
-                  )}
-                </div>
-              </a>
-            ))}
-          </div>
+                <img
+                  src={`https://image.mux.com/${video.mux_playback_id}/thumbnail.jpg?token=${thumbTokens[video.mux_playback_id]}&width=1600&time=10`}
+                  alt={video.title}
+                  class="absolute inset-0 w-full h-full object-cover"
+                />
+                <div class="absolute inset-0 bg-gradient-to-r from-black/85 via-black/40 to-transparent" />
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20" />
 
-          <!-- Per-category empty state (shown by JS when filtered) -->
-          <div id="empty-filtered" class="hidden text-center py-24 text-base-content/40">
-            <p class="text-lg font-medium">No videos in this category yet.</p>
-            <p class="text-sm mt-1">More content coming soon.</p>
+                <div class="absolute inset-0 flex flex-col justify-end px-8 pb-14 md:px-14 md:pb-16 max-w-2xl">
+                  <span class="badge badge-primary badge-sm mb-3 capitalize w-fit">
+                    {video.category}
+                  </span>
+                  <h2 class="text-3xl md:text-5xl font-bold text-white leading-tight mb-3">
+                    {video.title}
+                  </h2>
+                  {video.description && (
+                    <p class="text-white/65 text-sm md:text-base line-clamp-2 mb-5">
+                      {video.description}
+                    </p>
+                  )}
+                  <div class="flex items-center gap-3">
+                    <a
+                      href={`/videos/${video.id}`}
+                      class="btn btn-primary gap-2 rounded-full px-6"
+                    >
+                      <Icon name="lucide:play" class="w-4 h-4 fill-current" />
+                      Play now
+                    </a>
+                    {video.duration > 0 && (
+                      <span class="text-white/50 text-sm">
+                        {formatDuration(video.duration)}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+
+            {/* Progress dots — fill left to right over 8s */}
+            {heroVideos.length > 1 && (
+              <div class="absolute bottom-5 left-8 md:left-14 flex items-center gap-2">
+                {heroVideos.map((_, i) => (
+                  <button
+                    class="hero-dot relative w-8 h-1.5 rounded-full overflow-hidden bg-white/30 focus:outline-none"
+                    data-index={i}
+                    aria-label={`Go to slide ${i + 1}`}
+                  >
+                    <span
+                      class:list={[
+                        "dot-fill block h-full w-full bg-white rounded-full origin-left",
+                        i === 0 ? "animating" : "",
+                      ]}
+                    />
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* Admin upload button */}
+            {user.is_admin && (
+              <div class="absolute top-5 right-6">
+                <a
+                  href="/admin/upload"
+                  class="btn btn-sm btn-primary gap-2 opacity-90"
+                >
+                  <Icon name="lucide:plus" class="w-4 h-4" />
+                  Upload
+                </a>
+              </div>
+            )}
           </div>
-        </>
-      )}
-    </div>
-  </main>
+        )}
+
+        {/* Category rows */}
+        <div class="mt-8 space-y-10">
+          {videoCategories.map((cat) => {
+            const row = videosByCategory[cat.value];
+            if (!row || row.length === 0) return null;
+            return (
+              <section>
+                <h2 class="text-lg font-semibold px-8 md:px-14 mb-3 text-base-content/90">
+                  {cat.label}
+                </h2>
+                <div class="overflow-x-auto scrollbar-hide">
+                  <div class="flex gap-3 px-8 md:px-14 pb-2 w-max">
+                    {row.map((video: Video) => (
+                      <a
+                        href={`/videos/${video.id}`}
+                        class="group relative block rounded-lg overflow-hidden shrink-0 bg-base-300 focus-visible:ring-2 focus-visible:ring-primary outline-none"
+                        style="width: clamp(160px, 22vw, 260px)"
+                      >
+                        <div class="aspect-video w-full overflow-hidden relative">
+                          {video.mux_playback_id &&
+                          thumbTokens[video.mux_playback_id] ? (
+                            <img
+                              src={`https://image.mux.com/${video.mux_playback_id}/thumbnail.jpg?token=${thumbTokens[video.mux_playback_id]}&width=480&time=10`}
+                              alt={video.title}
+                              class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                              loading="lazy"
+                              onerror="this.style.display='none';this.nextElementSibling.style.display='block'"
+                            />
+                          ) : null}
+                          <div
+                            class="skeleton w-full h-full absolute inset-0"
+                            style={
+                              video.mux_playback_id &&
+                              thumbTokens[video.mux_playback_id]
+                                ? "display:none"
+                                : ""
+                            }
+                          />
+                        </div>
+
+                        {video.duration > 0 && (
+                          <span class="absolute top-2 right-2 bg-black/70 text-white text-xs px-1.5 py-0.5 rounded font-mono">
+                            {formatDuration(video.duration)}
+                          </span>
+                        )}
+
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-250 flex flex-col justify-end p-3">
+                          <div class="flex items-center gap-2 mb-1.5">
+                            <div class="w-7 h-7 rounded-full bg-primary flex items-center justify-center shrink-0">
+                              <Icon
+                                name="lucide:play"
+                                class="w-3.5 h-3.5 text-primary-content translate-x-px"
+                              />
+                            </div>
+                          </div>
+                          <p class="text-white text-xs font-semibold leading-snug line-clamp-2">
+                            {video.title}
+                          </p>
+                          {video.description && (
+                            <p class="text-white/55 text-xs mt-0.5 line-clamp-1">
+                              {video.description}
+                            </p>
+                          )}
+                        </div>
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              </section>
+            );
+          })}
+        </div>
+      </div>
+    )
+  }
 </DashboardLayout>
 
-<script>
-  const radios = document.querySelectorAll<HTMLInputElement>('[name="cat"]');
-  const cards = document.querySelectorAll<HTMLElement>("[data-category]");
-  const emptyState = document.getElementById("empty-filtered");
-
-  function applyFilter(value: string) {
-    let visible = 0;
-    cards.forEach((card) => {
-      const match = !value || card.dataset.category === value;
-      card.style.display = match ? "" : "none";
-      if (match) visible++;
-    });
-    if (emptyState) emptyState.classList.toggle("hidden", visible > 0);
+<style>
+  .scrollbar-hide {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
   }
 
-  radios.forEach((radio) => {
-    radio.addEventListener("change", () => {
-      // getAttribute returns null when no value attr is set (filter-reset);
-      // radio.value would return "on" which matches nothing
-      applyFilter(radio.getAttribute("value") ?? "");
-    });
-  });
+  @keyframes dot-progress {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+  .dot-fill {
+    transform: scaleX(0);
+  }
+  .dot-fill.animating {
+    animation: dot-progress 8s linear forwards;
+  }
+</style>
+
+<script>
+  const DURATION = 8000;
+
+  const hero = document.getElementById("hero");
+  if (hero) {
+    const slides = hero.querySelectorAll<HTMLElement>(".hero-slide");
+    const dots = hero.querySelectorAll<HTMLButtonElement>(".hero-dot");
+
+    if (slides.length > 1) {
+      let current = 0;
+      let timer: ReturnType<typeof setInterval>;
+
+      function getFill(i: number): HTMLElement | null {
+        return dots[i]?.querySelector<HTMLElement>(".dot-fill") ?? null;
+      }
+
+      function startFill(i: number) {
+        const fill = getFill(i);
+        if (!fill) return;
+        fill.classList.remove("animating");
+        void fill.offsetWidth; // force reflow so animation restarts from 0
+        fill.classList.add("animating");
+      }
+
+      function stopFill(i: number) {
+        getFill(i)?.classList.remove("animating");
+      }
+
+      function goTo(index: number) {
+        stopFill(current);
+        slides[current].classList.remove("opacity-100");
+        slides[current].classList.add("opacity-0", "pointer-events-none");
+
+        current = index;
+
+        slides[current].classList.remove("opacity-0", "pointer-events-none");
+        slides[current].classList.add("opacity-100");
+        startFill(current);
+      }
+
+      function start() {
+        startFill(current);
+        timer = setInterval(
+          () => goTo((current + 1) % slides.length),
+          DURATION,
+        );
+      }
+
+      function stop() {
+        clearInterval(timer);
+        stopFill(current);
+      }
+
+      start();
+
+      hero.addEventListener("mouseenter", stop);
+      hero.addEventListener("mouseleave", start);
+
+      dots.forEach((dot, i) => {
+        dot.addEventListener("click", () => {
+          stop();
+          goTo(i);
+          start();
+        });
+      });
+    }
+  }
 </script>

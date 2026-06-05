@@ -1,5 +1,7 @@
 ---
 import DashboardLayout from "../../layouts/DashboardLayout.astro";
+import { Icon } from "astro-icon/components";
+import config from "../../../breakthru.config.json";
 ---
 
 <DashboardLayout title="Upload video — Breakthru Admin">
@@ -16,34 +18,22 @@ import DashboardLayout from "../../layouts/DashboardLayout.astro";
       </div>
 
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <!-- Upload zone -->
+        {/* Upload zone */}
         <div>
           <div
             id="drop-zone"
             class="relative border-2 border-dashed border-base-300 rounded-xl flex flex-col items-center justify-center gap-4 p-12 text-center transition-colors hover:border-primary hover:bg-primary/5"
           >
-            <!-- Transparent full-size file input — this IS the click target -->
+            {/* Transparent full-size file input — this IS the click target */}
             <input
               id="file-input"
               type="file"
               accept="video/*"
               class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
             />
-            <!-- Visual content sits below the input, pointer-events-none so clicks pass through -->
+            {/* Visual content sits below the input, pointer-events-none so clicks pass through */}
             <div id="dz-idle" class="pointer-events-none">
-              <svg
-                class="w-12 h-12 text-base-content/30 mx-auto mb-3"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="1.5"
-                  d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                ></path>
-              </svg>
+              <Icon name="lucide:cloud-upload" class="w-12 h-12 text-base-content/30 mx-auto mb-3" />
               <p class="font-semibold text-base-content/60">
                 Drag and drop your video here
               </p>
@@ -53,25 +43,13 @@ import DashboardLayout from "../../layouts/DashboardLayout.astro";
               </p>
             </div>
             <div id="dz-file" class="hidden w-full pointer-events-none">
-              <svg
-                class="w-10 h-10 text-primary mx-auto mb-2"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M15 10l4.553-2.069A1 1 0 0121 8.87v6.26a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
-                ></path>
-              </svg>
+              <Icon name="lucide:video" class="w-10 h-10 text-primary mx-auto mb-2" />
               <p id="file-name" class="font-medium text-sm truncate max-w-full px-2"></p>
               <p id="file-size" class="text-xs text-base-content/40 mt-1"></p>
             </div>
           </div>
 
-          <!-- Progress area -->
+          {/* Progress area */}
           <div id="progress-area" class="hidden mt-6">
             <div class="flex items-center justify-between text-sm mb-2">
               <span id="progress-label" class="font-medium">Uploading...</span>
@@ -85,7 +63,7 @@ import DashboardLayout from "../../layouts/DashboardLayout.astro";
             ></progress>
           </div>
 
-          <!-- Processing state -->
+          {/* Processing state */}
           <div id="processing-area" class="hidden mt-6">
             <div class="flex items-center gap-3">
               <span class="loading loading-spinner loading-sm text-primary"></span>
@@ -93,7 +71,7 @@ import DashboardLayout from "../../layouts/DashboardLayout.astro";
             </div>
           </div>
 
-          <!-- Ready state -->
+          {/* Ready state */}
           <div id="ready-area" class="hidden mt-6">
             <div
               id="thumbnail-preview"
@@ -109,14 +87,14 @@ import DashboardLayout from "../../layouts/DashboardLayout.astro";
             <a id="view-link" href="#" class="btn btn-primary w-full">View video</a>
           </div>
 
-          <!-- Error state -->
+          {/* Error state */}
           <div id="error-area" class="hidden mt-6 alert alert-error">
             <span id="error-msg">Upload failed.</span>
             <button id="retry-btn" class="btn btn-sm btn-ghost ml-auto">Retry</button>
           </div>
         </div>
 
-        <!-- Metadata form -->
+        {/* Metadata form */}
         <div id="meta-form" class="hidden">
           <div class="card bg-base-200">
             <div class="card-body gap-4">
@@ -149,9 +127,9 @@ import DashboardLayout from "../../layouts/DashboardLayout.astro";
               <fieldset class="fieldset">
                 <legend class="fieldset-legend">Category</legend>
                 <select id="meta-category" class="select w-full">
-                  <option value="workouts">Workouts</option>
-                  <option value="nutrition">Nutrition</option>
-                  <option value="mindset">Mindset</option>
+                  {config.videoCategories.map((cat) => (
+                    <option value={cat.value}>{cat.label}</option>
+                  ))}
                 </select>
               </fieldset>
 
@@ -258,7 +236,7 @@ import DashboardLayout from "../../layouts/DashboardLayout.astro";
           clearInterval(pollingTimer!);
           processingArea.classList.add("hidden");
           currentVideoId = data.videoId;
-          thumbnailImg.src = `https://image.mux.com/${data.playbackId}/thumbnail.jpg?token=${data.thumbToken}&width=640`;
+          thumbnailImg.src = `https://image.mux.com/${data.playbackId}/thumbnail.jpg?token=${data.thumbToken}&width=640&time=10`;
           viewLink.href = `/videos/${data.videoId}`;
           readyArea.classList.remove("hidden");
           // Auto-save all metadata

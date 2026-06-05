@@ -63,8 +63,7 @@ const cards = [
 
 <DashboardLayout title="Dashboard — Breakthru">
   <div class="px-6 py-10 max-w-4xl mx-auto space-y-10">
-
-    <!-- Welcome row -->
+    {/* Welcome row */}
     <div class="flex items-start justify-between gap-4 flex-wrap">
       <div>
         <h1 class="text-2xl font-bold tracking-tight">
@@ -73,21 +72,23 @@ const cards = [
         <p class="text-base-content/40 mt-1 text-xs font-mono">{user.email}</p>
       </div>
       <div class="flex items-center gap-2 shrink-0 mt-1">
-        {entitlements.hasSubscription ? (
-          <div class="flex items-center gap-2">
-            <span class="status status-success"></span>
-            <span class="text-sm text-base-content/60">Active member</span>
-          </div>
-        ) : (
-          <div class="flex items-center gap-2">
-            <span class="status status-neutral"></span>
-            <span class="text-sm text-base-content/40">No active plan</span>
-          </div>
-        )}
+        {
+          entitlements.hasSubscription ? (
+            <div class="flex items-center gap-2">
+              <span class="status status-success" />
+              <span class="text-sm text-base-content/60">Active member</span>
+            </div>
+          ) : (
+            <div class="flex items-center gap-2">
+              <span class="status status-neutral" />
+              <span class="text-sm text-base-content/40">No active plan</span>
+            </div>
+          )
+        }
       </div>
     </div>
 
-    <!-- Quick access cards (asymmetric bento) -->
+    {/* Quick access cards (asymmetric bento) */}
     <div class="grid grid-cols-1 md:grid-cols-[2fr_1fr] gap-4">
       {
         cards.map((card) => (
@@ -100,14 +101,20 @@ const cards = [
                 </a>
               </div>
             )}
-            <div class:list={["card-body p-6", !card.available && "opacity-30"]}>
+            <div
+              class:list={["card-body p-6", !card.available && "opacity-30"]}
+            >
               <div class="text-primary mb-3">
                 <Icon name={card.icon} class="w-6 h-6" />
               </div>
               <h2 class="font-semibold text-base">{card.label}</h2>
-              <p class="text-sm text-base-content/50 mt-1">{card.description}</p>
+              <p class="text-sm text-base-content/50 mt-1">
+                {card.description}
+              </p>
               <div class="card-actions mt-4">
-                <a href={card.href} class="btn btn-primary btn-sm">Open</a>
+                <a href={card.href} class="btn btn-primary btn-sm">
+                  Open
+                </a>
               </div>
             </div>
           </div>
@@ -115,10 +122,14 @@ const cards = [
       }
     </div>
 
-    <!-- Billing -->
+    {/* Billing */}
     <div>
-      <div class="flex items-center justify-between pb-4 border-b border-base-300">
-        <h2 class="text-xs font-semibold text-base-content/40 uppercase tracking-wider">
+      <div
+        class="flex items-center justify-between pb-4 border-b border-base-300"
+      >
+        <h2
+          class="text-xs font-semibold text-base-content/40 uppercase tracking-wider"
+        >
           Billing
         </h2>
         {
@@ -133,7 +144,7 @@ const cards = [
       </div>
 
       <div class="divide-y divide-base-300/60">
-        <!-- Monthly membership -->
+        {/* Monthly membership */}
         <div class="flex items-center gap-3 py-4">
           {
             entitlements.hasSubscription ? (
@@ -173,54 +184,104 @@ const cards = [
           }
         </div>
 
-        <!-- 12-week programme -->
+        {/* 12-week programme */}
         <div class="flex items-center gap-3 py-4">
-          {entitlements.hasSubscription ? (
-            <div class="tooltip tooltip-right shrink-0" data-tip="Included with your monthly membership">
-              <span class="badge badge-success badge-sm cursor-help">Included</span>
-            </div>
-          ) : (
-            <span class:list={["badge badge-sm shrink-0", entitlements.hasProgramme ? "badge-success" : "badge-ghost"]}>
-              {entitlements.hasProgramme ? "Purchased" : "Not purchased"}
-            </span>
-          )}
+          {
+            entitlements.hasSubscription ? (
+              <div
+                class="tooltip tooltip-right shrink-0"
+                data-tip="Included with your monthly membership"
+              >
+                <span class="badge badge-success badge-sm cursor-help">
+                  Included
+                </span>
+              </div>
+            ) : (
+              <span
+                class:list={[
+                  "badge badge-sm shrink-0",
+                  entitlements.hasProgramme ? "badge-success" : "badge-ghost",
+                ]}
+              >
+                {entitlements.hasProgramme ? "Purchased" : "Not purchased"}
+              </span>
+            )
+          }
           <div class="flex-1">
             <p class="text-sm font-medium">12-week programme</p>
-            {entitlements.hasSubscription && (
-              <p class="text-xs text-base-content/40">Included with monthly membership</p>
-            )}
-            {!entitlements.hasSubscription && entitlements.hasProgramme && (
-              <p class="text-xs text-base-content/40">One-time purchase</p>
-            )}
+            {
+              entitlements.hasSubscription && (
+                <p class="text-xs text-base-content/40">
+                  Included with monthly membership
+                </p>
+              )
+            }
+            {
+              !entitlements.hasSubscription && entitlements.hasProgramme && (
+                <p class="text-xs text-base-content/40">One-time purchase</p>
+              )
+            }
           </div>
-          {!entitlements.hasProgramme && (
-            <a href="/subscribe?product=12week_programme" class="btn btn-outline btn-xs shrink-0">Add</a>
-          )}
+          {
+            !entitlements.hasProgramme && (
+              <a
+                href="/subscribe?product=12week_programme"
+                class="btn btn-outline btn-xs shrink-0"
+              >
+                Add
+              </a>
+            )
+          }
         </div>
 
-        <!-- Meal plan -->
+        {/* Meal plan */}
         <div class="flex items-center gap-3 py-4">
-          {entitlements.hasSubscription ? (
-            <div class="tooltip tooltip-right shrink-0" data-tip="Included with your monthly membership">
-              <span class="badge badge-success badge-sm cursor-help">Included</span>
-            </div>
-          ) : (
-            <span class:list={["badge badge-sm shrink-0", entitlements.hasMealPlan ? "badge-success" : "badge-ghost"]}>
-              {entitlements.hasMealPlan ? "Purchased" : "Not purchased"}
-            </span>
-          )}
+          {
+            entitlements.hasSubscription ? (
+              <div
+                class="tooltip tooltip-right shrink-0"
+                data-tip="Included with your monthly membership"
+              >
+                <span class="badge badge-success badge-sm cursor-help">
+                  Included
+                </span>
+              </div>
+            ) : (
+              <span
+                class:list={[
+                  "badge badge-sm shrink-0",
+                  entitlements.hasMealPlan ? "badge-success" : "badge-ghost",
+                ]}
+              >
+                {entitlements.hasMealPlan ? "Purchased" : "Not purchased"}
+              </span>
+            )
+          }
           <div class="flex-1">
             <p class="text-sm font-medium">Meal plan</p>
-            {entitlements.hasSubscription && (
-              <p class="text-xs text-base-content/40">Included with monthly membership</p>
-            )}
-            {!entitlements.hasSubscription && entitlements.hasMealPlan && (
-              <p class="text-xs text-base-content/40">One-time purchase</p>
-            )}
+            {
+              entitlements.hasSubscription && (
+                <p class="text-xs text-base-content/40">
+                  Included with monthly membership
+                </p>
+              )
+            }
+            {
+              !entitlements.hasSubscription && entitlements.hasMealPlan && (
+                <p class="text-xs text-base-content/40">One-time purchase</p>
+              )
+            }
           </div>
-          {!entitlements.hasMealPlan && (
-            <a href="/subscribe?product=meal_plan_pdf" class="btn btn-outline btn-xs shrink-0">Add</a>
-          )}
+          {
+            !entitlements.hasMealPlan && (
+              <a
+                href="/subscribe?product=meal_plan_pdf"
+                class="btn btn-outline btn-xs shrink-0"
+              >
+                Add
+              </a>
+            )
+          }
         </div>
       </div>
 
@@ -238,7 +299,49 @@ const cards = [
       }
     </div>
 
-    <!-- Admin section -->
+    {/* 12-week programme notification (shown for subscribers, dismissible) */}
+    {
+      entitlements.hasSubscription && (
+        <div
+          id="programme-toast"
+          class="fixed bottom-6 right-6 z-50 max-w-sm w-full"
+        >
+          <div class="relative alert bg-base-200 border border-primary/40 shadow-2xl flex-col items-start gap-3 p-5 pt-7 rounded-2xl">
+            <button
+              id="dismiss-toast"
+              class="absolute top-1.5 right-1.5 btn btn-ghost btn-xs btn-circle"
+              aria-label="Dismiss"
+            >
+              <Icon name="lucide:x" class="w-3.5 h-3.5" />
+            </button>
+            <div class="flex items-center gap-3">
+              <div class="indicator shrink-0">
+                <span class="indicator-item badge badge-primary badge-xs animate-pulse rounded-full" />
+                <div class="w-10 h-10 rounded-full flex items-center justify-center">
+                  <Icon
+                    name="lucide:clipboard-list"
+                    class="w-10 h-10 text-primary"
+                  />
+                </div>
+              </div>
+              <div>
+                <p class="font-semibold text-sm leading-snug">
+                  12-week programme included
+                </p>
+                <p class="text-xs text-base-content/50 mt-0.5">
+                  Your membership includes a personalised programme.
+                </p>
+              </div>
+            </div>
+            <a href="/#qualify" class="btn btn-primary btn-sm w-full">
+              Apply
+            </a>
+          </div>
+        </div>
+      )
+    }
+
+    {/* Admin section */}
     {
       user.is_admin && (
         <div class="border border-warning/20 bg-warning/5 rounded-lg p-5">
@@ -246,11 +349,33 @@ const cards = [
             Admin
           </h2>
           <div class="flex flex-wrap gap-2">
-            <a href="/admin" class="btn btn-sm btn-outline">Video library</a>
-            <a href="/admin/upload" class="btn btn-sm btn-outline">Upload video</a>
+            <a href="/admin" class="btn btn-sm btn-outline">
+              Video library
+            </a>
+            <a href="/admin/upload" class="btn btn-sm btn-outline">
+              Upload video
+            </a>
           </div>
         </div>
       )
     }
   </div>
 </DashboardLayout>
+
+<script>
+  const DISMISS_KEY = "breakthru_12week_toast_dismissed";
+  const toast = document.getElementById("programme-toast");
+  const dismissBtn = document.getElementById("dismiss-toast");
+
+  if (toast) {
+    // Hide immediately if previously dismissed
+    if (localStorage.getItem(DISMISS_KEY) === "1") {
+      toast.classList.add("hidden");
+    }
+
+    dismissBtn?.addEventListener("click", () => {
+      localStorage.setItem(DISMISS_KEY, "1");
+      toast.classList.add("hidden");
+    });
+  }
+</script>

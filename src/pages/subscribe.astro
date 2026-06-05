@@ -2,6 +2,7 @@
 import Layout from "../layouts/Layout.astro";
 import Nav from "../components/Nav.astro";
 import Footer from "../components/Footer.astro";
+import { Icon } from "astro-icon/components";
 import config from "../../breakthru.config.json";
 
 const user = Astro.locals.user;
@@ -30,48 +31,48 @@ const tiers = focusProduct
         )}
       </div>
 
-      <div class:list={["grid gap-6", focusProduct ? "grid-cols-1 max-w-md mx-auto" : "grid-cols-1 md:grid-cols-3"]}>
+      <div class:list={["grid gap-6", focusProduct ? "grid-cols-1 max-w-lg mx-auto" : "grid-cols-1 md:grid-cols-3"]}>
         {tiers.map((tier: { tier: string; title: string; description: string; features: string[]; popular: boolean; price: string; billing: string; product: string }) => (
-          <div class:list={["card bg-base-200 border", tier.popular ? "border-primary shadow-lg" : "border-base-300"]}>
+          <div class:list={["card border", tier.popular ? "border-primary shadow-xl bg-base-200 scale-[1.03]" : "border-base-300 bg-base-200/60"]}>
             {tier.popular && (
-              <div class="bg-primary text-primary-content text-center text-xs font-semibold py-1 px-4 rounded-t-2xl">
+              <div class="bg-primary text-primary-content text-center text-xs font-bold py-2 px-4 rounded-t-2xl tracking-widest uppercase">
                 {tier.tier}
               </div>
             )}
-            <div class="card-body gap-4">
+            <div class="card-body gap-5 p-8">
               <div>
-                <p class="text-xs text-base-content/50 uppercase tracking-widest mb-1">{!tier.popular ? tier.tier : ""}</p>
-                <h2 class="card-title text-xl">{tier.title}</h2>
-                <p class="text-sm text-base-content/60 mt-1">{tier.description}</p>
+                {!tier.popular && (
+                  <p class="text-xs text-base-content/40 uppercase tracking-widest mb-1">{tier.tier}</p>
+                )}
+                <h2 class="card-title text-2xl font-bold">{tier.title}</h2>
+                <p class="text-sm text-base-content/60 mt-2 leading-relaxed">{tier.description}</p>
               </div>
 
-              <div>
-                <span class="text-3xl font-bold">{tier.price}</span>
-                <span class="text-sm text-base-content/50 ml-1">{tier.billing}</span>
+              <div class="py-2 border-y border-base-300">
+                <span class="text-4xl font-black">{tier.price}</span>
+                <span class="text-sm text-base-content/40 ml-1">{tier.billing}</span>
               </div>
 
-              <ul class="flex flex-col gap-2">
+              <ul class="flex flex-col gap-3">
                 {tier.features.map((f) => (
-                  <li class="flex items-start gap-2 text-sm">
-                    <svg class="w-4 h-4 text-success mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                    </svg>
+                  <li class="flex items-start gap-3 text-sm">
+                    <Icon name="lucide:check" class="w-4 h-4 text-success mt-0.5 shrink-0" />
                     {f}
                   </li>
                 ))}
               </ul>
 
-              <div class="card-actions mt-auto pt-2">
+              <div class="card-actions mt-2">
                 {user ? (
                   <form method="POST" action={tier.product === "subscription" ? "/api/checkout/subscription" : "/api/checkout/one-time"} class="w-full">
                     <input type="hidden" name="product" value={tier.product} />
-                    <button type="submit" class:list={["btn w-full", tier.popular ? "btn-primary" : "btn-outline"]}>
-                      Get started
+                    <button type="submit" class="btn btn-warning w-full text-warning-content font-bold text-base">
+                      Buy now
                     </button>
                   </form>
                 ) : (
-                  <a href="/login" class:list={["btn w-full", tier.popular ? "btn-primary" : "btn-outline"]}>
-                    Sign in to buy
+                  <a href="/login" class="btn btn-warning w-full text-warning-content font-bold text-base">
+                    Buy now
                   </a>
                 )}
               </div>

@@ -62,7 +62,7 @@ const categoryLabel =
 <DashboardLayout title={`${video.title} — Breakthru`}>
   <main class="min-h-screen px-6 py-10">
     <div class="max-w-4xl mx-auto">
-      <!-- Breadcrumbs -->
+      {/* Breadcrumbs */}
       <div class="breadcrumbs text-sm mb-6">
         <ul>
           <li><a href="/videos">Library</a></li>
@@ -73,7 +73,7 @@ const categoryLabel =
         </ul>
       </div>
 
-      <!-- Player -->
+      {/* Player */}
       <div class="rounded-xl overflow-hidden mb-6 bg-black aspect-video">
         <mux-player
           playback-id={video.mux_playback_id}
@@ -85,7 +85,7 @@ const categoryLabel =
           style="width:100%;height:100%;"></mux-player>
       </div>
 
-      <!-- Video info -->
+      {/* Video info */}
       <div class="mb-10">
         <span class="badge badge-outline capitalize text-xs mb-2"
           >{video.category}</span
@@ -98,7 +98,7 @@ const categoryLabel =
         }
       </div>
 
-      <!-- Up next -->
+      {/* Up next */}
       {
         upNext.length > 0 && (
           <section>
@@ -121,7 +121,7 @@ const categoryLabel =
                       {v.mux_playback_id &&
                       upNextThumbMap[v.mux_playback_id] ? (
                         <img
-                          src={`https://image.mux.com/${v.mux_playback_id}/thumbnail.jpg?token=${upNextThumbMap[v.mux_playback_id]}&width=320`}
+                          src={`https://image.mux.com/${v.mux_playback_id}/thumbnail.jpg?token=${upNextThumbMap[v.mux_playback_id]}&width=320&time=10`}
                           alt={v.title}
                           class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                           loading="lazy"

@@ -27,13 +27,13 @@ const { title = "Member's Zone — Breakthru" } = Astro.props;
     />
   </head>
   <body class="h-full bg-base-100">
-    <!-- DaisyUI drawer: sidebar on desktop, slide-out on mobile -->
+    {/* DaisyUI drawer: sidebar on desktop, slide-out on mobile */}
     <div class="drawer lg:drawer-open h-full">
       <input id="dashboard-drawer" type="checkbox" class="drawer-toggle" />
 
-      <!-- Page content -->
+      {/* Page content */}
       <div class="drawer-content flex flex-col h-full overflow-hidden">
-        <!-- Mobile top bar -->
+        {/* Mobile top bar */}
         <header
           class="lg:hidden flex items-center gap-3 px-4 py-3 border-b border-base-300 bg-base-200 sticky top-0 z-30"
         >
@@ -47,13 +47,13 @@ const { title = "Member's Zone — Breakthru" } = Astro.props;
           <span class="font-semibold text-sm">Member's Zone</span>
         </header>
 
-        <!-- Main content area -->
+        {/* Main content area */}
         <main class="flex-1 overflow-y-auto">
           <slot />
         </main>
       </div>
 
-      <!-- Sidebar -->
+      {/* Sidebar */}
       <div class="drawer-side z-40">
         <label
           for="dashboard-drawer"

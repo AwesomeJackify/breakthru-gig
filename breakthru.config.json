@@ -87,6 +87,14 @@
     "tagline": "Online personal training by Myer Bevan — former NZ international footballer"
   },
 
+  "videoCategories": [
+    { "value": "daily",    "label": "Daily workouts" },
+    { "value": "partner",  "label": "Partner workouts" },
+    { "value": "15min",    "label": "15 minute workouts" },
+    { "value": "travel",   "label": "Travel friendly workouts" },
+    { "value": "specific", "label": "Specific workouts" }
+  ],
+
   "forms": {
     "leadQualification": {
       "recipientEmail": "hello@breakthru.fit",

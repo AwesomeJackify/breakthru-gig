@@ -1,5 +1,7 @@
 ---
 import DashboardLayout from "../../layouts/DashboardLayout.astro";
+import { Icon } from "astro-icon/components";
+import config from "../../../breakthru.config.json";
 
 const supabase = Astro.locals.supabase;
 
@@ -11,9 +13,12 @@ const { data: videos } = await supabase
 const total = videos?.length ?? 0;
 const readyCount = videos?.filter((v: { status: string }) => v.status === "ready").length ?? 0;
 const processingCount = videos?.filter((v: { status: string }) => v.status === "processing" || v.status === "uploading").length ?? 0;
-const workoutsCount = videos?.filter((v: { status: string; category: string }) => v.status === "ready" && v.category === "workouts").length ?? 0;
-const nutritionCount = videos?.filter((v: { status: string; category: string }) => v.status === "ready" && v.category === "nutrition").length ?? 0;
-const mindsetCount = videos?.filter((v: { status: string; category: string }) => v.status === "ready" && v.category === "mindset").length ?? 0;
+const countByCategory = Object.fromEntries(
+  config.videoCategories.map((cat) => [
+    cat.value,
+    videos?.filter((v: { status: string; category: string }) => v.status === "ready" && v.category === cat.value).length ?? 0,
+  ]),
+);
 
 const hasInProgress = processingCount > 0;
 
@@ -31,14 +36,12 @@ const statusBadge: Record<string, string> = {
       <div class="flex items-center justify-between mb-6">
         <h1 class="text-3xl font-bold">Video library</h1>
         <a href="/admin/upload" class="btn btn-primary gap-2">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-          </svg>
+          <Icon name="lucide:plus" class="w-4 h-4" />
           Upload video
         </a>
       </div>
 
-      <!-- Stats -->
+      {/* Stats */}
       <div class="stats stats-horizontal shadow w-full mb-8 border border-base-300">
         <div class="stat">
           <div class="stat-title">Total videos</div>
@@ -61,9 +64,12 @@ const statusBadge: Record<string, string> = {
         <div class="stat">
           <div class="stat-title">By category</div>
           <div class="stat-desc mt-1 flex flex-col gap-1">
-            <span><span class="badge badge-outline badge-xs">Workouts</span> {workoutsCount}</span>
-            <span><span class="badge badge-outline badge-xs">Nutrition</span> {nutritionCount}</span>
-            <span><span class="badge badge-outline badge-xs">Mindset</span> {mindsetCount}</span>
+            {config.videoCategories.map((cat) => (
+              <span>
+                <span class="badge badge-outline badge-xs">{cat.label}</span>{" "}
+                {countByCategory[cat.value] ?? 0}
+              </span>
+            ))}
           </div>
         </div>
       </div>
@@ -137,7 +143,7 @@ const statusBadge: Record<string, string> = {
     </div>
   </main>
 
-  <!-- Delete modal -->
+  {/* Delete modal */}
   <dialog id="delete-modal" class="modal">
     <div class="modal-box">
       <h3 class="font-bold text-lg">Delete video</h3>
@@ -154,7 +160,7 @@ const statusBadge: Record<string, string> = {
     <form method="dialog" class="modal-backdrop"><button>close</button></form>
   </dialog>
 
-  <!-- Edit modal -->
+  {/* Edit modal */}
   <dialog id="edit-modal" class="modal">
     <div class="modal-box">
       <h3 class="font-bold text-lg mb-4">Edit video</h3>
@@ -170,9 +176,9 @@ const statusBadge: Record<string, string> = {
         <fieldset class="fieldset">
           <legend class="fieldset-legend">Category</legend>
           <select id="edit-category" class="select w-full">
-            <option value="workouts">Workouts</option>
-            <option value="nutrition">Nutrition</option>
-            <option value="mindset">Mindset</option>
+            {config.videoCategories.map((cat) => (
+              <option value={cat.value}>{cat.label}</option>
+            ))}
           </select>
         </fieldset>
         <fieldset class="fieldset">
