@@ -6,6 +6,7 @@ import {
   getThumbnailToken,
   getStoryboardToken,
 } from "../../lib/mux";
+import config from "../../../breakthru.config.json";
 
 const { id } = Astro.params;
 const user = Astro.locals.user!;
@@ -13,7 +14,9 @@ const supabase = Astro.locals.supabase;
 
 const { data: video } = await supabase
   .from("videos")
-  .select("id, title, description, category, access, mux_playback_id, status")
+  .select(
+    "id, title, description, category, access, mux_playback_id, status, thumbnail_time",
+  )
   .eq("id", id)
   .eq("status", "ready")
   .single();
@@ -30,7 +33,9 @@ if (!allowed) return Astro.redirect("/subscribe");
 // Up-next videos from same category
 const { data: relatedVideos } = await supabase
   .from("videos")
-  .select("id, title, description, mux_playback_id, duration, category")
+  .select(
+    "id, title, description, mux_playback_id, duration, category, thumbnail_time",
+  )
   .eq("status", "ready")
   .eq("category", video.category)
   .neq("id", video.id)
@@ -38,24 +43,44 @@ const { data: relatedVideos } = await supabase
 
 const upNext = relatedVideos ?? [];
 
-// Generate all tokens in parallel (local JWT signing — no network calls)
-const upNextIds = upNext
-  .map((v: { mux_playback_id: string }) => v.mux_playback_id)
-  .filter(Boolean);
+type UpNext = {
+  id: string;
+  title: string;
+  description: string;
+  mux_playback_id: string;
+  duration: number;
+  category: string;
+  thumbnail_time: number;
+};
 
-const [playbackToken, thumbnailToken, storyboardToken, ...upNextThumbTokens] =
+// Generate all tokens in parallel (local JWT signing — no network calls).
+// posterToken bakes in the chosen cover time so the player's poster shows the
+// selected frame; thumbnailToken stays generic for the player's own use.
+const [playbackToken, posterToken, thumbnailToken, storyboardToken] =
   await Promise.all([
     getPlaybackToken(video.mux_playback_id),
+    getThumbnailToken(video.mux_playback_id, video.thumbnail_time ?? 10),
     getThumbnailToken(video.mux_playback_id),
     getStoryboardToken(video.mux_playback_id),
-    ...upNextIds.map((pid: string) => getThumbnailToken(pid)),
   ]);
 
-const upNextThumbMap: Record<string, string> = Object.fromEntries(
-  upNextIds.map((pid: string, i: number) => [pid, upNextThumbTokens[i]]),
+const posterUrl = `https://image.mux.com/${video.mux_playback_id}/thumbnail.jpg?token=${posterToken}`;
+
+// Up-next covers — each token bakes in that video's own cover time.
+const upNextThumbMap: Record<string, string> = {};
+await Promise.all(
+  (upNext as UpNext[])
+    .filter((v) => v.mux_playback_id)
+    .map(async (v) => {
+      upNextThumbMap[v.mux_playback_id] = await getThumbnailToken(
+        v.mux_playback_id,
+        v.thumbnail_time ?? 10,
+      );
+    }),
 );
 
 const categoryLabel =
+  config.videoCategories.find((c) => c.value === video.category)?.label ??
   video.category.charAt(0).toUpperCase() + video.category.slice(1);
 ---
 
@@ -80,6 +105,7 @@ const categoryLabel =
           playback-token={playbackToken}
           thumbnail-token={thumbnailToken}
           storyboard-token={storyboardToken}
+          poster={posterUrl}
           metadata-video-title={video.title}
           metadata-viewer-user-id={user.id}
           style="width:100%;height:100%;"></mux-player>
@@ -87,9 +113,7 @@ const categoryLabel =
 
       {/* Video info */}
       <div class="mb-10">
-        <span class="badge badge-outline capitalize text-xs mb-2"
-          >{video.category}</span
-        >
+        <span class="badge badge-outline text-xs mb-2">{categoryLabel}</span>
         <h1 class="text-2xl font-bold">{video.title}</h1>
         {
           video.description && (
@@ -112,6 +136,7 @@ const categoryLabel =
                   mux_playback_id: string;
                   duration: number;
                   category: string;
+                  thumbnail_time: number;
                 }) => (
                   <a
                     href={`/videos/${v.id}`}
@@ -121,7 +146,7 @@ const categoryLabel =
                       {v.mux_playback_id &&
                       upNextThumbMap[v.mux_playback_id] ? (
                         <img
-                          src={`https://image.mux.com/${v.mux_playback_id}/thumbnail.jpg?token=${upNextThumbMap[v.mux_playback_id]}&width=320&time=10`}
+                          src={`https://image.mux.com/${v.mux_playback_id}/thumbnail.jpg?token=${upNextThumbMap[v.mux_playback_id]}`}
                           alt={v.title}
                           class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                           loading="lazy"

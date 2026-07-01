@@ -88,11 +88,12 @@
   },
 
   "videoCategories": [
-    { "value": "daily",    "label": "Daily workouts" },
-    { "value": "partner",  "label": "Partner workouts" },
-    { "value": "15min",    "label": "15 minute workouts" },
-    { "value": "travel",   "label": "Travel friendly workouts" },
-    { "value": "specific", "label": "Specific workouts" }
+    { "value": "daily",    "label": "Daily workouts",                     "comingSoon": false },
+    { "value": "partner",  "label": "Partner workouts",                   "comingSoon": false },
+    { "value": "15min",    "label": "15 minute workouts",                 "comingSoon": false },
+    { "value": "travel",   "label": "Travel friendly workouts",           "comingSoon": false },
+    { "value": "specific", "label": "Meal ideas",                         "comingSoon": false },
+    { "value": "boxing",   "label": "Boxing fundamentals - Duken Williams", "comingSoon": true }
   ],
 
   "forms": {

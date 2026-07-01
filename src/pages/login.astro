@@ -6,6 +6,8 @@ import Footer from "../components/Footer.astro";
 if (Astro.locals.user) {
   return Astro.redirect("/dashboard");
 }
+
+const urlError = Astro.url.searchParams.get("error");
 ---
 
 <Layout
@@ -21,6 +23,10 @@ if (Astro.locals.user) {
           Sign in to access your Breakthru portal.
         </p>
       </div>
+
+      {urlError && (
+        <div class="alert alert-error mb-6 text-sm">{urlError}</div>
+      )}
 
       <div role="tablist" class="tabs tabs-border mb-6">
         <button
@@ -174,6 +180,11 @@ if (Astro.locals.user) {
         email: (form.elements.namedItem("email") as HTMLInputElement).value,
         password: (form.elements.namedItem("password") as HTMLInputElement)
           .value,
+        options: {
+          // Confirmation link returns here; the callback exchanges the code
+          // for a session and forwards to /dashboard already logged in.
+          emailRedirectTo: `${window.location.origin}/api/auth/callback`,
+        },
       });
       if (error) {
         errorEl.textContent = error.message;

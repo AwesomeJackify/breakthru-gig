@@ -17,24 +17,12 @@ if (!entitlements.hasSubscription && !entitlements.hasProgramme) {
 const { data: videos } = await supabase
   .from("videos")
   .select(
-    "id, title, description, category, access, mux_playback_id, duration, status",
+    "id, title, description, category, access, mux_playback_id, duration, status, thumbnail_time",
   )
   .eq("status", "ready")
   .order("created_at", { ascending: false });
 
 const allVideos = videos ?? [];
-
-// Generate thumbnail tokens in parallel (local JWT signing — no network calls)
-const thumbTokens: Record<string, string> = {};
-await Promise.all(
-  allVideos
-    .filter((v: { mux_playback_id: string }) => v.mux_playback_id)
-    .map(async (v: { mux_playback_id: string }) => {
-      thumbTokens[v.mux_playback_id] = await getThumbnailToken(
-        v.mux_playback_id,
-      );
-    }),
-);
 
 const videoCategories = config.videoCategories;
 
@@ -45,7 +33,23 @@ type Video = {
   category: string;
   mux_playback_id: string;
   duration: number;
+  thumbnail_time: number;
 };
+
+// Generate thumbnail tokens in parallel (local JWT signing — no network calls).
+// The cover frame time is baked into each token (Mux ignores ?time= on signed
+// URLs), so each video gets a token keyed to its own thumbnail_time.
+const thumbTokens: Record<string, string> = {};
+await Promise.all(
+  (allVideos as Video[])
+    .filter((v) => v.mux_playback_id)
+    .map(async (v) => {
+      thumbTokens[v.mux_playback_id] = await getThumbnailToken(
+        v.mux_playback_id,
+        v.thumbnail_time ?? 10,
+      );
+    }),
+);
 
 const videosByCategory = Object.fromEntries(
   videoCategories.map((cat) => [
@@ -91,7 +95,7 @@ function formatDuration(s: number) {
                 data-index={i}
               >
                 <img
-                  src={`https://image.mux.com/${video.mux_playback_id}/thumbnail.jpg?token=${thumbTokens[video.mux_playback_id]}&width=1600&time=10`}
+                  src={`https://image.mux.com/${video.mux_playback_id}/thumbnail.jpg?token=${thumbTokens[video.mux_playback_id]}`}
                   alt={video.title}
                   class="absolute inset-0 w-full h-full object-cover"
                 />
@@ -166,6 +170,36 @@ function formatDuration(s: number) {
         {/* Category rows */}
         <div class="mt-8 space-y-10">
           {videoCategories.map((cat) => {
+            if (cat.comingSoon) {
+              return (
+                <section>
+                  <h2 class="text-lg font-semibold px-8 md:px-14 mb-3 text-base-content/90 flex items-center gap-2">
+                    {cat.label}
+                    <span class="badge badge-outline badge-sm">Coming soon</span>
+                  </h2>
+                  <div class="overflow-x-auto scrollbar-hide">
+                    <div class="flex gap-3 px-8 md:px-14 pb-2 w-max">
+                      {[0, 1, 2, 3].map(() => (
+                        <div
+                          class="shrink-0 rounded-lg overflow-hidden bg-base-300 relative"
+                          style="width: clamp(160px, 22vw, 260px)"
+                        >
+                          <div class="aspect-video w-full relative">
+                            <div class="skeleton w-full h-full absolute inset-0 opacity-40" />
+                            <div class="absolute inset-0 flex items-center justify-center">
+                              <Icon
+                                name="lucide:lock"
+                                class="w-6 h-6 text-base-content/30"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </section>
+              );
+            }
             const row = videosByCategory[cat.value];
             if (!row || row.length === 0) return null;
             return (
@@ -185,7 +219,7 @@ function formatDuration(s: number) {
                           {video.mux_playback_id &&
                           thumbTokens[video.mux_playback_id] ? (
                             <img
-                              src={`https://image.mux.com/${video.mux_playback_id}/thumbnail.jpg?token=${thumbTokens[video.mux_playback_id]}&width=480&time=10`}
+                              src={`https://image.mux.com/${video.mux_playback_id}/thumbnail.jpg?token=${thumbTokens[video.mux_playback_id]}`}
                               alt={video.title}
                               class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                               loading="lazy"

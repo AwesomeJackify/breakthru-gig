@@ -13,7 +13,7 @@ export const GET: APIRoute = async ({ locals, url }) => {
   const admin = createSupabaseAdmin();
   const { data: video } = await admin
     .from("videos")
-    .select("id, status, mux_playback_id, mux_asset_id")
+    .select("id, status, mux_playback_id, mux_asset_id, duration")
     .eq("mux_upload_id", uploadId)
     .single();
 
@@ -23,7 +23,7 @@ export const GET: APIRoute = async ({ locals, url }) => {
   if (video.status === "ready" && video.mux_playback_id) {
     const thumbToken = await getThumbnailToken(video.mux_playback_id);
     return new Response(
-      JSON.stringify({ status: "ready", videoId: video.id, playbackId: video.mux_playback_id, thumbToken }),
+      JSON.stringify({ status: "ready", videoId: video.id, playbackId: video.mux_playback_id, thumbToken, duration: video.duration ?? null }),
       { headers: { "Content-Type": "application/json" } },
     );
   }
@@ -56,7 +56,7 @@ export const GET: APIRoute = async ({ locals, url }) => {
 
         const thumbToken = playbackId ? await getThumbnailToken(playbackId) : null;
         return new Response(
-          JSON.stringify({ status: "ready", videoId: video.id, playbackId, thumbToken }),
+          JSON.stringify({ status: "ready", videoId: video.id, playbackId, thumbToken, duration: asset.duration ? Math.round(asset.duration) : null }),
           { headers: { "Content-Type": "application/json" } },
         );
       }

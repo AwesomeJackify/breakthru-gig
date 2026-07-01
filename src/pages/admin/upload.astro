@@ -75,15 +75,45 @@ import config from "../../../breakthru.config.json";
           <div id="ready-area" class="hidden mt-6">
             <div
               id="thumbnail-preview"
-              class="aspect-video bg-base-300 rounded-xl overflow-hidden mb-4"
+              class="aspect-video bg-base-300 rounded-xl overflow-hidden mb-3"
             >
               <img
                 id="thumbnail-img"
                 src=""
-                alt="Video thumbnail"
+                alt="Video cover"
                 class="w-full h-full object-cover"
               />
             </div>
+
+            {/* Cover frame picker — drag to choose the cover, like Instagram */}
+            <div id="cover-picker" class="mb-4">
+              <div class="flex items-center justify-between mb-1">
+                <span class="text-sm font-medium">Cover frame</span>
+                <span
+                  id="cover-time-label"
+                  class="text-xs text-base-content/50 font-mono">0:10</span
+                >
+              </div>
+              <input
+                id="cover-slider"
+                type="range"
+                min="0"
+                max="10"
+                step="0.5"
+                value="10"
+                class="range range-primary range-sm w-full"
+              />
+              <div class="flex items-center justify-between mt-1">
+                <p class="text-xs text-base-content/40">
+                  Drag to choose the frame shown as the cover.
+                </p>
+                <span
+                  id="cover-saved"
+                  class="badge badge-success badge-sm hidden">Cover saved</span
+                >
+              </div>
+            </div>
+
             <a id="view-link" href="#" class="btn btn-primary w-full">View video</a>
           </div>
 
@@ -128,7 +158,10 @@ import config from "../../../breakthru.config.json";
                 <legend class="fieldset-legend">Category</legend>
                 <select id="meta-category" class="select w-full">
                   {config.videoCategories.map((cat) => (
-                    <option value={cat.value}>{cat.label}</option>
+                    <option value={cat.value} disabled={cat.comingSoon}>
+                      {cat.label}
+                      {cat.comingSoon ? " (coming soon)" : ""}
+                    </option>
                   ))}
                 </select>
               </fieldset>
@@ -175,6 +208,9 @@ import config from "../../../breakthru.config.json";
   const processingArea = document.getElementById("processing-area")!;
   const readyArea = document.getElementById("ready-area")!;
   const thumbnailImg = document.getElementById("thumbnail-img") as HTMLImageElement;
+  const coverSlider = document.getElementById("cover-slider") as HTMLInputElement;
+  const coverTimeLabel = document.getElementById("cover-time-label")!;
+  const coverSaved = document.getElementById("cover-saved")!;
   const viewLink = document.getElementById("view-link") as HTMLAnchorElement;
   const errorArea = document.getElementById("error-area")!;
   const errorMsg = document.getElementById("error-msg")!;
@@ -191,12 +227,62 @@ import config from "../../../breakthru.config.json";
   let currentUploadId: string | null = null;
   let currentVideoId: string | null = null;
   let pollingTimer: ReturnType<typeof setInterval> | null = null;
+  let coverPreviewTimer: ReturnType<typeof setTimeout> | null = null;
 
   function formatBytes(bytes: number) {
     if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
     if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
     return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
   }
+
+  function formatClock(s: number) {
+    const total = Math.round(s);
+    return `${Math.floor(total / 60)}:${String(total % 60).padStart(2, "0")}`;
+  }
+
+  function coverUrl(time: number) {
+    // Server signs a token for this exact frame time and redirects to Mux.
+    return `/api/admin/videos/${currentVideoId}/thumbnail?time=${time}`;
+  }
+
+  // Wire up the cover-frame picker once the video is ready.
+  function initCoverPicker(duration: number | null) {
+    const max = duration && duration > 0 ? duration : 10;
+    const initial = Math.min(10, max);
+    coverSlider.max = String(max);
+    coverSlider.step = max > 60 ? "1" : "0.5";
+    coverSlider.value = String(initial);
+    coverTimeLabel.textContent = formatClock(initial);
+    thumbnailImg.src = coverUrl(initial);
+  }
+
+  async function saveCover(time: number) {
+    if (!currentVideoId) return;
+    coverSaved.classList.add("hidden");
+    const res = await fetch(`/api/admin/videos/${currentVideoId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ thumbnail_time: time }),
+    });
+    if (res.ok) {
+      coverSaved.classList.remove("hidden");
+      setTimeout(() => coverSaved.classList.add("hidden"), 2000);
+    }
+  }
+
+  // Live scrub the preview while dragging (debounced so we don't hammer Mux)...
+  coverSlider.addEventListener("input", () => {
+    const t = Number(coverSlider.value);
+    coverTimeLabel.textContent = formatClock(t);
+    if (coverPreviewTimer) clearTimeout(coverPreviewTimer);
+    coverPreviewTimer = setTimeout(() => {
+      if (currentVideoId) thumbnailImg.src = coverUrl(t);
+    }, 150);
+  });
+  // ...and persist the chosen frame on release.
+  coverSlider.addEventListener("change", () => {
+    saveCover(Number(coverSlider.value));
+  });
 
   function showError(msg: string) {
     progressArea.classList.add("hidden");
@@ -231,12 +317,13 @@ import config from "../../../breakthru.config.json";
           videoId: string;
           playbackId: string;
           thumbToken: string;
+          duration: number | null;
         };
         if (data.status === "ready") {
           clearInterval(pollingTimer!);
           processingArea.classList.add("hidden");
           currentVideoId = data.videoId;
-          thumbnailImg.src = `https://image.mux.com/${data.playbackId}/thumbnail.jpg?token=${data.thumbToken}&width=640&time=10`;
+          initCoverPicker(data.duration);
           viewLink.href = `/videos/${data.videoId}`;
           readyArea.classList.remove("hidden");
           // Auto-save all metadata
@@ -361,6 +448,7 @@ import config from "../../../breakthru.config.json";
     updateBtn.classList.add("hidden");
     fileInput.value = "";
     fileInput.classList.remove("hidden");
+    coverSaved.classList.add("hidden");
     currentUploadId = null;
     currentVideoId = null;
   });

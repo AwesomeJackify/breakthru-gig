@@ -56,6 +56,7 @@ export const PATCH: APIRoute = async ({ locals, params, request }) => {
     description?: string;
     category?: string;
     access?: string;
+    thumbnail_time?: number;
   };
 
   const admin = createSupabaseAdmin();
@@ -67,12 +68,18 @@ export const PATCH: APIRoute = async ({ locals, params, request }) => {
     .eq("id", id)
     .single();
 
-  const { error } = await admin.from("videos").update({
-    title: body.title,
-    description: body.description,
-    category: body.category,
-    access: body.access,
-  }).eq("id", id);
+  // Only write fields that were actually provided, so a cover-only save
+  // doesn't blank out the title/category.
+  const updates: Record<string, unknown> = {};
+  if (body.title !== undefined) updates.title = body.title;
+  if (body.description !== undefined) updates.description = body.description;
+  if (body.category !== undefined) updates.category = body.category;
+  if (body.access !== undefined) updates.access = body.access;
+  if (body.thumbnail_time !== undefined) {
+    updates.thumbnail_time = Math.max(0, body.thumbnail_time);
+  }
+
+  const { error } = await admin.from("videos").update(updates).eq("id", id);
 
   if (error) return new Response("Failed to update", { status: 500 });
 

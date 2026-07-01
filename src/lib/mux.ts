@@ -24,10 +24,17 @@ export async function getPlaybackToken(playbackId: string): Promise<string> {
   });
 }
 
-export async function getThumbnailToken(playbackId: string): Promise<string> {
+export async function getThumbnailToken(
+  playbackId: string,
+  time?: number,
+): Promise<string> {
+  // For SIGNED playback, Mux ignores query params like ?time= on the image URL.
+  // The frame timestamp must be baked into the token's claims — otherwise every
+  // thumbnail comes back as the same default frame regardless of ?time=.
   return mux.jwt.signPlaybackId(playbackId, {
     type: "thumbnail",
     expiration: "24h",
+    ...(time != null ? { params: { time: String(time) } } : {}),
   });
 }
 
