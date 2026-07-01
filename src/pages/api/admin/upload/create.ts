@@ -15,7 +15,7 @@ export const POST: APIRoute = async ({ locals, request }) => {
   }
 
   const origin = new URL(request.url).origin;
-  const upload = await createUploadUrl(origin);
+  const upload = await createUploadUrl(origin, body.title?.trim());
 
   const admin = createSupabaseAdmin();
   const { data: video, error } = await admin.from("videos").insert({

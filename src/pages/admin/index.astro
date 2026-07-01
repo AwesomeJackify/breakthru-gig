@@ -7,7 +7,7 @@ const supabase = Astro.locals.supabase;
 
 const { data: videos } = await supabase
   .from("videos")
-  .select("id, title, description, category, access, status, created_at")
+  .select("id, title, description, category, access, status, created_at, duration, thumbnail_time")
   .order("created_at", { ascending: false });
 
 const total = videos?.length ?? 0;
@@ -93,7 +93,7 @@ const statusBadge: Record<string, string> = {
               </tr>
             </thead>
             <tbody>
-              {videos.map((v: { id: string; title: string; description: string; category: string; access: string; status: string; created_at: string }) => (
+              {videos.map((v: { id: string; title: string; description: string; category: string; access: string; status: string; created_at: string; duration: number | null; thumbnail_time: number | null }) => (
                 <tr class="hover">
                   <td class="font-medium max-w-xs truncate">{v.title}</td>
                   <td><span class="badge badge-outline capitalize">{v.category}</span></td>
@@ -122,6 +122,9 @@ const statusBadge: Record<string, string> = {
                         data-edit-description={v.description ?? ""}
                         data-edit-category={v.category}
                         data-edit-access={v.access}
+                        data-edit-status={v.status}
+                        data-edit-duration={v.duration ?? 0}
+                        data-edit-thumbnail-time={v.thumbnail_time ?? 10}
                       >
                         Edit
                       </button>
@@ -188,6 +191,20 @@ const statusBadge: Record<string, string> = {
             <option value="programme_12week">12-week programme only</option>
           </select>
         </fieldset>
+
+        {/* Cover frame picker — only usable once the video is ready */}
+        <fieldset id="edit-cover" class="fieldset hidden">
+          <legend class="fieldset-legend">
+            Cover frame
+            <span id="edit-cover-time" class="text-xs text-base-content/50 font-mono ml-1">0:10</span>
+          </legend>
+          <div class="aspect-video bg-base-300 rounded-lg overflow-hidden mb-2">
+            <img id="edit-cover-img" src="" alt="Video cover" class="w-full h-full object-cover" />
+          </div>
+          <input id="edit-cover-slider" type="range" min="0" max="10" step="0.5" value="10" class="range range-primary range-sm w-full" />
+          <p class="text-xs text-base-content/40 mt-1">Drag to choose the frame shown as the cover.</p>
+        </fieldset>
+
         <div id="edit-error" class="alert alert-error hidden text-sm"></div>
       </div>
       <div class="modal-action">
@@ -239,6 +256,28 @@ const statusBadge: Record<string, string> = {
   const editAccessEl = document.getElementById("edit-access");
   const editErrorEl = document.getElementById("edit-error");
   const confirmEditBtn = document.getElementById("confirm-edit");
+  const editCover = document.getElementById("edit-cover");
+  const editCoverImg = document.getElementById("edit-cover-img");
+  const editCoverSlider = document.getElementById("edit-cover-slider");
+  const editCoverTime = document.getElementById("edit-cover-time");
+  let coverPreviewTimer = null;
+
+  const clock = (s) => {
+    const t = Math.round(s);
+    return Math.floor(t / 60) + ":" + String(t % 60).padStart(2, "0");
+  };
+
+  // Live scrub the cover preview while dragging (debounced).
+  editCoverSlider.addEventListener("input", () => {
+    const t = Number(editCoverSlider.value);
+    editCoverTime.textContent = clock(t);
+    if (coverPreviewTimer) clearTimeout(coverPreviewTimer);
+    coverPreviewTimer = setTimeout(() => {
+      if (pendingEditId) {
+        editCoverImg.src = `/api/admin/videos/${pendingEditId}/thumbnail?time=${t}`;
+      }
+    }, 150);
+  });
 
   document.querySelectorAll("[data-edit-id]").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -250,6 +289,23 @@ const statusBadge: Record<string, string> = {
       editErrorEl.classList.add("hidden");
       confirmEditBtn.textContent = "Save changes";
       confirmEditBtn.removeAttribute("disabled");
+
+      // Cover picker is only usable for ready videos (they have a playback id).
+      if (btn.dataset.editStatus === "ready") {
+        const duration = Number(btn.dataset.editDuration || "0");
+        const thumbTime = Number(btn.dataset.editThumbnailTime || "10");
+        const max = duration > 0 ? duration : 10;
+        const initial = Math.min(thumbTime, max);
+        editCoverSlider.max = String(max);
+        editCoverSlider.step = max > 60 ? "1" : "0.5";
+        editCoverSlider.value = String(initial);
+        editCoverTime.textContent = clock(initial);
+        editCoverImg.src = `/api/admin/videos/${pendingEditId}/thumbnail?time=${initial}`;
+        editCover.classList.remove("hidden");
+      } else {
+        editCover.classList.add("hidden");
+      }
+
       editModal.showModal();
     });
   });
@@ -272,6 +328,9 @@ const statusBadge: Record<string, string> = {
         description: editDescEl.value,
         category: editCatEl.value,
         access: editAccessEl.value,
+        ...(editCover.classList.contains("hidden")
+          ? {}
+          : { thumbnail_time: Number(editCoverSlider.value) }),
       }),
     });
     if (res.ok) {

@@ -7,11 +7,13 @@ export const mux = new Mux({
   jwtPrivateKey: import.meta.env.MUX_PRIVATE_KEY,
 });
 
-export async function createUploadUrl(corsOrigin: string) {
+export async function createUploadUrl(corsOrigin: string, title?: string) {
   const upload = await mux.video.uploads.create({
     cors_origin: corsOrigin,
     new_asset_settings: {
       playback_policy: ["signed"],
+      // meta.title is what the Mux dashboard shows as the asset title.
+      ...(title ? { meta: { title } } : {}),
     },
   });
   return upload;
@@ -59,7 +61,9 @@ export async function updateAssetMetadata(
   description?: string,
 ) {
   await mux.video.assets.update(assetId, {
-    // passthrough is the standard Mux field for custom metadata — shows in dashboard
+    // meta.title is the field the Mux dashboard displays as the asset title.
+    meta: { title },
+    // passthrough keeps the full record (incl. description) as custom metadata.
     passthrough: JSON.stringify({
       title,
       ...(description ? { description } : {}),
