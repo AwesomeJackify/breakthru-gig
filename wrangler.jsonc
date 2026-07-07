@@ -6,5 +6,11 @@
 	"name": "breakthru-gig-video-portal",
 	"assets": {
 		"directory": "./dist",
-	}
+	},
+	"observability": {
+    "logs": {
+      "enabled": false,
+      "invocation_logs": true
+    }
+  }
 }
