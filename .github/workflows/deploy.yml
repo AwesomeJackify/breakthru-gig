@@ -19,8 +19,24 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Validate public build vars
+        run: |
+          if [ -z "$PUBLIC_SUPABASE_URL" ] || [ -z "$PUBLIC_SUPABASE_ANON_KEY" ]; then
+            echo "PUBLIC_SUPABASE_URL and PUBLIC_SUPABASE_ANON_KEY must be set as repository secrets."
+            echo "They are baked into the client bundle at build time; without them the browser Supabase client (login/signup) is broken."
+            exit 1
+          fi
+        env:
+          PUBLIC_SUPABASE_URL: ${{ secrets.PUBLIC_SUPABASE_URL }}
+          PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.PUBLIC_SUPABASE_ANON_KEY }}
+
       - name: Build
         run: npm run build
+        env:
+          # These PUBLIC_ vars are inlined into the client bundle at build time.
+          # They are the public/anon Supabase keys, safe to expose to the browser.
+          PUBLIC_SUPABASE_URL: ${{ secrets.PUBLIC_SUPABASE_URL }}
+          PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.PUBLIC_SUPABASE_ANON_KEY }}
 
       - name: Validate Cloudflare secrets
         run: |

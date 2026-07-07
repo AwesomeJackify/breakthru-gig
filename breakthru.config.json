@@ -93,7 +93,7 @@
     { "value": "15min",    "label": "15 minute workouts",                 "comingSoon": false },
     { "value": "travel",   "label": "Travel friendly workouts",           "comingSoon": false },
     { "value": "specific", "label": "Specific workouts",                  "comingSoon": false },
-    { "value": "meal",     "label": "Meal ideas",                         "comingSoon": true },
+    { "value": "meal",     "label": "Meal of the week",                   "comingSoon": true },
     { "value": "boxing",   "label": "Boxing fundamentals - Duken Williams", "comingSoon": true }
   ],
 
