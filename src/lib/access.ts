@@ -15,8 +15,11 @@ export async function getUserEntitlements(
       .from("subscriptions")
       .select("status, current_period_end")
       .eq("user_id", userId)
-      .eq("status", "active")
+      // Stripe reports paid-but-in-trial subscriptions as "trialing" — they
+      // have access just like "active" ones.
+      .in("status", ["active", "trialing"])
       .gt("current_period_end", new Date().toISOString())
+      .limit(1)
       .maybeSingle(),
     supabase
       .from("purchases")

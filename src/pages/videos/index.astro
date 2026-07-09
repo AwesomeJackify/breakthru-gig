@@ -1,9 +1,24 @@
 ---
 import DashboardLayout from "../../layouts/DashboardLayout.astro";
+import { Image } from "astro:assets";
+import type { ImageMetadata } from "astro";
 import { Icon } from "astro-icon/components";
 import { getUserEntitlements } from "../../lib/access";
 import { getThumbnailToken } from "../../lib/mux";
 import config from "../../../breakthru.config.json";
+
+// Teaser photos for coming-soon categories — folder name matches the
+// category value (src/assets/images/coming-soon/<value>/*.jpeg).
+const comingSoonGlob = import.meta.glob<{ default: ImageMetadata }>(
+  "../../assets/images/coming-soon/*/*.jpeg",
+  { eager: true },
+);
+function comingSoonImages(catValue: string): ImageMetadata[] {
+  return Object.entries(comingSoonGlob)
+    .filter(([path]) => path.includes(`/coming-soon/${catValue}/`))
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([, mod]) => mod.default);
+}
 
 const user = Astro.locals.user!;
 const supabase = Astro.locals.supabase;
@@ -171,30 +186,48 @@ function formatDuration(s: number) {
         <div class="mt-8 space-y-10">
           {videoCategories.map((cat) => {
             if (cat.comingSoon) {
+              const teasers = comingSoonImages(cat.value);
               return (
                 <section>
-                  <h2 class="text-lg font-semibold px-8 md:px-14 mb-3 text-base-content/90 flex items-center gap-2">
-                    {cat.label}
-                    <span class="badge badge-outline badge-sm">Coming soon</span>
+                  <h2 class="text-lg font-semibold px-8 md:px-14 mb-3 text-base-content/90 flex flex-wrap items-center gap-2 min-w-0">
+                    <span class="min-w-0">{cat.label}</span>
+                    <span class="badge badge-outline badge-sm shrink-0 whitespace-nowrap">
+                      Coming soon
+                    </span>
                   </h2>
                   <div class="overflow-x-auto scrollbar-hide">
                     <div class="flex gap-3 px-8 md:px-14 pb-2 w-max">
-                      {[0, 1, 2, 3].map(() => (
-                        <div
-                          class="shrink-0 rounded-lg overflow-hidden bg-base-300 relative"
-                          style="width: clamp(160px, 22vw, 260px)"
-                        >
-                          <div class="aspect-video w-full relative">
-                            <div class="skeleton w-full h-full absolute inset-0 opacity-40" />
-                            <div class="absolute inset-0 flex items-center justify-center">
-                              <Icon
-                                name="lucide:lock"
-                                class="w-6 h-6 text-base-content/30"
-                              />
+                      {(teasers.length > 0 ? teasers : [null, null, null, null]).map(
+                        (img) => (
+                          <div
+                            class="shrink-0 rounded-lg overflow-hidden bg-base-300 relative"
+                            style="width: clamp(160px, 22vw, 260px)"
+                          >
+                            <div class="aspect-video w-full relative overflow-hidden">
+                              {img ? (
+                                <Image
+                                  src={img}
+                                  alt={`${cat.label} — coming soon`}
+                                  width={520}
+                                  class="absolute inset-0 w-full h-full object-cover"
+                                  loading="lazy"
+                                />
+                              ) : (
+                                <div class="skeleton w-full h-full absolute inset-0 opacity-40" />
+                              )}
+                              <div class="absolute inset-0 bg-black/45 flex items-center justify-center">
+                                <Icon
+                                  name="lucide:lock"
+                                  class:list={[
+                                    "w-6 h-6",
+                                    img ? "text-white/80" : "text-base-content/30",
+                                  ]}
+                                />
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      ))}
+                        ),
+                      )}
                     </div>
                   </div>
                 </section>

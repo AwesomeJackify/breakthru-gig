@@ -98,8 +98,9 @@ const categoryLabel =
         </ul>
       </div>
 
-      {/* Player */}
-      <div class="rounded-xl overflow-hidden mb-6 bg-black aspect-video">
+      {/* Player — content is portrait (9:16); size the frame to the video
+          instead of a 16:9 box so it isn't pillarboxed in black */}
+      <div class="rounded-xl overflow-hidden mb-6 bg-black mx-auto aspect-[9/16] h-[70vh] max-h-[720px] max-w-full">
         <mux-player
           playback-id={video.mux_playback_id}
           playback-token={playbackToken}
@@ -142,7 +143,7 @@ const categoryLabel =
                     href={`/videos/${v.id}`}
                     class="card card-side bg-base-200 hover:bg-base-300 transition-colors overflow-hidden group"
                   >
-                    <figure class="w-40 shrink-0 relative overflow-hidden">
+                    <figure class="w-24 shrink-0 aspect-[9/16] relative overflow-hidden">
                       {v.mux_playback_id &&
                       upNextThumbMap[v.mux_playback_id] ? (
                         <img
@@ -154,14 +155,17 @@ const categoryLabel =
                       ) : (
                         <div class="skeleton w-full h-full min-h-24" />
                       )}
+                      {/* w-fit/h-fit: DaisyUI stretches figure children to
+                          100% — without them this badge becomes a black
+                          overlay across the whole thumbnail */}
                       {v.duration > 0 && (
-                        <span class="absolute bottom-1 right-1 bg-black/80 text-white text-xs px-1 py-px rounded">
+                        <span class="absolute bottom-1 right-1 w-fit h-fit bg-black/80 text-white text-xs px-1 py-px rounded">
                           {Math.floor(v.duration / 60)}:
                           {String(v.duration % 60).padStart(2, "0")}
                         </span>
                       )}
                     </figure>
-                    <div class="card-body p-4">
+                    <div class="card-body p-4 justify-center">
                       <h3 class="font-semibold leading-snug">{v.title}</h3>
                       {v.description && (
                         <p class="text-sm text-base-content/60 line-clamp-2">
