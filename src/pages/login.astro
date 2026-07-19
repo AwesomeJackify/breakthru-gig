@@ -17,7 +17,7 @@ const authNext = requestedNext?.startsWith("/") ? requestedNext : "/dashboard";
   description="Sign in to your Breakthru account."
 >
   <Nav />
-  <main class="min-h-screen flex items-center justify-center px-4 py-24">
+  <main id="auth-page" data-next={authNext} class="min-h-screen flex items-center justify-center px-4 py-24">
     <div class="w-full max-w-md">
       <div class="text-center mb-8">
         <h1 class="text-3xl font-bold mb-2">Welcome back</h1>
@@ -119,8 +119,10 @@ const authNext = requestedNext?.startsWith("/") ? requestedNext : "/dashboard";
   <Footer />
 </Layout>
 
-<script define:vars={{ authNext }}>
+<script>
   import { createBrowserClient } from "@supabase/ssr";
+
+  const authNext = document.getElementById("auth-page")?.dataset.next || "/dashboard";
 
   const supabase = createBrowserClient(
     import.meta.env.PUBLIC_SUPABASE_URL,
