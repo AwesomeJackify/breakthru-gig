@@ -63,7 +63,11 @@ const tiers = focusProduct
               </ul>
 
               <div class="card-actions mt-2">
-                {user ? (
+                {tier.product === "12week_programme" || tier.product === "meal_plan_pdf" ? (
+                  <a href={tier.product === "12week_programme" ? "/programmes/12-week" : "/programmes/eat-like-me"} class="btn btn-warning w-full text-warning-content font-bold text-base">
+                    Buy now
+                  </a>
+                ) : user ? (
                   <form method="POST" action={tier.product === "subscription" ? "/api/checkout/subscription" : "/api/checkout/one-time"} class="w-full">
                     <input type="hidden" name="product" value={tier.product} />
                     <button type="submit" class="btn btn-warning w-full text-warning-content font-bold text-base">

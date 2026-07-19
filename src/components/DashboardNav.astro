@@ -13,8 +13,8 @@ const links = [
 ];
 
 const adminLinks = [
-  { label: "Admin", href: "/admin", icon: "lucide:shield" },
-  { label: "Upload", href: "/admin/upload", icon: "lucide:upload" },
+  { label: "Video library", href: "/admin", icon: "lucide:video" },
+  { label: "Manage members", href: "/admin/members", icon: "lucide:users" },
 ];
 ---
 
@@ -54,7 +54,7 @@ const adminLinks = [
       user.is_admin && (
         <div class="pt-4">
           <p class="px-3 pb-2 text-xs font-semibold text-base-content/40 uppercase tracking-wider">
-            Admin
+            Management
           </p>
           {adminLinks.map((link) => {
             const active = pathname === link.href;

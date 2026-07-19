@@ -49,7 +49,7 @@ const { services } = config;
                 </div>
               )}
               <a
-                href="/login?signup=1"
+                href={s.product === "12week_programme" ? "/programmes/12-week" : s.product === "meal_plan_pdf" ? "/programmes/eat-like-me" : "/login?signup=1"}
                 class={`btn w-full${s.popular ? " btn-primary" : " btn-outline border-white/30 text-white hover:bg-white hover:text-black"}`}
               >
                 Get started

@@ -1,0 +1,51 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import Nav from "../../components/Nav.astro";
+import Footer from "../../components/Footer.astro";
+import config from "../../../breakthru.config.json";
+
+const { programmeCheckout, services } = config;
+const programme = services.tiers.find((tier) => tier.product === "12week_programme");
+---
+
+<Layout title="12 Week Programme — Breakthru" description={programmeCheckout.body}>
+  <Nav />
+  <main class="min-h-screen px-4 py-16 md:py-24">
+    <div class="max-w-5xl mx-auto grid gap-10 lg:grid-cols-[1.15fr_0.85fr] items-start">
+      <section>
+        <p class="text-sm font-semibold uppercase tracking-widest text-primary mb-3">{programmeCheckout.eyebrow}</p>
+        <h1 class="text-4xl md:text-5xl font-bold leading-tight">{programmeCheckout.headline}</h1>
+        <p class="mt-5 text-lg text-base-content/70 leading-relaxed">{programmeCheckout.body}</p>
+
+        <div class="mt-10 card bg-base-200 border border-base-300">
+          <div class="card-body">
+            <p class="text-xs uppercase tracking-widest text-base-content/50">{programme?.tier}</p>
+            <h2 class="text-2xl font-bold">{programme?.title}</h2>
+            <p class="text-base-content/70">{programme?.description}</p>
+            <ul class="mt-2 space-y-2 text-sm">
+              {programme?.features.map((feature) => <li class="flex gap-2"><span class="text-primary">✓</span>{feature}</li>)}
+            </ul>
+          </div>
+        </div>
+
+        <div class="mt-10">
+          <p class="text-sm font-semibold uppercase tracking-widest text-base-content/50 mb-4">{programmeCheckout.whatHappensLabel}</p>
+          <ol class="space-y-3">
+            {programmeCheckout.steps.map((step, index) => <li class="flex gap-3"><span class="badge badge-primary badge-lg">{index + 1}</span><span class="pt-1">{step}</span></li>)}
+          </ol>
+        </div>
+      </section>
+
+      <aside class="card bg-base-200 border border-primary/30 shadow-xl lg:sticky lg:top-24">
+        <div class="card-body gap-5">
+          <h2 class="text-2xl font-bold">{programmeCheckout.paymentHeadline}</h2>
+          <div><span class="text-4xl font-black">{programme?.price}</span><span class="ml-2 text-sm text-base-content/50">{programme?.billing}</span></div>
+          <p class="text-base-content/70">{programmeCheckout.accountRequiredBody}</p>
+          <a href="/login?signup=1&next=/dashboard/checkout/12-week" class="btn btn-primary btn-lg w-full">{programmeCheckout.accountRequiredButton}</a>
+          <a href="/login?next=/dashboard/checkout/12-week" class="btn btn-ghost w-full">{programmeCheckout.accountSignInButton}</a>
+        </div>
+      </aside>
+    </div>
+  </main>
+  <Footer />
+</Layout>

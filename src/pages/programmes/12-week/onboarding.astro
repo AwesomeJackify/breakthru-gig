@@ -1,0 +1,143 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import Nav from "../../../components/Nav.astro";
+import Footer from "../../../components/Footer.astro";
+import { stripe } from "../../../lib/stripe";
+import { getUserEntitlements } from "../../../lib/access";
+import { createSupabaseAdmin } from "../../../lib/supabase";
+import config from "../../../../breakthru.config.json";
+
+const { programmeCheckout, site } = config;
+const sessionId = Astro.url.searchParams.get("session_id");
+const user = Astro.locals.user;
+const memberEntitlements = user
+  ? await getUserEntitlements(user.id, Astro.locals.supabase)
+  : null;
+const isMemberOnboarding = memberEntitlements?.hasSubscription ?? false;
+const isProgrammeOwner = memberEntitlements?.hasProgramme ?? false;
+const { data: existingOnboarding } = user
+  ? await Astro.locals.supabase
+      .from("programme_onboarding")
+      .select("status, submitted_at")
+      .eq("user_id", user.id)
+      .maybeSingle()
+  : { data: null };
+const hasSubmittedForm = !!existingOnboarding;
+let validPayment = isProgrammeOwner;
+let buyerEmail = user?.email ?? "";
+const accessKey = import.meta.env.WEB3FORMS_ACCESS_KEY;
+
+if (sessionId) {
+  try {
+    const session = await stripe.checkout.sessions.retrieve(sessionId);
+    validPayment = session.payment_status === "paid" && session.metadata?.product === "12week_programme";
+    buyerEmail = session.customer_details?.email ?? session.customer_email ?? buyerEmail;
+  } catch {
+    validPayment = false;
+  }
+}
+
+if (!user) {
+  return Astro.redirect(`/login?next=${encodeURIComponent(`/programmes/12-week/onboarding?session_id=${sessionId ?? ""}`)}`);
+}
+
+if (!validPayment) {
+  return Astro.redirect("/dashboard");
+}
+
+// Ensure the completed Stripe checkout is linked to the signed-in member's
+// dashboard, purchase history, and self-service billing record.
+if (user && sessionId && !isMemberOnboarding) {
+  const checkoutEmail = buyerEmail.trim().toLowerCase();
+  if (checkoutEmail && checkoutEmail === user.email.trim().toLowerCase()) {
+    const session = await stripe.checkout.sessions.retrieve(sessionId);
+    const paymentIntentId = session.payment_intent as string | null;
+    const customerId = session.customer as string | null;
+    const admin = createSupabaseAdmin();
+    if (customerId) {
+      await admin.from("profiles").update({ stripe_customer_id: customerId }).eq("id", user.id);
+    }
+    if (paymentIntentId) {
+      const { data: existingPurchase } = await admin
+        .from("purchases")
+        .select("stripe_payment_intent_id")
+        .eq("stripe_payment_intent_id", paymentIntentId)
+        .maybeSingle();
+      if (!existingPurchase) {
+        await admin.from("purchases").insert({
+          user_id: user.id,
+          product: "12week_programme",
+          stripe_payment_intent_id: paymentIntentId,
+        });
+      }
+    }
+  }
+}
+---
+
+<Layout title="Programme onboarding — Breakthru" description={programmeCheckout.onboardingBody}>
+  <Nav />
+  <main class="min-h-screen px-4 py-16 md:py-24">
+    <section class="max-w-2xl mx-auto">
+      <>
+          <p class="text-sm font-semibold uppercase tracking-widest text-success mb-3">{isMemberOnboarding ? "Membership benefit" : "Payment confirmed"}</p>
+          <h1 class="text-4xl font-bold leading-tight">{isMemberOnboarding ? programmeCheckout.memberOnboardingHeadline : programmeCheckout.onboardingHeadline}</h1>
+          <p class="mt-4 text-base-content/70">{isMemberOnboarding ? programmeCheckout.memberOnboardingBody : programmeCheckout.onboardingBody}</p>
+
+          {hasSubmittedForm ? (
+            <div class="card bg-base-200 border border-success/30 mt-10">
+              <div class="card-body gap-4">
+                <p class="badge badge-success w-fit">Form completed</p>
+                <h2 class="text-2xl font-bold">{programmeCheckout.formSubmittedHeadline}</h2>
+                <p class="text-base-content/70">{programmeCheckout.formCompletedNote}</p>
+                <a href="/dashboard" class="btn btn-primary w-full">Go to my dashboard</a>
+              </div>
+            </div>
+          ) : (
+            <form id="programme-onboarding" class="card bg-base-200 border border-base-300 mt-10">
+        <div class="card-body gap-6">
+          <input type="hidden" name="access_key" value={accessKey} />
+          <input type="hidden" name="subject" value={`New completed 12-week programme form — ${site.title}`} />
+          <input type="hidden" name="order_reference" value={sessionId} />
+          <input type="checkbox" name="botcheck" class="hidden" style="display:none" />
+          <fieldset class="fieldset"><legend class="fieldset-legend">Your name</legend><input class="input w-full" name="name" required placeholder="First and last name" /></fieldset>
+          <fieldset class="fieldset"><legend class="fieldset-legend">Email address</legend><input class="input w-full" type="email" name="email" required value={buyerEmail} /></fieldset>
+          <fieldset class="fieldset"><legend class="fieldset-legend">Your age</legend><input class="input w-full" type="number" name="age" required min="16" max="99" placeholder="e.g. 28" /></fieldset>
+          <fieldset class="fieldset"><legend class="fieldset-legend">Training experience</legend><select class="select w-full" name="experience" required><option value="" disabled selected>Select your experience level</option><option>New to training</option><option>Less than 1 year</option><option>1–2 years</option><option>3–5 years</option><option>5+ years</option></select></fieldset>
+          <fieldset class="fieldset"><legend class="fieldset-legend">Your primary goal</legend><textarea class="textarea w-full h-28" name="goal" required placeholder="What do you want to achieve over the next 12 weeks?"></textarea></fieldset>
+          <fieldset class="fieldset"><legend class="fieldset-legend">Anything the coaching team should know?</legend><textarea class="textarea w-full h-28" name="context" required placeholder="Tell us about injuries, schedule, training access, or anything else that will help tailor your programme."></textarea></fieldset>
+          <button id="onboarding-submit" type="submit" class="btn btn-primary btn-lg w-full">{programmeCheckout.onboardingSubmit}</button>
+          <div id="onboarding-success" class="alert alert-success hidden">{programmeCheckout.onboardingSuccess}</div>
+          <div id="onboarding-error" class="alert alert-error hidden">{programmeCheckout.onboardingError}</div>
+        </div>
+            </form>
+          )}
+      </>
+    </section>
+  </main>
+  <Footer />
+</Layout>
+
+<script>
+  const form = document.getElementById("programme-onboarding") as HTMLFormElement | null;
+  const submit = document.getElementById("onboarding-submit") as HTMLButtonElement;
+  const success = document.getElementById("onboarding-success")!;
+  const error = document.getElementById("onboarding-error")!;
+  form?.addEventListener("submit", async (event) => {
+    event.preventDefault(); submit.disabled = true; submit.textContent = "Sending…";
+    try {
+      const data = new FormData(form);
+      const emailResponse = await fetch("https://api.web3forms.com/submit", { method: "POST", body: data });
+      const emailResult = await emailResponse.json();
+      if (!emailResult.success) throw new Error(emailResult.message ?? "We couldn't send your details. Please try again.");
+
+      const recordResponse = await fetch("/api/programmes/12-week/onboarding", { method: "POST", body: data });
+      const recordResult = await recordResponse.json();
+      if (!recordResult.success) throw new Error(recordResult.error ?? "We couldn't save your details. Please try again.");
+      window.location.href = "/dashboard?notice=onboarding-submitted";
+    } catch (submissionError) {
+      error.textContent = submissionError instanceof Error ? submissionError.message : "Your details could not be sent. Please try again.";
+      error.classList.remove("hidden"); success.classList.add("hidden"); submit.disabled = false; submit.textContent = "Send my onboarding details";
+    }
+  });
+</script>

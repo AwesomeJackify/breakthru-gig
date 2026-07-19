@@ -1,0 +1,124 @@
+---
+import DashboardLayout from "../../layouts/DashboardLayout.astro";
+import { createSupabaseAdmin } from "../../lib/supabase";
+
+const admin = createSupabaseAdmin();
+const { data: authData, error: authError } = await admin.auth.admin.listUsers({ perPage: 1000 });
+const users = authData?.users ?? [];
+const ids = users.map((user) => user.id);
+const [profilesResult, subscriptionsResult, purchasesResult, onboardingResult] = ids.length
+  ? await Promise.all([
+      admin.from("profiles").select("id, is_admin").in("id", ids),
+      admin.from("subscriptions").select("user_id, status, current_period_end").in("user_id", ids),
+      admin.from("purchases").select("user_id, product").in("user_id", ids),
+      admin.from("programme_onboarding").select("user_id, status, submitted_at").in("user_id", ids),
+    ])
+  : [{ data: [] }, { data: [] }, { data: [] }, { data: [] }];
+
+const profiles = new Map((profilesResult.data ?? []).map((profile: { id: string; is_admin: boolean }) => [profile.id, profile]));
+const subscriptions = new Map((subscriptionsResult.data ?? []).map((subscription: { user_id: string; status: string; current_period_end: string }) => [subscription.user_id, subscription]));
+const purchases = new Map<string, string[]>();
+for (const purchase of purchasesResult.data ?? []) {
+  const typedPurchase = purchase as { user_id: string; product: string };
+  purchases.set(typedPurchase.user_id, [...(purchases.get(typedPurchase.user_id) ?? []), typedPurchase.product]);
+}
+const onboarding = new Map((onboardingResult.data ?? []).map((form: { user_id: string; status: string; submitted_at: string }) => [form.user_id, form]));
+---
+
+<DashboardLayout title="Manage members — Breakthru">
+  <main class="min-h-screen px-6 py-10">
+    <div class="max-w-6xl mx-auto">
+      <div class="mb-8">
+        <div>
+          <h1 class="text-3xl font-bold">Manage members</h1>
+          <p class="text-sm text-base-content/60 mt-2">Cancel billing and permanently remove a member’s account when needed.</p>
+        </div>
+      </div>
+
+      {authError ? (
+        <div class="alert alert-error">Unable to load members. Please refresh and try again.</div>
+      ) : users.length === 0 ? (
+        <div class="text-center py-24 border border-dashed border-base-300 rounded-xl text-base-content/50">No members yet.</div>
+      ) : (
+        <div class="overflow-x-auto rounded-xl border border-base-300">
+          <table class="table">
+            <thead><tr><th>Member</th><th>Access</th><th>Programme form</th><th>Billing</th><th>Joined</th><th></th></tr></thead>
+            <tbody>
+              {users.map((member) => {
+                const profile = profiles.get(member.id);
+                const subscription = subscriptions.get(member.id);
+                const memberPurchases = purchases.get(member.id) ?? [];
+                const programmeForm = onboarding.get(member.id);
+                const isSelf = member.id === Astro.locals.user?.id;
+                return (
+                  <tr class="hover">
+                    <td>
+                      <p class="font-medium">{member.email ?? "No email"}</p>
+                      {profile?.is_admin && <span class="badge badge-primary badge-xs mt-1">Admin</span>}
+                    </td>
+                    <td class="text-sm text-base-content/60">
+                      {memberPurchases.length ? memberPurchases.join(", ").replaceAll("_", " ") : "—"}
+                    </td>
+                    <td>{programmeForm ? <span class="badge badge-success badge-sm capitalize">{programmeForm.status.replaceAll("_", " ")}</span> : <span class="text-base-content/40">Not completed</span>}</td>
+                    <td>
+                      {subscription ? <span class:list={["badge badge-sm capitalize", subscription.status === "active" ? "badge-success" : "badge-ghost"]}>{subscription.status}</span> : <span class="text-base-content/40">No subscription</span>}
+                    </td>
+                    <td class="text-sm text-base-content/50">{member.created_at ? new Date(member.created_at).toLocaleDateString("en-NZ", { day: "numeric", month: "short", year: "numeric" }) : "—"}</td>
+                    <td class="text-right">
+                      {isSelf || profile?.is_admin ? (
+                        <span class="text-xs text-base-content/40">Protected</span>
+                      ) : (
+                        <button class="btn btn-error btn-outline btn-xs" data-delete-member-id={member.id} data-delete-member-email={member.email ?? "this member"}>Delete</button>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  </main>
+
+  <dialog id="delete-member-modal" class="modal">
+    <div class="modal-box">
+      <h2 class="font-bold text-lg">Permanently delete member</h2>
+      <p class="py-4">This cancels active Stripe subscriptions immediately, removes purchase and profile records, and permanently deletes the Supabase account for <strong id="delete-member-email"></strong>. This cannot be undone.</p>
+      <fieldset class="fieldset"><legend class="fieldset-legend">Type DELETE to confirm</legend><input id="delete-member-confirmation" class="input w-full" autocomplete="off" /></fieldset>
+      <div id="delete-member-error" class="alert alert-error hidden mt-4 text-sm"></div>
+      <div class="modal-action">
+        <form method="dialog"><button class="btn btn-ghost">Cancel</button></form>
+        <button id="confirm-member-delete" class="btn btn-error" disabled>Delete member</button>
+      </div>
+    </div>
+    <form method="dialog" class="modal-backdrop"><button>close</button></form>
+  </dialog>
+</DashboardLayout>
+
+<script>
+  let pendingMemberId: string | null = null;
+  const modal = document.getElementById("delete-member-modal") as HTMLDialogElement;
+  const email = document.getElementById("delete-member-email")!;
+  const confirmation = document.getElementById("delete-member-confirmation") as HTMLInputElement;
+  const button = document.getElementById("confirm-member-delete") as HTMLButtonElement;
+  const error = document.getElementById("delete-member-error")!;
+
+  document.querySelectorAll<HTMLButtonElement>("[data-delete-member-id]").forEach((deleteButton) => {
+    deleteButton.addEventListener("click", () => {
+      pendingMemberId = deleteButton.dataset.deleteMemberId ?? null;
+      email.textContent = deleteButton.dataset.deleteMemberEmail ?? "this member";
+      confirmation.value = ""; error.classList.add("hidden"); button.disabled = true; modal.showModal();
+    });
+  });
+  confirmation.addEventListener("input", () => { button.disabled = confirmation.value !== "DELETE"; });
+  button.addEventListener("click", async () => {
+    if (!pendingMemberId || confirmation.value !== "DELETE") return;
+    button.disabled = true; button.textContent = "Deleting…";
+    const response = await fetch(`/api/admin/members/${pendingMemberId}`, { method: "DELETE" });
+    if (response.ok) window.location.reload();
+    const result = await response.json().catch(() => ({}));
+    error.textContent = result.error ?? "The member could not be deleted. No further action was taken.";
+    error.classList.remove("hidden"); button.disabled = false; button.textContent = "Delete member";
+  });
+</script>

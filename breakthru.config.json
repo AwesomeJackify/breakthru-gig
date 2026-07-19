@@ -103,5 +103,61 @@
       "successMessage": "Application received — Myer reviews every submission personally and will be in touch within 48 hours.",
       "errorMessage": "Something went wrong. Please try emailing Myer directly."
     }
+  },
+
+  "programmeCheckout": {
+    "eyebrow": "12 Week Programme",
+    "headline": "Your plan starts here.",
+    "body": "Secure your place now. Once your payment is complete, you’ll answer a short onboarding questionnaire so the Breakthru coaching team can tailor your programme to you.",
+    "paymentHeadline": "Secure your programme",
+    "paymentNote": "Payment is processed securely by Stripe. Your onboarding form comes immediately after payment.",
+    "paymentButton": "Continue to secure checkout",
+    "accountRequiredBody": "Create a Breakthru account before checkout so your programme, payment history, and billing are all easy to manage in one place.",
+    "accountRequiredButton": "Create account to continue",
+    "alreadyOwnedHeadline": "You already have this programme.",
+    "alreadyOwnedBody": "This programme is already available through your Breakthru account, so there is no need to buy it again.",
+    "memberHeadline": "Your membership already includes this.",
+    "memberBody": "You already have access to the 12-week programme through your active Breakthru membership, so there is no need to purchase it separately.",
+    "memberButton": "Go to my dashboard",
+    "whatHappensLabel": "What happens next",
+    "steps": [
+      "Complete secure payment",
+      "Tell us about your goals and training background",
+      "The Breakthru coaching team uses your answers to tailor your 12-week programme"
+    ],
+    "onboardingHeadline": "Payment received — let’s tailor your programme.",
+    "onboardingBody": "Answer these questions now so the Breakthru coaching team has everything needed to build your 12-week plan.",
+    "memberOnboardingHeadline": "Let’s tailor your 12-week programme.",
+    "memberOnboardingBody": "Your Breakthru membership includes a personalised programme. Answer these questions so the Breakthru coaching team has everything needed to build yours.",
+    "accountHeadline": "Create your Breakthru account.",
+    "accountBody": "Your payment is secure. Create an account with the same email you used at checkout to manage this programme, future purchases, and billing yourself.",
+    "accountCreateButton": "Create my account",
+    "accountSignInButton": "I already have an account",
+    "formSubmittedHeadline": "Your programme form has been completed.",
+    "onboardingSubmit": "Send my onboarding details",
+    "onboardingSuccess": "Your onboarding details are with the Breakthru coaching team. A PT will be in touch with your tailored programme.",
+    "onboardingError": "Your payment is confirmed, but we couldn’t send your details. Please contact the Breakthru team and quote your order reference.",
+    "formCompletedNote": "Your form has been received. Please wait for a Breakthru PT to contact you privately with your personalised 12-week programme.",
+    "invalidPayment": "We couldn’t verify this payment. Please return to the programme page and try again."
+  },
+
+  "mealPlanCheckout": {
+    "eyebrow": "Eat Like Me",
+    "headline": "Build a better relationship with food.",
+    "body": "A practical 30-day meal plan designed to make day-to-day fuelling simpler, more consistent, and more sustainable.",
+    "paymentHeadline": "Get your meal plan",
+    "paymentNote": "Payment is processed securely by Stripe. Your meal plan will be available in your Members Zone after purchase.",
+    "paymentButton": "Continue to secure checkout",
+    "accountRequiredBody": "Create a Breakthru account before checkout so your meal plan, purchase history, and billing are all easy to manage in one place.",
+    "accountRequiredButton": "Create account to continue",
+    "alreadyOwnedHeadline": "You already own this meal plan.",
+    "alreadyOwnedBody": "Your Eat Like Me meal plan is already available in your Members Zone, so there is no need to buy it again.",
+    "accountSignInButton": "I already have an account",
+    "whatHappensLabel": "What happens next",
+    "steps": [
+      "Create your Breakthru account",
+      "Complete secure payment",
+      "Access your meal plan in the Members Zone"
+    ]
   }
 }

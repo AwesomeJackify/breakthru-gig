@@ -8,6 +8,8 @@ if (Astro.locals.user) {
 }
 
 const urlError = Astro.url.searchParams.get("error");
+const requestedNext = Astro.url.searchParams.get("next");
+const authNext = requestedNext?.startsWith("/") ? requestedNext : "/dashboard";
 ---
 
 <Layout
@@ -41,7 +43,8 @@ const urlError = Astro.url.searchParams.get("error");
       </div>
 
       <div id="panel-signin">
-        <form id="signin-form" class="flex flex-col gap-4">
+        <form id="signin-form" method="post" action="/api/auth/login" class="flex flex-col gap-4">
+          <input type="hidden" name="next" value={authNext} />
           <fieldset class="fieldset">
             <legend class="fieldset-legend">Email</legend>
             <input
@@ -49,6 +52,7 @@ const urlError = Astro.url.searchParams.get("error");
               name="email"
               class="input w-full"
               placeholder="you@example.com"
+              autocomplete="username"
               required
             />
           </fieldset>
@@ -59,6 +63,7 @@ const urlError = Astro.url.searchParams.get("error");
               name="password"
               class="input w-full"
               placeholder="••••••••"
+              autocomplete="current-password"
               required
             />
           </fieldset>
@@ -70,7 +75,7 @@ const urlError = Astro.url.searchParams.get("error");
       </div>
 
       <div id="panel-signup" class="hidden">
-        <form id="signup-form" class="flex flex-col gap-4">
+        <form id="signup-form" method="post" class="flex flex-col gap-4">
           <fieldset class="fieldset">
             <legend class="fieldset-legend">Email</legend>
             <input
@@ -78,6 +83,7 @@ const urlError = Astro.url.searchParams.get("error");
               name="email"
               class="input w-full"
               placeholder="you@example.com"
+              autocomplete="email"
               required
             />
           </fieldset>
@@ -88,6 +94,7 @@ const urlError = Astro.url.searchParams.get("error");
               name="password"
               class="input w-full"
               placeholder="Min. 8 characters"
+              autocomplete="new-password"
               required
               minlength="8"
             />
@@ -112,7 +119,7 @@ const urlError = Astro.url.searchParams.get("error");
   <Footer />
 </Layout>
 
-<script>
+<script define:vars={{ authNext }}>
   import { createBrowserClient } from "@supabase/ssr";
 
   const supabase = createBrowserClient(
@@ -162,7 +169,7 @@ const urlError = Astro.url.searchParams.get("error");
         errorEl.textContent = error.message;
         errorEl.classList.remove("hidden");
       } else {
-        window.location.href = "/dashboard";
+        window.location.href = authNext;
       }
     });
 
@@ -176,20 +183,24 @@ const urlError = Astro.url.searchParams.get("error");
       const successEl = document.getElementById("signup-success")!;
       errorEl.classList.add("hidden");
       successEl.classList.add("hidden");
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email: (form.elements.namedItem("email") as HTMLInputElement).value,
         password: (form.elements.namedItem("password") as HTMLInputElement)
           .value,
         options: {
           // Confirmation link returns here; the callback exchanges the code
           // for a session and forwards to /dashboard already logged in.
-          emailRedirectTo: `${window.location.origin}/api/auth/callback`,
+          emailRedirectTo: `${window.location.origin}/api/auth/callback?next=${encodeURIComponent(authNext)}`,
         },
       });
       if (error) {
         errorEl.textContent = error.message;
         errorEl.classList.remove("hidden");
       } else {
+        if (data.session) {
+          window.location.href = authNext;
+          return;
+        }
         successEl.classList.remove("hidden");
         form.reset();
       }

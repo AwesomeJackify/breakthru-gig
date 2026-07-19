@@ -1,0 +1,33 @@
+---
+import DashboardLayout from "../../../layouts/DashboardLayout.astro";
+import { getUserEntitlements } from "../../../lib/access";
+import config from "../../../../breakthru.config.json";
+
+const { mealPlanCheckout, services } = config;
+const mealPlan = services.tiers.find((tier) => tier.product === "meal_plan_pdf");
+const entitlements = await getUserEntitlements(Astro.locals.user!.id, Astro.locals.supabase);
+if (entitlements.hasMealPlan) return Astro.redirect("/dashboard?notice=meal-plan-owned");
+---
+
+<DashboardLayout title="Secure Eat Like Me checkout — Breakthru">
+  <main class="min-h-screen px-6 py-10">
+    <div class="max-w-xl mx-auto">
+      <p class="text-sm font-semibold uppercase tracking-widest text-primary mb-3">{mealPlanCheckout.eyebrow}</p>
+      <h1 class="text-3xl font-bold">{mealPlanCheckout.paymentHeadline}</h1>
+      <p class="mt-3 text-base-content/60">{mealPlanCheckout.paymentNote}</p>
+      <div class="card bg-base-200 border border-base-300 mt-8">
+        <div class="card-body gap-5">
+          <div>
+            <h2 class="font-semibold text-xl">{mealPlan?.title}</h2>
+            <p class="text-sm text-base-content/60 mt-1">{mealPlan?.description}</p>
+          </div>
+          <div><span class="text-4xl font-black">{mealPlan?.price}</span><span class="text-sm text-base-content/50 ml-2">{mealPlan?.billing}</span></div>
+          <form method="POST" action="/api/checkout/one-time">
+            <input type="hidden" name="product" value="meal_plan_pdf" />
+            <button class="btn btn-primary btn-lg w-full" type="submit">{mealPlanCheckout.paymentButton}</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </main>
+</DashboardLayout>
