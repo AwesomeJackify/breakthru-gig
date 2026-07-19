@@ -81,26 +81,6 @@ const cards = [
         </h1>
         <p class="text-base-content/40 mt-1 text-xs font-mono">{user.email}</p>
       </div>
-      <div class="flex items-center gap-2 shrink-0 mt-1">
-        {
-          entitlements.hasSubscription ? (
-            <div class="flex items-center gap-2">
-              <span class="status status-success" />
-              <span class="text-sm text-base-content/60">Active member</span>
-            </div>
-          ) : entitlements.hasProgramme || entitlements.hasMealPlan ? (
-            <div class="flex items-center gap-2">
-              <span class="status status-success" />
-              <span class="text-sm text-base-content/60">Active plan</span>
-            </div>
-          ) : (
-            <div class="flex items-center gap-2">
-              <span class="status status-neutral" />
-              <span class="text-sm text-base-content/40">No active plan</span>
-            </div>
-          )
-        }
-      </div>
     </div>
 
     {checkoutNotice === "programme-included" && (
@@ -188,12 +168,12 @@ const cards = [
         {/* Monthly membership — highlighted row */}
         <div class="flex items-center gap-3 py-4 px-4 -mx-4 rounded-xl bg-primary/5 border border-primary/20">
           {
-            entitlements.hasProgramme ? (
+            entitlements.hasSubscription ? (
               <span class="badge badge-success badge-sm shrink-0">Active</span>
             ) : subscription?.status === "canceled" ? (
               <span class="badge badge-ghost badge-sm shrink-0">Cancelled</span>
             ) : (
-              <span class="badge badge-ghost badge-sm shrink-0">Inactive</span>
+              <span class="badge badge-ghost badge-sm shrink-0">Not purchased</span>
             )
           }
           <div class="flex-1 min-w-0">
@@ -271,7 +251,7 @@ const cards = [
             }
           </div>
           {
-            entitlements.hasSubscription ? (
+            entitlements.hasProgramme ? (
               hasCompletedProgrammeForm ? (
                 <div class="tooltip tooltip-left" data-tip={programmeCheckout.formCompletedNote}>
                   <span class="badge badge-success badge-sm cursor-help">Form completed</span>
