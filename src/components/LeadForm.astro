@@ -8,34 +8,63 @@ const accessKey = import.meta.env.WEB3FORMS_ACCESS_KEY;
 
 <section id="qualify" class="py-24">
   <div class="max-w-2xl mx-auto px-6">
-
     <!-- Section header -->
     <div class="text-center mb-12">
-      {form.sectionLabel && <p class="text-sm font-semibold uppercase tracking-widest opacity-50 mb-2">{form.sectionLabel}</p>}
+      {
+        form.sectionLabel && (
+          <p class="text-sm font-semibold uppercase tracking-widest opacity-50 mb-2">
+            {form.sectionLabel}
+          </p>
+        )
+      }
       <h2 class="text-4xl font-bold leading-tight mb-4">{form.headline}</h2>
       <p class="opacity-70">{form.body}</p>
     </div>
 
     <form id="lead-form" class="card card-border">
       <div class="card-body gap-6">
-
         <!-- Web3Forms hidden fields -->
         <input type="hidden" name="access_key" value={accessKey} />
-        <input type="hidden" name="subject" value={`New Breakthru application — ${site.title}`} />
-        <input type="checkbox" name="botcheck" class="hidden" style="display:none" />
+        <input
+          type="hidden"
+          name="subject"
+          value={`New Breakthru application — ${site.title}`}
+        />
+        <input
+          type="checkbox"
+          name="botcheck"
+          class="hidden"
+          style="display:none"
+        />
 
         <!-- Name -->
         <fieldset class="fieldset">
           <legend class="fieldset-legend">Your name</legend>
-          <input type="text" name="name" required class="input w-full" placeholder="First and last name" />
+          <input
+            type="text"
+            name="name"
+            required
+            class="input w-full"
+            placeholder="First and last name"
+          />
           <span class="fieldset-label">How we'll address you</span>
         </fieldset>
 
         <!-- Age -->
         <fieldset class="fieldset">
           <legend class="fieldset-legend">Your age</legend>
-          <input type="number" name="age" required class="input w-full" placeholder="e.g. 28" min="16" max="99" />
-          <span class="fieldset-label">Helps us understand your context and experience stage</span>
+          <input
+            type="number"
+            name="age"
+            required
+            class="input w-full"
+            placeholder="e.g. 28"
+            min="16"
+            max="99"
+          />
+          <span class="fieldset-label"
+            >Helps us understand your context and experience stage</span
+          >
         </fieldset>
 
         <!-- Gender -->
@@ -53,7 +82,9 @@ const accessKey = import.meta.env.WEB3FORMS_ACCESS_KEY;
         <fieldset class="fieldset">
           <legend class="fieldset-legend">Years of training experience</legend>
           <select name="experience" required class="select w-full">
-            <option value="" disabled selected>Select your experience level</option>
+            <option value="" disabled selected
+              >Select your experience level</option
+            >
             <option>0 — I am completely new to training</option>
             <option>Less than 1 year</option>
             <option>1–2 years</option>
@@ -61,7 +92,10 @@ const accessKey = import.meta.env.WEB3FORMS_ACCESS_KEY;
             <option>5–10 years</option>
             <option>10+ years</option>
           </select>
-          <span class="fieldset-label">Breakthru works with all levels — this helps personalise your programme</span>
+          <span class="fieldset-label"
+            >Breakthru works with all levels — this helps personalise your
+            programme</span
+          >
         </fieldset>
 
         <!-- Primary goal -->
@@ -75,43 +109,61 @@ const accessKey = import.meta.env.WEB3FORMS_ACCESS_KEY;
             <option>General fitness and health</option>
             <option>Multiple goals / other goals. I'll describe below.</option>
           </select>
-          <span class="fieldset-label">Your primary focus — you can expand on this below</span>
-        </fieldset>
-
-        <!-- Goals detail -->
-        <fieldset class="fieldset">
-          <legend class="fieldset-legend">Tell us about your goals</legend>
-          <textarea name="goals_detail" required class="textarea w-full h-32" placeholder="Describe what you want to achieve, what has and hasn't worked for you before, and why now is the right time for Breakthru"></textarea>
-          <span class="fieldset-label">The more context you give the better the team can assess fit.</span>
+          <span class="fieldset-label"
+            >Your primary focus — you can expand on this below</span
+          >
         </fieldset>
 
         <!-- Biggest challenge -->
         <fieldset class="fieldset">
-          <legend class="fieldset-legend">Your biggest challenge right now</legend>
-          <textarea name="biggest_challenge" required class="textarea w-full h-24" placeholder="What is the main obstacle standing between you and the results you want?"></textarea>
-          <span class="fieldset-label">Let the team know what's stopping you</span>
+          <legend class="fieldset-legend"
+            >Your biggest challenge right now</legend
+          >
+          <textarea
+            name="biggest_challenge"
+            required
+            class="textarea w-full h-24"
+            placeholder="What is the main obstacle standing between you and the results you want?"
+          ></textarea>
+          <span class="fieldset-label"
+            >Let the team know what's stopping you</span
+          >
         </fieldset>
 
         <!-- Email -->
         <fieldset class="fieldset">
           <legend class="fieldset-legend">Email address</legend>
-          <input type="email" name="email" required class="input w-full" placeholder="you@example.com" />
-          <span class="fieldset-label">This is how our team will contact you.</span>
+          <input
+            type="email"
+            name="email"
+            required
+            class="input w-full"
+            placeholder="you@example.com"
+          />
+          <span class="fieldset-label"
+            >This is how our team will contact you.</span
+          >
         </fieldset>
 
         <!-- Submit -->
         <div class="card-actions flex-col items-stretch gap-3 mt-2">
-          <button type="submit" id="lead-submit" class="btn btn-primary btn-lg w-full">
+          <button
+            type="submit"
+            id="lead-submit"
+            class="btn btn-primary btn-lg w-full"
+          >
             {form.submitLabel}
           </button>
-          <div id="lead-success" class="alert alert-success hidden">{successMessage}</div>
-          <div id="lead-error" class="alert alert-error hidden">{errorMessage}</div>
+          <div id="lead-success" class="alert alert-success hidden">
+            {successMessage}
+          </div>
+          <div id="lead-error" class="alert alert-error hidden">
+            {errorMessage}
+          </div>
           <p class="text-xs text-center opacity-50">{form.responseNote}</p>
         </div>
-
       </div>
     </form>
-
   </div>
 </section>
 
