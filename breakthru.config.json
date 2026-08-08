@@ -93,8 +93,8 @@
     { "value": "15min",    "label": "15 minute workouts",                 "comingSoon": false },
     { "value": "travel",   "label": "Travel friendly workouts",           "comingSoon": false },
     { "value": "specific", "label": "Specific workouts",                  "comingSoon": false },
-    { "value": "meal",     "label": "Meal of the week",                   "comingSoon": true },
-    { "value": "boxing",   "label": "Boxing fundamentals - Duken Williams", "comingSoon": true }
+    { "value": "boxing",   "label": "Boxing fundamentals - Duken Williams", "comingSoon": true },
+    { "value": "meal",     "label": "Meal of the week",                   "comingSoon": true }
   ],
 
   "forms": {
@@ -108,9 +108,9 @@
   "programmeCheckout": {
     "eyebrow": "12 Week Programme",
     "headline": "Your plan starts here.",
-    "body": "Secure your place now. Once your payment is complete, you’ll answer a short onboarding questionnaire so the Breakthru coaching team can tailor your programme to you.",
+    "body": "Secure your place now. Once your payment is complete, you’ll answer a short onboarding questionnaire so the Breakthru coaching team can tailor your programme to you. Tailored programmes are available to people aged 16 and over only.",
     "paymentHeadline": "Secure your programme",
-    "paymentNote": "Payment is processed securely by Stripe. Your onboarding form comes immediately after payment.",
+    "paymentNote": "Payment is processed securely by Stripe. Tailored programmes are for people aged 16 and over only. Your onboarding form comes immediately after payment.",
     "paymentButton": "Continue to secure checkout",
     "accountRequiredBody": "Create a Breakthru account before checkout so your programme, payment history, and billing are all easy to manage in one place.",
     "accountRequiredButton": "Create account to continue",
@@ -123,10 +123,10 @@
     "steps": [
       "Complete secure payment",
       "Tell us about your goals and training background",
-      "The Breakthru coaching team uses your answers to tailor your 12-week programme"
+      "The Breakthru coaching team tailors your 12-week programme and completes it within 5 working days"
     ],
     "onboardingHeadline": "Payment received — let’s tailor your programme.",
-    "onboardingBody": "Answer these questions now so the Breakthru coaching team has everything needed to build your 12-week plan.",
+    "onboardingBody": "Thank you for joining the Breakthru team. Answer these questions now so we have everything needed to tailor your 12-week programme, which will be completed within 5 working days.",
     "memberOnboardingHeadline": "Let’s tailor your 12-week programme.",
     "memberOnboardingBody": "Your Breakthru membership includes a personalised programme. Answer these questions so the Breakthru coaching team has everything needed to build yours.",
     "accountHeadline": "Create your Breakthru account.",
@@ -135,9 +135,9 @@
     "accountSignInButton": "I already have an account",
     "formSubmittedHeadline": "Your programme form has been completed.",
     "onboardingSubmit": "Send my onboarding details",
-    "onboardingSuccess": "Your onboarding details are with the Breakthru coaching team. A PT will be in touch with your tailored programme.",
+    "onboardingSuccess": "Thank you for joining the Breakthru team. Your onboarding details are with us and your 12-week programme, specifically tailored to you, will be completed within 5 working days.",
     "onboardingError": "Your payment is confirmed, but we couldn’t send your details. Please contact the Breakthru team and quote your order reference.",
-    "formCompletedNote": "Your form has been received. Please wait for a Breakthru PT to contact you privately with your personalised 12-week programme.",
+    "formCompletedNote": "Thank you for joining the Breakthru team. Your form has been received and your 12-week programme, specifically tailored to you, will be completed within 5 working days.",
     "invalidPayment": "We couldn’t verify this payment. Please return to the programme page and try again."
   },
 

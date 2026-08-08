@@ -7,6 +7,16 @@ const PRODUCT_PRICES: Record<string, string> = {
   "meal_plan_pdf": import.meta.env.STRIPE_PRICE_MEAL_PLAN,
 };
 
+const PROGRAMME_AGE_CONFIRMATION = {
+  key: "programme_age_confirmation",
+  label: { type: "custom" as const, custom: "Programme eligibility" },
+  type: "dropdown" as const,
+  dropdown: {
+    options: [{ label: "I confirm I am aged 16 or older", value: "aged_16_or_over" }],
+  },
+  optional: false,
+};
+
 export const POST: APIRoute = async ({ locals, request, redirect }) => {
   const user = locals.user;
 
@@ -32,6 +42,17 @@ export const POST: APIRoute = async ({ locals, request, redirect }) => {
       mode: "payment",
       customer: customerId,
       line_items: [{ price: priceId, quantity: 1 }],
+      ...(product === "12week_programme"
+        ? {
+            custom_fields: [PROGRAMME_AGE_CONFIRMATION],
+            custom_text: {
+              submit: {
+                message:
+                  "Tailored programmes are available to people aged 16 and over only.",
+              },
+            },
+          }
+        : {}),
       success_url: product === "12week_programme"
         ? `${origin}/programmes/12-week/onboarding?session_id={CHECKOUT_SESSION_ID}`
         : `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
