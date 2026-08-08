@@ -3,7 +3,7 @@ name: Deploy to Cloudflare
 on:
   push:
     branches:
-      - feature/video-portal
+      - main
 
 jobs:
   deploy:
@@ -19,47 +19,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Validate build variables
-        run: |
-          missing=0
-          for key in PUBLIC_SUPABASE_URL PUBLIC_SUPABASE_ANON_KEY SUPABASE_SERVICE_ROLE_KEY STRIPE_SECRET_KEY STRIPE_WEBHOOK_SECRET STRIPE_PRICE_SUBSCRIPTION STRIPE_PRICE_12WEEK STRIPE_PRICE_MEAL_PLAN WEB3FORMS_ACCESS_KEY MUX_TOKEN_ID MUX_TOKEN_SECRET MUX_SIGNING_KEY_ID MUX_PRIVATE_KEY; do
-            if [ -z "${!key}" ]; then
-              echo "$key must be set as a repository secret."
-              missing=1
-            fi
-          done
-          exit $missing
-        env:
-          PUBLIC_SUPABASE_URL: ${{ secrets.PUBLIC_SUPABASE_URL }}
-          PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.PUBLIC_SUPABASE_ANON_KEY }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
-          STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
-          STRIPE_PRICE_SUBSCRIPTION: ${{ secrets.STRIPE_PRICE_SUBSCRIPTION }}
-          STRIPE_PRICE_12WEEK: ${{ secrets.STRIPE_PRICE_12WEEK }}
-          STRIPE_PRICE_MEAL_PLAN: ${{ secrets.STRIPE_PRICE_MEAL_PLAN }}
-          WEB3FORMS_ACCESS_KEY: ${{ secrets.WEB3FORMS_ACCESS_KEY }}
-          MUX_TOKEN_ID: ${{ secrets.MUX_TOKEN_ID }}
-          MUX_TOKEN_SECRET: ${{ secrets.MUX_TOKEN_SECRET }}
-          MUX_SIGNING_KEY_ID: ${{ secrets.MUX_SIGNING_KEY_ID }}
-          MUX_PRIVATE_KEY: ${{ secrets.MUX_PRIVATE_KEY }}
-
       - name: Build
         run: npm run build
-        env:
-          PUBLIC_SUPABASE_URL: ${{ secrets.PUBLIC_SUPABASE_URL }}
-          PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.PUBLIC_SUPABASE_ANON_KEY }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
-          STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
-          STRIPE_PRICE_SUBSCRIPTION: ${{ secrets.STRIPE_PRICE_SUBSCRIPTION }}
-          STRIPE_PRICE_12WEEK: ${{ secrets.STRIPE_PRICE_12WEEK }}
-          STRIPE_PRICE_MEAL_PLAN: ${{ secrets.STRIPE_PRICE_MEAL_PLAN }}
-          WEB3FORMS_ACCESS_KEY: ${{ secrets.WEB3FORMS_ACCESS_KEY }}
-          MUX_TOKEN_ID: ${{ secrets.MUX_TOKEN_ID }}
-          MUX_TOKEN_SECRET: ${{ secrets.MUX_TOKEN_SECRET }}
-          MUX_SIGNING_KEY_ID: ${{ secrets.MUX_SIGNING_KEY_ID }}
-          MUX_PRIVATE_KEY: ${{ secrets.MUX_PRIVATE_KEY }}
 
       - name: Validate Cloudflare secrets
         run: |
