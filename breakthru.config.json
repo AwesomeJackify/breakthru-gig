@@ -79,7 +79,13 @@
     "headline": "Is Breakthru right for you?",
     "body": "Don't know if we're right for you? Apply here and help the team understand your goals, your obstacles and let's build a genuine transformation. Time to Breakthru!",
     "submitLabel": "Submit Application",
-    "responseNote": "The Breakthru team will assess and review each application and will get in touch."
+    "responseNote": "The Breakthru team will assess and review each application and will get in touch.",
+    "weightLabel": "Weight",
+    "weightPlaceholder": "e.g. 75 kg",
+    "heightLabel": "Height",
+    "heightPlaceholder": "e.g. 180 cm",
+    "commentsLabel": "Further comments",
+    "commentsPlaceholder": "Anything else you'd like the Breakthru team to know?"
   },
 
   "footer": {

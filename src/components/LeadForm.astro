@@ -69,6 +69,32 @@ const accessKey = import.meta.env.WEB3FORMS_ACCESS_KEY;
 
         <!-- Gender -->
         <fieldset class="fieldset">
+          <legend class="fieldset-legend">{form.weightLabel}</legend>
+          <input
+            type="number"
+            name="weight"
+            required
+            class="input w-full"
+            placeholder={form.weightPlaceholder}
+            min="1"
+            step="0.1"
+          />
+        </fieldset>
+
+        <fieldset class="fieldset">
+          <legend class="fieldset-legend">{form.heightLabel}</legend>
+          <input
+            type="number"
+            name="height"
+            required
+            class="input w-full"
+            placeholder={form.heightPlaceholder}
+            min="1"
+            step="0.1"
+          />
+        </fieldset>
+
+        <fieldset class="fieldset">
           <legend class="fieldset-legend">Gender</legend>
           <select name="gender" required class="select w-full">
             <option value="" disabled selected>Select your gender</option>
@@ -130,6 +156,16 @@ const accessKey = import.meta.env.WEB3FORMS_ACCESS_KEY;
         </fieldset>
 
         <!-- Submit -->
+        <fieldset class="fieldset">
+          <legend class="fieldset-legend">{form.commentsLabel}</legend>
+          <textarea
+            name="further_comments"
+            class="textarea w-full"
+            placeholder={form.commentsPlaceholder}
+            rows="5"
+          ></textarea>
+        </fieldset>
+
         <div class="card-actions flex-col items-stretch gap-3 mt-2">
           <button
             type="submit"
