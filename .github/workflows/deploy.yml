@@ -20,8 +20,52 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Validate build settings
+        run: |
+          missing=0
+          for key in PUBLIC_SUPABASE_URL PUBLIC_SUPABASE_ANON_KEY SUPABASE_SERVICE_ROLE_KEY STRIPE_SECRET_KEY STRIPE_WEBHOOK_SECRET STRIPE_PRICE_SUBSCRIPTION STRIPE_PRICE_12WEEK STRIPE_PRICE_MEAL_PLAN WEB3FORMS_ACCESS_KEY MUX_TOKEN_ID MUX_TOKEN_SECRET MUX_SIGNING_KEY_ID MUX_PRIVATE_KEY; do
+            if [ -z "${!key}" ]; then
+              echo "$key must be set as a repository secret."
+              missing=1
+            fi
+          done
+          exit $missing
+        env:
+          PUBLIC_SUPABASE_URL: ${{ secrets.PUBLIC_SUPABASE_URL }}
+          PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.PUBLIC_SUPABASE_ANON_KEY }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+          STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
+          STRIPE_PRICE_SUBSCRIPTION: ${{ secrets.STRIPE_PRICE_SUBSCRIPTION }}
+          STRIPE_PRICE_12WEEK: ${{ secrets.STRIPE_PRICE_12WEEK }}
+          STRIPE_PRICE_MEAL_PLAN: ${{ secrets.STRIPE_PRICE_MEAL_PLAN }}
+          WEB3FORMS_ACCESS_KEY: ${{ secrets.WEB3FORMS_ACCESS_KEY }}
+          MUX_TOKEN_ID: ${{ secrets.MUX_TOKEN_ID }}
+          MUX_TOKEN_SECRET: ${{ secrets.MUX_TOKEN_SECRET }}
+          MUX_SIGNING_KEY_ID: ${{ secrets.MUX_SIGNING_KEY_ID }}
+          MUX_PRIVATE_KEY: ${{ secrets.MUX_PRIVATE_KEY }}
+
       - name: Build
-        run: npm run build
+        run: |
+          if [ "$GITHUB_REF_NAME" = "feature/video-portal" ]; then
+            CLOUDFLARE_ENV=preview npm run build
+          else
+            npm run build
+          fi
+        env:
+          PUBLIC_SUPABASE_URL: ${{ secrets.PUBLIC_SUPABASE_URL }}
+          PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.PUBLIC_SUPABASE_ANON_KEY }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+          STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
+          STRIPE_PRICE_SUBSCRIPTION: ${{ secrets.STRIPE_PRICE_SUBSCRIPTION }}
+          STRIPE_PRICE_12WEEK: ${{ secrets.STRIPE_PRICE_12WEEK }}
+          STRIPE_PRICE_MEAL_PLAN: ${{ secrets.STRIPE_PRICE_MEAL_PLAN }}
+          WEB3FORMS_ACCESS_KEY: ${{ secrets.WEB3FORMS_ACCESS_KEY }}
+          MUX_TOKEN_ID: ${{ secrets.MUX_TOKEN_ID }}
+          MUX_TOKEN_SECRET: ${{ secrets.MUX_TOKEN_SECRET }}
+          MUX_SIGNING_KEY_ID: ${{ secrets.MUX_SIGNING_KEY_ID }}
+          MUX_PRIVATE_KEY: ${{ secrets.MUX_PRIVATE_KEY }}
 
       - name: Validate Cloudflare secrets
         run: |
@@ -34,7 +78,12 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 
       - name: Deploy
-        run: npx wrangler deploy
+        run: |
+          if [ "$GITHUB_REF_NAME" = "feature/video-portal" ]; then
+            npx wrangler deploy --env preview
+          else
+            npx wrangler deploy
+          fi
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
