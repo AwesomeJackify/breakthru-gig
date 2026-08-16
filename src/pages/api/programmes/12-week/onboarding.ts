@@ -13,14 +13,26 @@ export const POST: APIRoute = async ({ locals, request }) => {
   const name = data.get("name")?.toString().trim() ?? "";
   const email = data.get("email")?.toString().trim().toLowerCase() ?? "";
   const age = Number(data.get("age"));
+  const weight = Number(data.get("weight"));
+  const height = Number(data.get("height"));
+  const gender = data.get("gender")?.toString().trim() ?? "";
   const experience = data.get("experience")?.toString().trim() ?? "";
+  const trainingDays = data.get("training_days_available")?.toString().trim() ?? "";
   const goal = data.get("goal")?.toString().trim() ?? "";
   const context = data.get("context")?.toString().trim() ?? "";
   const orderReference = data.get("order_reference")?.toString() || null;
 
-  if (!name || !email || !Number.isInteger(age) || age < 16 || age > 99 || !experience || !goal || !context) {
+  if (!name || !email || !Number.isInteger(age) || age < 16 || age > 99 || !weight || !height || !gender || !experience || !trainingDays || !goal || !context) {
     return new Response(JSON.stringify({ error: "Please complete every field." }), { status: 400 });
   }
+
+  const onboardingContext = [
+    `Weight: ${weight} kg`,
+    `Height: ${height} cm`,
+    `Gender: ${gender}`,
+    `Available training days: ${trainingDays}`,
+    `Further comments: ${context}`,
+  ].join("\n");
 
   const admin = createSupabaseAdmin();
   const { error: saveError } = await admin.from("programme_onboarding").upsert({
@@ -31,7 +43,7 @@ export const POST: APIRoute = async ({ locals, request }) => {
     age,
     experience,
     goal,
-    context,
+    context: onboardingContext,
     status: "submitted",
     submitted_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),

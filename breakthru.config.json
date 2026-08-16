@@ -84,8 +84,13 @@
     "weightPlaceholder": "e.g. 75 kg",
     "heightLabel": "Height",
     "heightPlaceholder": "e.g. 180 cm",
-    "commentsLabel": "Further comments",
-    "commentsPlaceholder": "Anything else you'd like the Breakthru team to know?"
+    "barrierLabel": "What's getting in your way?",
+    "barrierPlaceholder": "Tell us about the obstacles making progress difficult.",
+    "trainingDaysLabel": "How many days a week are you available to train?",
+    "trainingDaysPlaceholder": "Select the number of days",
+    "trainingDaysOptions": ["1 day", "2 days", "3 days", "4 days", "5 days", "6 days", "7 days"],
+    "memberCommentsLabel": "Further comments",
+    "memberCommentsPlaceholder": "Anything else you'd like the Breakthru team to know?"
   },
 
   "footer": {

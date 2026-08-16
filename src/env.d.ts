@@ -10,7 +10,8 @@ interface ImportMetaEnv {
   readonly STRIPE_PRICE_SUBSCRIPTION: string;
   readonly STRIPE_PRICE_12WEEK: string;
   readonly STRIPE_PRICE_MEAL_PLAN: string;
-  readonly WEB3FORMS_ACCESS_KEY: string;
+  readonly WEB3FORMS_LANDING_ACCESS_KEY: string;
+  readonly WEB3FORMS_12_WEEK_ACCESS_KEY: string;
   readonly MUX_TOKEN_ID: string;
   readonly MUX_TOKEN_SECRET: string;
   readonly MUX_SIGNING_KEY_ID: string;

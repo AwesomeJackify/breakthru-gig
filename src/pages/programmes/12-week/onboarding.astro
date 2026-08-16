@@ -25,7 +25,7 @@ const { data: existingOnboarding } = user
 const hasSubmittedForm = !!existingOnboarding;
 let validPayment = isProgrammeOwner;
 let buyerEmail = user?.email ?? "";
-const accessKey = import.meta.env.WEB3FORMS_ACCESS_KEY;
+const accessKey = import.meta.env.WEB3FORMS_12_WEEK_ACCESS_KEY;
 
 if (sessionId) {
   try {
@@ -177,6 +177,39 @@ if (user && sessionId && !isMemberOnboarding) {
                 />
               </fieldset>
               <fieldset class="fieldset">
+                <legend class="fieldset-legend">{config.form.weightLabel}</legend>
+                <input
+                  class="input w-full"
+                  type="number"
+                  name="weight"
+                  required
+                  min="1"
+                  step="0.1"
+                  placeholder={config.form.weightPlaceholder}
+                />
+              </fieldset>
+              <fieldset class="fieldset">
+                <legend class="fieldset-legend">{config.form.heightLabel}</legend>
+                <input
+                  class="input w-full"
+                  type="number"
+                  name="height"
+                  required
+                  min="1"
+                  step="0.1"
+                  placeholder={config.form.heightPlaceholder}
+                />
+              </fieldset>
+              <fieldset class="fieldset">
+                <legend class="fieldset-legend">Gender</legend>
+                <select class="select w-full" name="gender" required>
+                  <option value="" disabled selected>Select your gender</option>
+                  <option>Male</option>
+                  <option>Female</option>
+                  <option>Rather not say</option>
+                </select>
+              </fieldset>
+              <fieldset class="fieldset">
                 <legend class="fieldset-legend">Training experience</legend>
                 <select class="select w-full" name="experience" required>
                   <option value="" disabled selected>
@@ -190,6 +223,13 @@ if (user && sessionId && !isMemberOnboarding) {
                 </select>
               </fieldset>
               <fieldset class="fieldset">
+                <legend class="fieldset-legend">{config.form.trainingDaysLabel}</legend>
+                <select class="select w-full" name="training_days_available" required>
+                  <option value="" disabled selected>{config.form.trainingDaysPlaceholder}</option>
+                  {config.form.trainingDaysOptions.map((option) => <option>{option}</option>)}
+                </select>
+              </fieldset>
+              <fieldset class="fieldset">
                 <legend class="fieldset-legend">Your primary goal</legend>
                 <textarea
                   class="textarea w-full h-28"
@@ -200,13 +240,13 @@ if (user && sessionId && !isMemberOnboarding) {
               </fieldset>
               <fieldset class="fieldset">
                 <legend class="fieldset-legend">
-                  Anything the coaching team should know?
+                  {config.form.memberCommentsLabel}
                 </legend>
                 <textarea
                   class="textarea w-full h-28"
                   name="context"
                   required
-                  placeholder="Tell us about injuries, schedule, training access, or anything else that will help tailor your programme."
+                  placeholder={config.form.memberCommentsPlaceholder}
                 />
               </fieldset>
               <button

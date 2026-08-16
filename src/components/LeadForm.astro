@@ -3,7 +3,7 @@
 import config from "../../breakthru.config.json";
 const { form, forms, site } = config;
 const { successMessage, errorMessage } = forms.leadQualification;
-const accessKey = import.meta.env.WEB3FORMS_ACCESS_KEY;
+const accessKey = import.meta.env.WEB3FORMS_LANDING_ACCESS_KEY;
 ---
 
 <section id="qualify" class="py-24">
@@ -140,6 +140,14 @@ const accessKey = import.meta.env.WEB3FORMS_ACCESS_KEY;
           >
         </fieldset>
 
+        <fieldset class="fieldset">
+          <legend class="fieldset-legend">{form.trainingDaysLabel}</legend>
+          <select name="training_days_available" required class="select w-full">
+            <option value="" disabled selected>{form.trainingDaysPlaceholder}</option>
+            {form.trainingDaysOptions.map((option) => <option>{option}</option>)}
+          </select>
+        </fieldset>
+
         <!-- Email -->
         <fieldset class="fieldset">
           <legend class="fieldset-legend">Email address</legend>
@@ -155,13 +163,12 @@ const accessKey = import.meta.env.WEB3FORMS_ACCESS_KEY;
           >
         </fieldset>
 
-        <!-- Submit -->
         <fieldset class="fieldset">
-          <legend class="fieldset-legend">{form.commentsLabel}</legend>
+          <legend class="fieldset-legend">{form.barrierLabel}</legend>
           <textarea
-            name="further_comments"
+            name="getting_in_your_way"
             class="textarea w-full"
-            placeholder={form.commentsPlaceholder}
+            placeholder={form.barrierPlaceholder}
             rows="5"
           ></textarea>
         </fieldset>
