@@ -18,5 +18,10 @@
       "enabled": false,
       "invocation_logs": true
     }
-  }
+  },
+	"env": {
+		"preview": {
+			"name": "breakthru-gig-video-portal-preview"
+		}
+	}
 }
