@@ -6,7 +6,7 @@ const PROGRAMME_AGE_CONFIRMATION = {
   label: { type: "custom" as const, custom: "Programme eligibility" },
   type: "dropdown" as const,
   dropdown: {
-    options: [{ label: "I confirm I am aged 16 or older", value: "aged_16_or_over" }],
+    options: [{ label: "I confirm I am aged 16 or older", value: "aged16orover" }],
   },
   optional: false,
 };

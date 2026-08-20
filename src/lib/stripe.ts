@@ -12,7 +12,15 @@ export async function getOrCreateStripeCustomer(userId: string, email: string): 
     .single();
 
   const existing = profile?.stripe_customer_id as string | undefined;
-  if (existing) return existing;
+  if (existing) {
+    try {
+      const customer = await stripe.customers.retrieve(existing);
+      if (!customer.deleted) return existing;
+    } catch (error) {
+      const code = error instanceof Stripe.errors.StripeError ? error.code : undefined;
+      if (code !== "resource_missing") throw error;
+    }
+  }
 
   const customer = await stripe.customers.create({ email });
   await admin.from("profiles").update({ stripe_customer_id: customer.id }).eq("id", userId);

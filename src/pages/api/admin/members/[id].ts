@@ -23,15 +23,20 @@ export const DELETE: APIRoute = async ({ locals, params }) => {
 
   try {
     if (profile?.stripe_customer_id) {
-      const stripeSubscriptions = await stripe.subscriptions.list({ customer: profile.stripe_customer_id, status: "all", limit: 100 });
-      await Promise.all(stripeSubscriptions.data
-        .filter((subscription) => !["canceled", "incomplete_expired"].includes(subscription.status))
-        .map((subscription) => stripe.subscriptions.cancel(subscription.id)));
       await stripe.customers.del(profile.stripe_customer_id);
     }
   } catch (error) {
+    // A previous deletion, or a customer created in the other Stripe mode,
+    // leaves a stale ID in Supabase. It is safe to finish removing the member.
+    if (error instanceof Stripe.errors.StripeError && error.code === "resource_missing") {
+      console.warn("[admin/members/delete] Stripe customer was already missing", {
+        userId,
+        customerId: profile?.stripe_customer_id,
+      });
+    } else {
     console.error("[admin/members/delete] Stripe cleanup failed", error);
     return new Response(JSON.stringify({ error: "Stripe cleanup failed, so the member was not deleted." }), { status: 502 });
+    }
   }
 
   const cleanup = await Promise.all([
