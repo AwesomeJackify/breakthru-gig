@@ -39,18 +39,23 @@ export const DELETE: APIRoute = async ({ locals, params }) => {
     }
   }
 
-  const cleanup = await Promise.all([
-    admin.from("purchases").delete().eq("user_id", userId),
-    admin.from("subscriptions").delete().eq("user_id", userId),
-    admin.from("profiles").delete().eq("id", userId),
-  ]);
-  const cleanupError = cleanup.find((result) => result.error)?.error;
-  if (cleanupError) {
-    console.error("[admin/members/delete] Database cleanup failed", cleanupError);
-    return new Response(JSON.stringify({ error: "Database cleanup failed after billing was cancelled. Please contact support before retrying." }), { status: 500 });
+  // Delete dependent records before the profile to avoid a foreign-key race.
+  for (const [table, column] of [["purchases", "user_id"], ["subscriptions", "user_id"], ["profiles", "id"]] as const) {
+    const { error: cleanupError } = await admin.from(table).delete().eq(column, userId);
+    if (cleanupError) {
+      console.error("[admin/members/delete] Database cleanup failed", { table, error: cleanupError });
+      return new Response(JSON.stringify({ error: `Could not remove the member's ${table} record. No account deletion was attempted.` }), { status: 500 });
+    }
   }
 
-  const { error: deleteError } = await admin.auth.admin.deleteUser(target.id, false);
+  let deleteError: { message: string } | null;
+  try {
+    const result = await admin.auth.admin.deleteUser(target.id, false);
+    deleteError = result.error;
+  } catch (error) {
+    console.error("[admin/members/delete] Auth cleanup request failed", error);
+    return new Response(JSON.stringify({ error: "Supabase could not be reached to remove this account. Check the server configuration and try again." }), { status: 502 });
+  }
   if (deleteError) {
     console.error("[admin/members/delete] Auth cleanup failed", deleteError);
     return new Response(JSON.stringify({ error: "The account could not be removed after billing was cancelled. Please contact support before retrying." }), { status: 500 });
