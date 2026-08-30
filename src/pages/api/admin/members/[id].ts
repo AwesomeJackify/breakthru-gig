@@ -1,4 +1,5 @@
 import type { APIRoute } from "astro";
+import Stripe from "stripe";
 import { stripe } from "../../../../lib/stripe";
 import { createSupabaseAdmin } from "../../../../lib/supabase";
 
