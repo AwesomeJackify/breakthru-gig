@@ -1,7 +1,7 @@
 ---
 import DashboardLayout from "../../layouts/DashboardLayout.astro";
 import { getUserEntitlements } from "../../lib/access";
-import { createSupabaseAdmin } from "../../lib/supabase";
+import { createSupabaseStorageAdmin } from "../../lib/supabase";
 
 const user = Astro.locals.user!;
 const supabase = Astro.locals.supabase;
@@ -11,7 +11,7 @@ if (!entitlements.hasMealPlan) {
   return Astro.redirect("/subscribe");
 }
 
-const admin = createSupabaseAdmin();
+const admin = createSupabaseStorageAdmin();
 const { data: signedUrl, error: storageError } = await admin.storage
   .from("downloads")
   .createSignedUrl("eat-like-me.pdf", 300); // 5-minute expiry

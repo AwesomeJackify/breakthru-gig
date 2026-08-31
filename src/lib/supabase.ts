@@ -49,3 +49,16 @@ export function createSupabaseAdmin() {
     { auth: { autoRefreshToken: false, persistSession: false } }
   );
 }
+
+/**
+ * Uses the optional branded Supabase domain when generating Storage URLs.
+ * Keep Auth and the rest of the API on the project URL to avoid changing
+ * existing cookie and callback behaviour.
+ */
+export function createSupabaseStorageAdmin() {
+  return createClient(
+    import.meta.env.SUPABASE_STORAGE_URL || import.meta.env.PUBLIC_SUPABASE_URL,
+    import.meta.env.SUPABASE_SERVICE_ROLE_KEY,
+    { auth: { autoRefreshToken: false, persistSession: false } }
+  );
+}
