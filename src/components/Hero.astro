@@ -1,6 +1,7 @@
 ---
 import { Image } from "astro:assets";
-import heroImg from "../assets/images/hero.jpeg";
+import photo4 from "../assets/images/photo-gallery/photo-gallery4.jpeg";
+import photo5 from "../assets/images/photo-gallery/photo-gallery5.jpeg";
 import config from "../../breakthru.config.json";
 const { hero } = config;
 ---
@@ -9,13 +10,24 @@ const { hero } = config;
   <div class="max-w-6xl mx-auto px-6 flex flex-col gap-10">
     <!-- Top row: image + bio -->
     <div class="flex flex-col lg:flex-row gap-12 items-center">
-      <!-- Hero image -->
-      <div class="w-full lg:w-1/2 shrink-0">
-        <Image
-          src={heroImg}
-          alt={hero.imageAlt}
-          class="w-full rounded-xl shadow-2xl object-cover max-h-[600px]"
-        />
+      <!-- Founder photos styled as overlapping playing cards -->
+      <div class="w-full lg:w-1/2 shrink-0 flex justify-center">
+        <div class="relative h-[28rem] w-full max-w-md sm:h-[34rem]" aria-label={hero.imageAlt}>
+          <figure class="absolute left-0 top-5 h-[88%] w-[58%] -translate-x-10 overflow-hidden rounded-2xl border-4 border-white bg-base-100 shadow-2xl -rotate-12">
+            <Image
+              src={photo4}
+              alt="Myer Bevan training"
+              class="h-full w-full object-cover"
+            />
+          </figure>
+          <figure class="absolute right-0 top-5 h-[88%] w-[58%] translate-x-10 overflow-hidden rounded-2xl border-4 border-white bg-base-100 shadow-2xl rotate-12">
+            <Image
+              src={photo5}
+              alt="Myer Bevan training"
+              class="h-full w-full object-cover"
+            />
+          </figure>
+        </div>
       </div>
 
       <!-- Bio -->
